@@ -1,0 +1,15 @@
+# Archivos temporales
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# Archivos de backup
+*-backup-*.json
+*.bak
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
