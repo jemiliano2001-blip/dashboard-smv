@@ -23,25 +23,29 @@
     <!-- BARRA SUPERIOR -->
     <div id="topBar">
         <div class="flex items-center gap-4">
-            <img src="assets/images/SMV MAQUINADOS LOGO_color azul.PNG" 
+            <img src="assets/images/smv-logo.PNG" 
                  alt="SMV Maquinados" 
-                 class="h-20 object-contain rounded-lg"
+                 class="h-8 object-contain rounded-lg"
                  onerror="this.style.display='none';">
         </div>
         
         <div class="text-center flex flex-col">
-            <div id="clock" class="text-5xl font-medium text-high tracking-widest tabular-nums">00:00</div>
-            <div id="date" class="text-sm text-medium uppercase font-medium mt-1">LUNES, 01 ENERO</div>
+            <div id="date" class="text-xl text-high uppercase font-semibold tracking-wide">LUNES, 01 ENERO</div>
         </div>
         
-        <div class="flex justify-end items-center gap-4">
-            <div id="companyDisplay" class="flex flex-col items-end">
-                <span id="currentCompany" class="text-xl font-bold text-high">SUPRAJIT</span>
-                <span id="companyPagination" class="text-xs text-medium">1 de 1</span>
+        <div class="flex justify-end items-center gap-3">
+            <div id="suprajitSchedule" class="delivery-schedule">
+                <div class="schedule-title">Horarios de Entrega</div>
+                <div class="schedule-times">
+                    <span>9:00 - 11:00</span>
+                    <span>2:00 - 2:45</span>
+                    <span>3:20 - 4:00</span>
+                </div>
             </div>
-            <div class="h-10 w-10 rounded-full flex items-center justify-center bg-[#252525]">
-                <i class="fas fa-industry text-[#A8C7FA]"></i>
-            </div>
+            <img src="assets/images/logo-suprajit.png" 
+                 alt="Suprajit" 
+                 class="h-8 object-contain rounded-lg"
+                 onerror="this.style.display='none';">
         </div>
     </div>
 

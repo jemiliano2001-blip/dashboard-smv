@@ -92,19 +92,17 @@ body.editing-mode .editable-cell:focus {
     padding: var(--badge-padding);
     border-radius: var(--pill-radius);
     font-size: var(--badge-font);
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    max-width: 150px;
+    width: auto;
+    min-width: fit-content;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     cursor: pointer;
     border: 1px solid transparent;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     transition: var(--hover-transition);
 }
 
@@ -720,3 +718,65 @@ body.editing-mode .drag-handle {
 .notification-toast span {
     color: var(--text-high-emphasis);
 }
+
+/* ============================================
+   DELIVERY SCHEDULE
+   ============================================ */
+
+.delivery-schedule {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end; /* Align text to the right towards the logo */
+    gap: 4px;
+    padding: 8px 16px;
+    background: linear-gradient(180deg, var(--color-bg-secondary) 0%, rgba(255,255,255,0.03) 100%);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    height: auto;
+    min-width: 200px;
+}
+
+.delivery-schedule.hidden {
+    display: none;
+}
+
+.schedule-title {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--color-cyan);
+    letter-spacing: 0.1em;
+    text-align: right;
+    opacity: 0.9;
+}
+
+.schedule-times {
+    display: flex;
+    gap: 16px;
+    flex-direction: row;
+    align-items: center;
+}
+
+.schedule-times span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-high-emphasis);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    position: relative;
+}
+
+.schedule-times span:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: -9px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 2px;
+    background-color: var(--text-medium-emphasis);
+    border-radius: 50%;
+}
+

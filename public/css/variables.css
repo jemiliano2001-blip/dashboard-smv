@@ -5,25 +5,24 @@
 :root {
     /* Spacing & Sizing - Optimized for TV */
     --row-height: auto;
-    --row-min-height: 88px; /* Increased for TV legibility */
-    --row-padding: 16px 20px; /* More internal space */
-    --row-gap: 12px; /* Space between cards */
+    --row-min-height: 92px; /* Increased for TV legibility */
+    --row-padding: 18px 24px; /* More internal space */
+    --row-gap: 16px; /* Space between cards */
     
-    /* Typography - 20% larger for TV viewing */
-    --font-po: 1.1rem;
-    --font-part: 1.2rem;
-    --font-qty: 1.35rem;
-    --font-date: 1rem;
+    /* Typography - Enhanced for TV viewing */
+    --font-po: 1.25rem;
+    --font-part: 1.15rem;
+    --font-qty: 1.4rem;
+    --font-date: 1.05rem;
     
     /* Badges */
-    --badge-padding: 8px 16px;
-    --badge-font: 0.9rem;
+    --badge-padding: 10px 20px;
+    --badge-font: 0.95rem;
     
-    /* Header - Larger for prominence */
-    --header-height: 96px;
+    /* Header - Compact for more order space */
+    --header-height: 72px;
     --header-padding: 0 32px;
-    --clock-font: 4rem; /* 64px */
-    --date-font: 1rem;
+    --date-font: 1.25rem;
     --company-font: 1.5rem;
     
     /* Colors - Enhanced contrast for TV */
@@ -48,12 +47,12 @@
     --color-gray: #9E9E9E;   /* Neutral */
     --color-red: #FFB4AB;    /* Error */
 
-    /* Badge Backgrounds - Slightly more opaque for clarity */
-    --bg-badge-process: rgba(168, 199, 250, 0.18);
-    --bg-badge-heat: rgba(255, 180, 171, 0.18);
-    --bg-badge-qc: rgba(208, 188, 255, 0.18);
-    --bg-badge-partial: rgba(168, 199, 250, 0.18);
-    --bg-badge-done: rgba(109, 213, 140, 0.18);
+    /* Badge Backgrounds - Enhanced opacity for better contrast */
+    --bg-badge-process: rgba(168, 199, 250, 0.25);
+    --bg-badge-heat: rgba(255, 180, 171, 0.25);
+    --bg-badge-qc: rgba(208, 188, 255, 0.25);
+    --bg-badge-partial: rgba(168, 199, 250, 0.25);
+    --bg-badge-done: rgba(109, 213, 140, 0.25);
     
     /* Transitions - Smoother for modern feel */
     --transition-fast: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);

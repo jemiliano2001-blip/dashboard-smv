@@ -62,7 +62,19 @@ async function initializeApp() {
                 
                 // 5. Verificar y ejecutar migración de campo company si es necesario
                 if (orders.length > 0 && typeof checkAndMigrate === 'function') {
-                    await checkAndMigrate();
+                    // Verificar si necesitamos migrar ANTES de hacerlo
+                    const needsMigration = typeof hasOrdersWithoutCompany === 'function' && hasOrdersWithoutCompany();
+                    const silentMigration = sessionStorage.getItem('migration_notified') === 'true';
+                    
+                    if (needsMigration) {
+                        // Evitar migrar si acabamos de recibir una actualización provocada por nosotros mismos
+                        // (o si las órdenes ya vienen corregidas de Firebase)
+                        await checkAndMigrate(silentMigration);
+                        
+                        if (!silentMigration) {
+                            sessionStorage.setItem('migration_notified', 'true');
+                        }
+                    }
                 }
                 
                 // 6. Inicializar sistema de rotación

@@ -15,7 +15,7 @@ function hasOrdersWithoutCompany() {
  * Migra órdenes legacy agregando el campo company
  * @returns {Promise<void>}
  */
-async function migrateOrdersToMultiCompany() {
+async function migrateOrdersToMultiCompany(silent = false) {
     console.log('🔄 Iniciando migración de datos...');
     
     let migratedCount = 0;
@@ -27,7 +27,16 @@ async function migrateOrdersToMultiCompany() {
         return;
     }
     
-    // Actualizar órdenes sin company
+    // Protección anti-loop: si ya migramos recientemente, ignorar
+    const lastMigration = parseInt(sessionStorage.getItem('last_migration_ts') || '0');
+    const now = Date.now();
+    if (now - lastMigration < 10000) {
+        console.log('⏭️ Saltando migración para evitar loops (ya ejecutada hace menos de 10s)');
+        return;
+    }
+    sessionStorage.setItem('last_migration_ts', now.toString());
+    
+    // Actualizar órdenes sin company - SOLO actualizar las que tengan ID
     const updatedOrders = state.orders.map(order => {
         if (!order.company || order.company === '') {
             migratedCount++;
@@ -39,33 +48,45 @@ async function migrateOrdersToMultiCompany() {
         return order;
     });
     
-    // Actualizar estado
+    // Actualizar estado local
     state.orders = updatedOrders;
     
-    // Guardar en Firestore
-    try {
-        await saveAllOrders(state.orders);
-        console.log(`✅ Migración completada: ${migratedCount} órdenes actualizadas con compañía '${defaultCompany}'`);
-        
-        // Mostrar notificación si hay notificaciones configuradas
-        if (typeof showNotification === 'function') {
-            showNotification({
-                type: 'success',
-                message: `${migratedCount} órdenes actualizadas con compañía por defecto`
-            });
+    // Guardar en Firestore solo si hubo cambios Y solo las órdenes con ID
+    if (migratedCount > 0) {
+        try {
+            const ordersWithIds = updatedOrders.filter(order => order.id);
+            
+            if (ordersWithIds.length === 0) {
+                console.log('⚠️ No hay órdenes con ID para migrar en Firebase');
+                return;
+            }
+            
+            // Batch update eficiente solo de campo company
+            if (typeof batchUpdateOrders === 'function') {
+                await batchUpdateOrders(ordersWithIds);
+            }
+            
+            console.log(`✅ Migración completada: ${migratedCount} órdenes actualizadas con compañía '${defaultCompany}'`);
+            
+            if (!silent && typeof showNotification === 'function') {
+                showNotification({
+                    type: 'success',
+                    message: `${migratedCount} órdenes actualizadas con compañía por defecto`
+                });
+            }
+        } catch (error) {
+            console.error('❌ Error durante la migración:', error);
         }
-    } catch (error) {
-        console.error('❌ Error durante la migración:', error);
-        throw error;
     }
 }
 
 /**
  * Verifica y ejecuta la migración si es necesario
  * Llamar durante la inicialización de la app
+ * @param {boolean} silent - Si es true, no muestra notificaciones en pantalla
  * @returns {Promise<void>}
  */
-async function checkAndMigrate() {
+async function checkAndMigrate(silent = false) {
     if (state.orders.length === 0) {
         console.log('ℹ️ No hay órdenes para migrar');
         return;
@@ -73,7 +94,7 @@ async function checkAndMigrate() {
     
     if (hasOrdersWithoutCompany()) {
         console.log('⚠️ Se detectaron órdenes sin compañía asignada');
-        await migrateOrdersToMultiCompany();
+        await migrateOrdersToMultiCompany(silent);
     } else {
         console.log('✅ Todas las órdenes tienen compañía asignada');
     }

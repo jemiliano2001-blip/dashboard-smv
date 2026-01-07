@@ -135,6 +135,25 @@ function updateCompanyDisplay() {
         companyElement.textContent = 'SIN COMPAÑÍA';
         paginationElement.textContent = '0 de 0';
     }
+    
+    // Actualizar visibilidad del horario de Suprajit
+    updateSuprajitScheduleVisibility();
+}
+
+/**
+ * Actualiza la visibilidad del horario de entrega de Suprajit
+ */
+function updateSuprajitScheduleVisibility() {
+    const scheduleElement = document.getElementById('suprajitSchedule');
+    if (!scheduleElement) return;
+    
+    const currentCompany = getCurrentCompany();
+    
+    if (currentCompany === 'SUPRAJIT') {
+        scheduleElement.classList.remove('hidden');
+    } else {
+        scheduleElement.classList.add('hidden');
+    }
 }
 
 /**

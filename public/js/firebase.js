@@ -120,6 +120,7 @@ function subscribeToOrders(callback) {
 
     try {
         const ordersRef = getOrdersCollection();
+        let isFirstLoad = true;
         
         unsubscribeListener = ordersRef
             .orderBy('order')
@@ -127,6 +128,13 @@ function subscribeToOrders(callback) {
                 (snapshot) => {
                     // Prevenir bucles infinitos si ya estamos actualizando
                     if (isUpdatingFromFirestore) {
+                        console.log('⏭️ Ignorando actualización (ya procesando)');
+                        return;
+                    }
+                    
+                    // Si no es la primera carga y viene de metadata changes, ignorar
+                    if (!isFirstLoad && snapshot.metadata.hasPendingWrites) {
+                        console.log('⏭️ Ignorando escritura local pendiente');
                         return;
                     }
                     
@@ -142,13 +150,17 @@ function subscribeToOrders(callback) {
                             });
                         });
                         
-                        console.log(`📦 Órdenes sincronizadas: ${orders.length}`);
+                        console.log(`📦 Órdenes sincronizadas: ${orders.length} (primera: ${isFirstLoad})`);
                         callback(orders);
+                        
+                        if (isFirstLoad) {
+                            isFirstLoad = false;
+                        }
                     } finally {
                         // Resetear flag después de un breve delay
                         setTimeout(() => {
                             isUpdatingFromFirestore = false;
-                        }, 100);
+                        }, 200);
                     }
                 },
                 (error) => {
@@ -190,6 +202,9 @@ async function saveOrderToFirestore(order, orderIndex) {
         throw new Error('Firebase no está inicializado');
     }
 
+    // Marcar que estamos escribiendo
+    isUpdatingFromFirestore = true;
+
     try {
         const ordersRef = getOrdersCollection();
         const orderData = {
@@ -200,6 +215,7 @@ async function saveOrderToFirestore(order, orderIndex) {
             date: order.date || '',
             notes: order.notes || '',
             order: orderIndex,
+            company: order.company || 'SUPRAJIT',
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
 
@@ -217,6 +233,10 @@ async function saveOrderToFirestore(order, orderIndex) {
     } catch (error) {
         console.error('❌ Error al guardar orden:', error);
         throw error;
+    } finally {
+        setTimeout(() => {
+            isUpdatingFromFirestore = false;
+        }, 300);
     }
 }
 
@@ -249,6 +269,9 @@ async function batchUpdateOrders(orders) {
         throw new Error('Firebase no está inicializado');
     }
 
+    // Marcar que estamos escribiendo para evitar loops del listener
+    isUpdatingFromFirestore = true;
+
     try {
         const batch = db.batch();
         const ordersRef = getOrdersCollection();
@@ -268,6 +291,11 @@ async function batchUpdateOrders(orders) {
     } catch (error) {
         console.error('❌ Error al actualizar lote:', error);
         throw error;
+    } finally {
+        // Resetear flag después de dar tiempo a Firestore
+        setTimeout(() => {
+            isUpdatingFromFirestore = false;
+        }, 500);
     }
 }
 
@@ -280,6 +308,8 @@ async function importOrdersToFirestore(orders) {
     if (!isInitialized) {
         throw new Error('Firebase no está inicializado');
     }
+
+    isUpdatingFromFirestore = true;
 
     try {
         const batch = db.batch();
@@ -295,6 +325,7 @@ async function importOrdersToFirestore(orders) {
                 status: order.status || 'process',
                 date: order.date || '',
                 notes: order.notes || '',
+                company: order.company || 'SUPRAJIT',
                 order: index,
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
@@ -307,6 +338,10 @@ async function importOrdersToFirestore(orders) {
     } catch (error) {
         console.error('❌ Error al importar órdenes:', error);
         throw error;
+    } finally {
+        setTimeout(() => {
+            isUpdatingFromFirestore = false;
+        }, 1000);
     }
 }
 
