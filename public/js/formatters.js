@@ -50,6 +50,14 @@ function formatDate(date = new Date()) {
 }
 
 /**
+ * Obtiene la fecha actual formateada en formato dd/mm/yy
+ * @returns {string} Fecha actual formateada
+ */
+function getCurrentDateFormatted() {
+    return formatDate(new Date());
+}
+
+/**
  * Obtiene la clase CSS para un código de estatus
  * @param {string} code - Código de estatus
  * @returns {string} Clase CSS

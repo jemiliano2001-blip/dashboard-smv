@@ -1,6 +1,8 @@
-# 📊 SMV Dashboard - Sistema de Gestión de Producción
+# 📊 Maquinados Vázquez - Sistema de Gestión de Producción
 
-Dashboard visual moderno para gestión de órdenes de producción con sincronización en tiempo real en la nube.
+Dashboard visual moderno para gestión de órdenes de producción multi-cliente con sincronización en tiempo real en la nube.
+
+**Maquinados Vázquez** proporciona servicios de manufactura a múltiples empresas clientes (SUPRAJIT, etc.).
 
 ## ✨ Características
 
@@ -13,6 +15,8 @@ Dashboard visual moderno para gestión de órdenes de producción con sincroniza
 - 📦 **Importación/Exportación** de datos en formato JSON
 - 🌓 **Modo de densidad** (Normal/Compacto)
 - 🎯 **Arquitectura modular** con 14 módulos JavaScript independientes
+- 🏢 **Multi-cliente** con rotación automática entre empresas cliente
+- ⏱️ **Horarios de entrega** personalizados por cliente
 
 ## 🏗️ Arquitectura del Proyecto
 
@@ -23,7 +27,8 @@ tv-dashboard/
 ├── README.md                    # Este archivo
 ├── assets/
 │   └── images/
-│       └── SMV MAQUINADOS LOGO_color azul.PNG
+│       ├── smv-logo.PNG                    # Logo Maquinados Vázquez
+│       └── logo-suprajit.png               # Logo cliente SUPRAJIT
 ├── css/
 │   ├── variables.css            # Variables CSS, colores, espaciado
 │   ├── base.css                 # Reset, scrollbar, body, fuentes
@@ -43,8 +48,11 @@ tv-dashboard/
     ├── ui-interactions.js       # Event handlers
     ├── edit-mode.js             # Lógica de edición
     ├── order-operations.js      # CRUD de órdenes
+    ├── context-menu.js          # Menú contextual
+    ├── rotation-manager.js      # Rotación automática multi-cliente
     ├── export-import.js         # Exportación/importación
     ├── clock.js                 # Reloj en tiempo real
+    ├── migration.js             # Migración de datos legacy
     └── main.js                  # Inicialización y orquestación
 ```
 
@@ -70,6 +78,8 @@ Simplemente abre `index.html` en tu navegador web:
 ### Modo Vista (Por Defecto)
 
 - **Ver órdenes**: Organizadas en dos columnas con código de colores
+- **Rotación automática**: Alterna entre clientes cada 15 segundos
+- **Filtro por cliente**: Muestra solo órdenes del cliente actual
 - **Acciones rápidas al hover**:
   - ✏️ Editar fila específica
   - 📋 Duplicar orden
@@ -89,6 +99,8 @@ Simplemente abre `index.html` en tu navegador web:
 
 | Botón | Función |
 |-------|---------|
+| ◀️ / ▶️ | Navegar entre clientes manualmente |
+| ▶️/⏸️ | Play/Pause de rotación automática |
 | 🔄 Densidad | Alterna entre modo Normal y Compacto |
 | ✏️ Editar | Activa/desactiva modo edición |
 | 💾 Guardar | Guarda cambios manualmente en Firebase |
@@ -96,15 +108,36 @@ Simplemente abre `index.html` en tu navegador web:
 
 ## 🎨 Estados de Órdenes
 
-| Estado | Color | Descripción |
-|--------|-------|-------------|
-| MAQUINADO | 🔵 Cyan | En proceso de maquinado |
-| TEMPLE | 🟠 Naranja | En proceso de temple |
-| CALIDAD | 🟣 Morado | En control de calidad |
-| PARCIAL (REM) | 🔷 Azul | Parcialmente listo |
-| LISTO | 🟢 Verde | Completado |
-| FACTURADO | ⚪ Gris | Ya facturado |
-| PARO/MAT | 🔴 Rojo | Detenido (alerta) |
+| Estado | Código | Color | Descripción |
+|--------|--------|-------|-------------|
+| MAQUINADO | MAQ | 🔵 Cyan | En proceso de maquinado |
+| TEMPLE | TEMP | 🟠 Naranja | En proceso de temple |
+| CALIDAD | CAL | 🟣 Morado | En control de calidad |
+| PARCIAL | PARC | 🔷 Azul | Parcialmente listo |
+| LISTO | OK | 🟢 Verde | Completado |
+| FACTURADO | FACT | ⚪ Gris | Ya facturado |
+| PARO | PARO | 🔴 Rojo | Detenido (alerta) |
+
+## 🏢 Gestión Multi-Cliente
+
+El sistema permite gestionar órdenes de múltiples empresas cliente:
+
+### Clientes Configurados
+- **SUPRAJIT** (Cliente principal)
+  - Horarios de entrega: 9:00-11:00, 2:00-2:45, 3:20-4:00
+  - Logo personalizado en dashboard
+
+### Agregar Nuevos Clientes
+1. Al crear/editar una orden, especifica el nombre del cliente en el campo "Compañía"
+2. El sistema automáticamente:
+   - Agrega el cliente a la lista de rotación
+   - Filtra órdenes por cliente en modo visualización
+   - Mantiene historial de clientes en autocomplete
+
+### Rotación Automática
+- Cambia entre clientes cada **15 segundos**
+- Muestra progreso visual con timer circular
+- Controles manuales: ◀️ Anterior | ▶️/⏸️ Play/Pause | ▶️ Siguiente
 
 ## 🔧 Tecnologías Utilizadas
 
@@ -155,7 +188,7 @@ El dashboard utiliza Firebase Firestore con listeners en tiempo real:
 ### Exportación manual
 1. Activa modo edición
 2. Click en **"Exportar"**
-3. Descarga archivo `smv-ordenes-YYYY-MM-DD.json`
+3. Descarga archivo `mv-ordenes-YYYY-MM-DD.json`
 
 ### Importación
 1. Activa modo edición
@@ -299,7 +332,7 @@ El código está organizado para facilitar contribuciones:
 
 ## 📄 Licencia
 
-Proyecto interno de SMV Maquinados.
+Proyecto interno de **Maquinados Vázquez**.
 
 ## 🆘 Soporte
 
@@ -311,6 +344,6 @@ Para problemas técnicos:
 
 ---
 
-**Desarrollado con ❤️ para SMV Maquinados**
+**Desarrollado con ❤️ para Maquinados Vázquez**
 
-v4.0 - Arquitectura Modular con Firebase Firestore
+v4.0 - Arquitectura Modular Multi-Cliente con Firebase Firestore

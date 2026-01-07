@@ -9,6 +9,7 @@ let calculateRowHeightsTimer = null;
 
 /**
  * Renderiza todas las órdenes en las dos columnas
+ * Optimizado con DocumentFragment para reducir reflows/repaints
  */
 function renderAllOrders() {
     // Prevenir renderizados simultáneos
@@ -18,107 +19,126 @@ function renderAllOrders() {
     
     isRendering = true;
     
-    try {
-        const leftCol = document.getElementById('colLeft');
-        const rightCol = document.getElementById('colRight');
-        
-        if (!leftCol || !rightCol) {
-            console.error('❌ Columnas no encontradas en el DOM');
-            return;
-        }
-
-        // Remover solo las filas de órdenes, preservando el botón de agregar
-        leftCol.querySelectorAll('.order-row').forEach(row => row.remove());
-        rightCol.querySelectorAll('.order-row').forEach(row => row.remove());
-
-        // Actualizar estado vacío y contador
-        updateEmptyState();
-        updateTotalOrders();
-
-        // Determinar qué órdenes renderizar
-        let orders = state.orders || [];
-        
-        console.log(`📊 Total de órdenes en estado: ${orders.length}`);
-        
-        // Solo filtrar si hay múltiples compañías Y el sistema de rotación está activo
-        if (typeof rotationState !== 'undefined' && 
-            rotationState.companies.length > 1 && 
-            rotationState.isActive) {
-            const currentCompany = getCurrentCompany();
-            if (currentCompany) {
-                const filtered = filterOrdersByCompany(currentCompany);
-                console.log(`🔍 Filtrando por compañía: ${currentCompany} (${filtered.length} de ${orders.length} órdenes)`);
-                orders = filtered;
+    // Wrap DOM manipulation in requestAnimationFrame for optimal frame timing
+    requestAnimationFrame(() => {
+        try {
+            const leftCol = document.getElementById('colLeft');
+            const rightCol = document.getElementById('colRight');
+            
+            if (!leftCol || !rightCol) {
+                console.error('❌ Columnas no encontradas en el DOM');
+                isRendering = false;
+                return;
             }
-        } else {
-            console.log(`📋 Mostrando todas las órdenes: ${orders.length}`);
-        }
-        
-        if (orders.length === 0 && state.orders.length > 0) {
-            console.warn('⚠️ Filtro eliminó todas las órdenes, mostrando todas');
-            orders = state.orders;
-        }
-        
-        if (orders.length === 0) {
-            console.warn('⚠️ No hay órdenes para renderizar');
-            console.log('Estado actual:', {
-                totalOrders: state.orders.length,
-                rotationState: typeof rotationState !== 'undefined' ? {
-                    companies: rotationState.companies,
-                    currentIndex: rotationState.currentCompanyIndex,
-                    isActive: rotationState.isActive
-                } : 'no definido'
+
+            // Remover solo las filas de órdenes, preservando el botón de agregar
+            leftCol.querySelectorAll('.order-row').forEach(row => row.remove());
+            rightCol.querySelectorAll('.order-row').forEach(row => row.remove());
+
+            // Actualizar estado vacío y contador
+            updateEmptyState();
+            updateTotalOrders();
+
+            // Determinar qué órdenes renderizar
+            let orders = state.orders || [];
+            
+            console.log(`📊 Total de órdenes en estado: ${orders.length}`);
+            
+            // Solo filtrar si hay múltiples compañías Y el sistema de rotación está activo
+            if (typeof rotationState !== 'undefined' && 
+                rotationState.companies.length > 1 && 
+                rotationState.isActive) {
+                const currentCompany = getCurrentCompany();
+                if (currentCompany) {
+                    const filtered = filterOrdersByCompany(currentCompany);
+                    console.log(`🔍 Filtrando por compañía: ${currentCompany} (${filtered.length} de ${orders.length} órdenes)`);
+                    orders = filtered;
+                }
+            } else {
+                console.log(`📋 Mostrando todas las órdenes: ${orders.length}`);
+            }
+            
+            if (orders.length === 0 && state.orders.length > 0) {
+                console.warn('⚠️ Filtro eliminó todas las órdenes, mostrando todas');
+                orders = state.orders;
+            }
+            
+            if (orders.length === 0) {
+                console.warn('⚠️ No hay órdenes para renderizar');
+                console.log('Estado actual:', {
+                    totalOrders: state.orders.length,
+                    rotationState: typeof rotationState !== 'undefined' ? {
+                        companies: rotationState.companies,
+                        currentIndex: rotationState.currentCompanyIndex,
+                        isActive: rotationState.isActive
+                    } : 'no definido'
+                });
+                isRendering = false;
+                return;
+            }
+            
+            // Create DocumentFragments for batch DOM insertion
+            const leftFragment = document.createDocumentFragment();
+            const rightFragment = document.createDocumentFragment();
+            
+            const midPoint = Math.ceil(orders.length / 2);
+            
+            orders.forEach((order, index) => {
+                try {
+                    const row = createOrderRow(order, index);
+                    
+                    if (!row) {
+                        console.error(`❌ Error creando fila para orden ${index}`);
+                        return;
+                    }
+                    
+                    // Append to appropriate fragment
+                    const targetFragment = index < midPoint ? leftFragment : rightFragment;
+                    targetFragment.appendChild(row);
+                    
+                    // Habilitar drag & drop si estamos en modo edición
+                    if (state.isEditing && typeof enableDragDrop === 'function') {
+                        enableDragDrop(row, index);
+                    }
+                } catch (error) {
+                    console.error(`❌ Error renderizando orden ${index}:`, error);
+                }
             });
-            isRendering = false;
-            return;
-        }
-        
-        const midPoint = Math.ceil(orders.length / 2);
-        
-        orders.forEach((order, index) => {
-            try {
-                const targetCol = index < midPoint ? leftCol : rightCol;
-                const row = createOrderRow(order, index);
-                
-                if (!row) {
-                    console.error(`❌ Error creando fila para orden ${index}`);
-                    return;
-                }
-                
-                const addBtn = targetCol.querySelector('.add-order-btn');
-                
-                if (addBtn) {
-                    targetCol.insertBefore(row, addBtn);
-                } else {
-                    targetCol.appendChild(row);
-                }
-                
-                // Habilitar drag & drop si estamos en modo edición
-                if (state.isEditing && typeof enableDragDrop === 'function') {
-                    enableDragDrop(row, index);
-                }
-            } catch (error) {
-                console.error(`❌ Error renderizando orden ${index}:`, error);
+
+            // Single paint frame append - preserves .add-order-btn
+            const leftAddBtn = leftCol.querySelector('.add-order-btn');
+            const rightAddBtn = rightCol.querySelector('.add-order-btn');
+            
+            if (leftAddBtn) {
+                leftCol.insertBefore(leftFragment, leftAddBtn);
+            } else {
+                leftCol.appendChild(leftFragment);
             }
-        });
+            
+            if (rightAddBtn) {
+                rightCol.insertBefore(rightFragment, rightAddBtn);
+            } else {
+                rightCol.appendChild(rightFragment);
+            }
 
-    // Calcular alturas después de renderizar (con debounce)
-    if (calculateRowHeightsTimer) {
-        clearTimeout(calculateRowHeightsTimer);
-    }
-    calculateRowHeightsTimer = setTimeout(() => {
-        calculateRowHeights();
-        isRendering = false;
-    }, 50);
+            // Calcular alturas después de renderizar (con debounce)
+            if (calculateRowHeightsTimer) {
+                clearTimeout(calculateRowHeightsTimer);
+            }
+            calculateRowHeightsTimer = setTimeout(() => {
+                calculateRowHeights();
+                isRendering = false;
+            }, 50);
 
-        // Aplicar modo edición si está activo
-        if (state.isEditing) {
-            applyEditMode(true);
+            // Aplicar modo edición si está activo
+            if (state.isEditing) {
+                applyEditMode(true);
+            }
+        } catch (error) {
+            console.error('❌ Error al renderizar órdenes:', error);
+            isRendering = false;
         }
-    } catch (error) {
-        console.error('❌ Error al renderizar órdenes:', error);
-        isRendering = false;
-    }
+    });
 }
 
 /**
@@ -177,7 +197,8 @@ function createOrderRowHTML(order, index) {
         
         <div class="w-status px-2">
             <span class="badge-compact ${getStatusClass(order.status)}" 
-                  onclick="state.isEditing && cycleOrderStatus(${index})">
+                  onclick="cycleOrderStatus(${index})"
+                  title="Click to change status">
                 ${getStatusLabel(order.status)}
             </span>
         </div>

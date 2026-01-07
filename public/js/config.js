@@ -15,13 +15,13 @@
  * @type {StatusOption[]}
  */
 const statusOptions = [
-    { code: 'process', label: 'MAQUINADO', class: 'bg-process' },
-    { code: 'heat', label: 'TEMPLE', class: 'bg-heat' },
-    { code: 'qc', label: 'CALIDAD', class: 'bg-qc' },
-    { code: 'partial', label: 'PARCIAL (REM)', class: 'bg-partial' },
-    { code: 'done', label: 'LISTO', class: 'bg-done' },
-    { code: 'invoiced', label: 'FACTURADO', class: 'bg-invoiced' },
-    { code: 'hold', label: 'PARO/MAT', class: 'bg-hold' }
+    { code: 'process', label: 'MAQ', class: 'bg-process' },
+    { code: 'heat', label: 'TEMP', class: 'bg-heat' },
+    { code: 'qc', label: 'CAL', class: 'bg-qc' },
+    { code: 'partial', label: 'PARC', class: 'bg-partial' },
+    { code: 'done', label: 'OK', class: 'bg-done' },
+    { code: 'invoiced', label: 'FACT', class: 'bg-invoiced' },
+    { code: 'hold', label: 'PARO', class: 'bg-hold' }
 ];
 
 /**

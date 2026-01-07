@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMV | Dashboard de Producción Masivo</title>
+    <title>Maquinados Vázquez | Dashboard de Producción</title>
     
     <!-- Tailwind CSS (Minimal usage for flex/grid utilities) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,12 +16,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS Modules -->
-    <link rel="stylesheet" href="css/variables.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/animations.css">
+    <!-- Custom CSS Modules (Auto Cache-Busting) -->
+    <script>
+        const cssVersion = Date.now();
+        const cssFiles = [
+            'css/variables.css',
+            'css/base.css',
+            'css/layout.css',
+            'css/components.css',
+            'css/animations.css'
+        ];
+        cssFiles.forEach(file => {
+            document.write('<link rel="stylesheet" href="' + file + '?v=' + cssVersion + '">');
+        });
+    </script>
 </head>
 <body class="h-screen flex flex-col p-4 bg-[#121212]">
 
@@ -29,7 +37,7 @@
     <div id="topBar">
         <div class="flex items-center gap-4">
             <img src="assets/images/smv-logo.PNG" 
-                 alt="SMV Maquinados" 
+                 alt="Maquinados Vázquez" 
                  class="h-10 object-contain rounded-lg"
                  onerror="this.style.display='none';">
         </div>
@@ -193,6 +201,27 @@
         </div>
     </div>
 
+    <!-- CONTEXT MENU -->
+    <div id="contextMenu" class="context-menu">
+        <div class="context-menu-item" data-action="edit">
+            <i class="fas fa-pen"></i> Editar Orden
+        </div>
+        <div class="context-menu-item" data-action="duplicate">
+            <i class="fas fa-copy"></i> Duplicar
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item" data-action="move-top">
+            <i class="fas fa-arrow-up"></i> Mover Arriba
+        </div>
+        <div class="context-menu-item" data-action="move-bottom">
+            <i class="fas fa-arrow-down"></i> Mover Abajo
+        </div>
+        <div class="context-menu-divider"></div>
+        <div class="context-menu-item danger" data-action="delete">
+            <i class="fas fa-trash-alt"></i> Eliminar
+        </div>
+    </div>
+
     <!-- ESTADÍSTICAS -->
     <div class="footer-stats">
         <div id="totalOrders" class="text-lg font-medium text-high">Total: 0</div>
@@ -202,7 +231,7 @@
             <span class="text-[#8E918F] font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#8E918F]"></span> FACTURADO</span>
             <span class="text-[#FFB4AB] font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#FFB4AB]"></span> PARO</span>
         </div>
-        <div class="text-xs text-medium">SMV Visual System v4.0</div>
+        <div class="text-xs text-medium">Maquinados Vázquez • Sistema Visual v4.0</div>
     </div>
 
     <!-- CONTROLES -->
@@ -289,6 +318,7 @@
     <script src="js/edit-mode.js"></script>
     <script src="js/edit-modal.js"></script>
     <script src="js/order-operations.js"></script>
+    <script src="js/context-menu.js"></script>
     <script src="js/export-import.js"></script>
     <script src="js/clock.js"></script>
     <script src="js/migration.js"></script>

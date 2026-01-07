@@ -4,6 +4,11 @@
  */
 
 /**
+ * Debounce flag to prevent duplicate order submissions
+ */
+let isAddingOrder = false;
+
+/**
  * Determines the appropriate company for new orders based on current context
  * @returns {string} Company name to use for new orders
  */
@@ -84,57 +89,72 @@ async function addNewOrders(count) {
  * Agrega una orden al final
  */
 async function addOrderAtEnd() {
-    const today = getCurrentDateFormatted();
-    const companyName = getContextCompany();
+    // Debounce: prevent duplicate submissions from rapid clicks
+    if (isAddingOrder) {
+        console.log('⚠️ Order already being added, ignoring duplicate request');
+        return;
+    }
     
-    const newOrder = {
-        po: '',
-        part: '',
-        qty: '0',
-        status: 'process',
-        date: today,
-        notes: '',
-        company: companyName
-    };
+    isAddingOrder = true;
     
-    state.orders.push(newOrder);
-    renderAllOrders();
-    
-    // Guardar la nueva orden
     try {
-        await saveOrderToStorage(newOrder, state.orders.length - 1);
-        console.log(`✅ Orden agregada al final para ${companyName}`);
+        const today = getCurrentDateFormatted();
+        const companyName = getContextCompany();
         
-        // Notification feedback
-        showNotification({
-            type: 'success',
-            message: `New Order Added for ${companyName}`,
-            duration: 2500
-        });
+        const newOrder = {
+            po: '',
+            part: '',
+            qty: '0',
+            status: 'process',
+            date: today,
+            notes: '',
+            company: companyName
+        };
         
-        // Scroll to the newly added order
-        setTimeout(() => {
-            const newIndex = state.orders.length - 1;
-            const newRow = document.querySelector(`.order-row[data-index="${newIndex}"]`);
+        state.orders.push(newOrder);
+        renderAllOrders();
+        
+        // Guardar la nueva orden
+        try {
+            await saveOrderToStorage(newOrder, state.orders.length - 1);
+            console.log(`✅ Orden agregada al final para ${companyName}`);
             
-            if (newRow) {
-                newRow.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'nearest',
-                    inline: 'nearest'
-                });
-                newRow.classList.add('adding');
-                setTimeout(() => newRow.classList.remove('adding'), 1000);
-            }
-        }, 100);
-        
-    } catch (error) {
-        console.error('Error al agregar orden:', error);
-        showNotification({
-            type: 'error',
-            message: `Error adding order: ${error.message}`,
-            duration: 3000
-        });
+            // Notification feedback
+            showNotification({
+                type: 'success',
+                message: `New Order Added for ${companyName}`,
+                duration: 2500
+            });
+            
+            // Scroll to the newly added order
+            setTimeout(() => {
+                const newIndex = state.orders.length - 1;
+                const newRow = document.querySelector(`.order-row[data-index="${newIndex}"]`);
+                
+                if (newRow) {
+                    newRow.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest',
+                        inline: 'nearest'
+                    });
+                    newRow.classList.add('adding');
+                    setTimeout(() => newRow.classList.remove('adding'), 1000);
+                }
+            }, 100);
+            
+        } catch (error) {
+            console.error('Error al agregar orden:', error);
+            showNotification({
+                type: 'error',
+                message: `Error adding order: ${error.message}`,
+                duration: 3000
+            });
+        }
+    } finally {
+        // Reset flag after 500ms to allow intentional rapid adds
+        setTimeout(() => {
+            isAddingOrder = false;
+        }, 500);
     }
 }
 
@@ -230,13 +250,10 @@ async function animateAndDeleteOrder(index) {
 }
 
 /**
- * Cambia el estatus de una orden al siguiente en el ciclo (solo en modo edición)
+ * Cambia el estatus de una orden al siguiente en el ciclo
  * @param {number} index - Índice de la orden
  */
 async function cycleOrderStatus(index) {
-    // Solo permitir en modo edición
-    if (!state.isEditing) return;
-    
     const order = state.orders[index];
     if (!order) return;
     
@@ -244,8 +261,9 @@ async function cycleOrderStatus(index) {
     const statusCodes = STATUS_OPTIONS.map(s => s.code);
     const currentIndex = statusCodes.indexOf(currentStatus);
     const nextIndex = (currentIndex + 1) % statusCodes.length;
+    const newStatus = statusCodes[nextIndex];
     
-    order.status = statusCodes[nextIndex];
+    order.status = newStatus;
     
     // Actualizar solo esta fila
     updateSingleRow(index);
@@ -254,8 +272,20 @@ async function cycleOrderStatus(index) {
     try {
         await saveOrderToStorage(order, index);
         console.log(`✅ Estatus cambiado a: ${order.status}`);
+        
+        // Notification feedback
+        showNotification({
+            type: 'success',
+            message: `Status: ${getStatusLabel(newStatus)}`,
+            duration: 1500
+        });
     } catch (error) {
         console.error('Error al cambiar estatus:', error);
+        showNotification({
+            type: 'error',
+            message: 'Error updating status',
+            duration: 2000
+        });
     }
 }
 

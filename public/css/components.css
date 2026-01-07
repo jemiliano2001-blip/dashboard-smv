@@ -108,11 +108,17 @@ body.editing-mode .editable-cell:focus {
     letter-spacing: 0.1em;
     transition: var(--hover-transition);
     will-change: transform;
+    user-select: none;
 }
 
 .badge-compact:hover {
     filter: brightness(1.15);
     transform: scale(1.05);
+}
+
+.badge-compact:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
 }
 
 /* Badge Variants (Tonal) - with Status Glows */
@@ -199,7 +205,7 @@ body.editing-mode .action-btn:hover {
 .add-order-btn {
     display: none;
     width: 100%;
-    padding: 1rem;
+    padding: 1.25rem;
     margin-top: 1rem;
     border: 1px dashed var(--color-border);
     border-radius: var(--card-radius);
@@ -212,6 +218,9 @@ body.editing-mode .action-btn:hover {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    z-index: 10;
+    position: relative;
+    min-height: 56px;
 }
 
 .editing-mode .add-order-btn {
@@ -222,6 +231,11 @@ body.editing-mode .action-btn:hover {
     background: var(--bg-badge-process);
     border-color: var(--color-cyan);
     transform: translateY(-2px);
+}
+
+.add-order-btn:active {
+    transform: translateY(0);
+    transition: transform 0.1s ease;
 }
 
 /* Focus states for accessibility */
@@ -792,5 +806,65 @@ body.editing-mode .drag-handle {
     background-color: var(--color-cyan);
     border-radius: 50%;
     opacity: 0.6;
+}
+
+/* ============================================
+   CONTEXT MENU
+   ============================================ */
+
+.context-menu {
+    position: fixed;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-light);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    min-width: 200px;
+    padding: 4px 0;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.context-menu.show {
+    opacity: 1;
+    pointer-events: all;
+    transform: scale(1);
+}
+
+.context-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    color: var(--text-high-emphasis);
+    transition: background 0.15s ease;
+    font-size: 0.9rem;
+    user-select: none;
+}
+
+.context-menu-item i {
+    width: 16px;
+    text-align: center;
+}
+
+.context-menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.context-menu-item.danger {
+    color: var(--color-red);
+}
+
+.context-menu-item.danger:hover {
+    background: rgba(255, 180, 171, 0.12);
+}
+
+.context-menu-divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 4px 0;
 }
 
