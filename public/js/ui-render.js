@@ -159,7 +159,8 @@ function createOrderRowHTML(order, index) {
         </div>
         
         <div class="w-po font-medium editable-cell truncate" 
-             data-key="po">
+             data-key="po"
+             style="font-family: var(--font-mono);">
             ${formatPO(order.po)}
         </div>
         
@@ -169,7 +170,8 @@ function createOrderRowHTML(order, index) {
         </div>
         
         <div class="w-qty font-medium editable-cell" 
-             data-key="qty">
+             data-key="qty"
+             style="font-family: var(--font-mono);">
             ${escapeHTML(order.qty)}
         </div>
         

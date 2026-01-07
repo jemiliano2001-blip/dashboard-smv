@@ -5,7 +5,9 @@
 .order-row {
     display: flex;
     align-items: center;
-    background-color: var(--color-bg-secondary);
+    background: rgba(26, 26, 26, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     margin-bottom: var(--row-gap);
     padding: var(--row-padding);
     height: auto;
@@ -15,17 +17,18 @@
     gap: 20px;
     position: relative;
     
-    /* Minimalist Card Styling */
+    /* Glassmorphism Card Styling */
     border-radius: var(--card-radius);
-    border: 1px solid var(--color-border);
-    box-shadow: none;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    will-change: transform;
 }
 
 .order-row:hover {
-    background-color: var(--color-bg-tertiary);
-    border-color: var(--color-border-light);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-1);
+    background: rgba(36, 36, 36, 0.8);
+    border-color: rgba(255, 255, 255, 0.12);
+    transform: translate3d(0, -2px, 0);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* Double-click hint */
@@ -89,7 +92,7 @@ body.editing-mode .editable-cell:focus {
    ============================================ */
 
 .badge-compact {
-    padding: var(--badge-padding);
+    padding: 12px 24px;
     border-radius: var(--pill-radius);
     font-size: var(--badge-font);
     font-weight: 700;
@@ -104,54 +107,62 @@ body.editing-mode .editable-cell:focus {
     border: 1px solid transparent;
     letter-spacing: 0.1em;
     transition: var(--hover-transition);
+    will-change: transform;
 }
 
 .badge-compact:hover {
     filter: brightness(1.15);
-    transform: scale(1.02);
+    transform: scale(1.05);
 }
 
-/* Badge Variants (Tonal) - with subtle borders */
+/* Badge Variants (Tonal) - with Status Glows */
 .bg-process {
     background-color: var(--bg-badge-process);
     color: var(--color-cyan);
-    border-color: rgba(168, 199, 250, 0.3);
+    border-color: rgba(168, 199, 250, 0.4);
+    box-shadow: 0 0 12px rgba(168, 199, 250, 0.4), 0 0 3px rgba(168, 199, 250, 0.6) inset;
 }
 
 .bg-heat {
     background-color: var(--bg-badge-heat);
     color: var(--color-orange);
-    border-color: rgba(255, 180, 171, 0.3);
+    border-color: rgba(255, 180, 171, 0.4);
+    box-shadow: 0 0 12px rgba(255, 180, 171, 0.4), 0 0 3px rgba(255, 180, 171, 0.6) inset;
 }
 
 .bg-qc {
     background-color: var(--bg-badge-qc);
     color: var(--color-purple);
-    border-color: rgba(208, 188, 255, 0.3);
+    border-color: rgba(208, 188, 255, 0.4);
+    box-shadow: 0 0 12px rgba(208, 188, 255, 0.4), 0 0 3px rgba(208, 188, 255, 0.6) inset;
 }
 
 .bg-partial {
     background-color: var(--bg-badge-partial);
     color: var(--color-blue);
-    border-color: rgba(168, 199, 250, 0.3);
+    border-color: rgba(168, 199, 250, 0.4);
+    box-shadow: 0 0 12px rgba(168, 199, 250, 0.4), 0 0 3px rgba(168, 199, 250, 0.6) inset;
 }
 
 .bg-done {
     background-color: var(--bg-badge-done);
     color: var(--color-green);
-    border-color: rgba(109, 213, 140, 0.3);
+    border-color: rgba(109, 213, 140, 0.4);
+    box-shadow: 0 0 12px rgba(109, 213, 140, 0.4), 0 0 3px rgba(109, 213, 140, 0.6) inset;
 }
 
 .bg-invoiced {
     background-color: var(--color-bg-tertiary);
     color: var(--color-gray);
     border-color: var(--color-border);
+    box-shadow: 0 0 8px rgba(158, 158, 158, 0.2), 0 0 2px rgba(158, 158, 158, 0.4) inset;
 }
 
 .bg-hold {
     background-color: rgba(255, 180, 171, 0.2);
     color: var(--color-red);
-    border-color: rgba(255, 180, 171, 0.4);
+    border-color: rgba(255, 180, 171, 0.5);
+    box-shadow: 0 0 15px rgba(255, 180, 171, 0.5), 0 0 4px rgba(255, 180, 171, 0.7) inset;
 }
 
 /* ============================================
@@ -727,15 +738,16 @@ body.editing-mode .drag-handle {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-end; /* Align text to the right towards the logo */
-    gap: 4px;
-    padding: 8px 16px;
-    background: linear-gradient(180deg, var(--color-bg-secondary) 0%, rgba(255,255,255,0.03) 100%);
-    border-radius: 8px;
-    border: 1px solid var(--color-border);
+    align-items: flex-end;
+    gap: 6px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, rgba(168, 199, 250, 0.12), rgba(168, 199, 250, 0.06));
+    border-radius: 10px;
+    border: 1px solid rgba(168, 199, 250, 0.4);
     transition: opacity 0.3s ease, transform 0.3s ease;
     height: auto;
-    min-width: 200px;
+    min-width: 220px;
+    box-shadow: 0 2px 12px rgba(168, 199, 250, 0.15);
 }
 
 .delivery-schedule.hidden {
@@ -743,13 +755,13 @@ body.editing-mode .drag-handle {
 }
 
 .schedule-title {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     text-transform: uppercase;
     font-weight: 700;
     color: var(--color-cyan);
     letter-spacing: 0.1em;
     text-align: right;
-    opacity: 0.9;
+    opacity: 1;
 }
 
 .schedule-times {
@@ -760,10 +772,11 @@ body.editing-mode .drag-handle {
 }
 
 .schedule-times span {
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text-high-emphasis);
     font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
     letter-spacing: 0.02em;
     position: relative;
 }
@@ -776,7 +789,8 @@ body.editing-mode .drag-handle {
     transform: translateY(-50%);
     width: 2px;
     height: 2px;
-    background-color: var(--text-medium-emphasis);
+    background-color: var(--color-cyan);
     border-radius: 50%;
+    opacity: 0.6;
 }
 
