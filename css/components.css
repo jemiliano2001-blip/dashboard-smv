@@ -1,0 +1,722 @@
+/* ============================================
+   ORDER CARDS (Rows)
+   ============================================ */
+
+.order-row {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-bg-secondary);
+    margin-bottom: var(--row-gap);
+    padding: var(--row-padding);
+    height: auto;
+    min-height: var(--row-min-height);
+    flex-shrink: 0;
+    transition: var(--hover-transition);
+    gap: 20px;
+    position: relative;
+    
+    /* Minimalist Card Styling */
+    border-radius: var(--card-radius);
+    border: 1px solid var(--color-border);
+    box-shadow: none;
+}
+
+.order-row:hover {
+    background-color: var(--color-bg-tertiary);
+    border-color: var(--color-border-light);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-1);
+}
+
+/* Double-click hint */
+body:not(.editing-mode) .order-row:hover {
+    cursor: pointer;
+}
+
+body.editing-mode .order-row {
+    cursor: grab;
+}
+
+body.editing-mode .order-row:active {
+    cursor: grabbing;
+}
+
+.order-row:nth-child(even) {
+    background-color: var(--color-bg-secondary);
+}
+
+/* Row Variants */
+.row-urgent {
+    border: 1px solid var(--color-red) !important;
+    background-color: rgba(255, 180, 171, 0.05) !important;
+}
+
+.row-invoiced {
+    opacity: 0.6;
+}
+
+.row-invoiced:hover {
+    opacity: 1;
+}
+
+/* Editable Cells */
+.editable-cell {
+    transition: var(--transition-fast);
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+body.editing-mode .editable-cell {
+    border: 1px dashed var(--color-border);
+    background-color: var(--color-bg-elevated);
+    cursor: text;
+}
+
+body.editing-mode .editable-cell:focus {
+    outline: none;
+    border-color: var(--color-cyan);
+    background-color: var(--color-bg-tertiary);
+}
+
+.order-row.editing-row {
+    background: var(--color-bg-elevated) !important;
+    border: 1px solid var(--color-cyan) !important;
+    box-shadow: var(--shadow-2);
+}
+
+/* ============================================
+   STATUS PILLS (Badges)
+   ============================================ */
+
+.badge-compact {
+    padding: var(--badge-padding);
+    border-radius: var(--pill-radius);
+    font-size: var(--badge-font);
+    font-weight: 600;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    border: 1px solid transparent;
+    letter-spacing: 0.08em;
+    transition: var(--hover-transition);
+}
+
+.badge-compact:hover {
+    filter: brightness(1.15);
+    transform: scale(1.02);
+}
+
+/* Badge Variants (Tonal) - with subtle borders */
+.bg-process {
+    background-color: var(--bg-badge-process);
+    color: var(--color-cyan);
+    border-color: rgba(168, 199, 250, 0.3);
+}
+
+.bg-heat {
+    background-color: var(--bg-badge-heat);
+    color: var(--color-orange);
+    border-color: rgba(255, 180, 171, 0.3);
+}
+
+.bg-qc {
+    background-color: var(--bg-badge-qc);
+    color: var(--color-purple);
+    border-color: rgba(208, 188, 255, 0.3);
+}
+
+.bg-partial {
+    background-color: var(--bg-badge-partial);
+    color: var(--color-blue);
+    border-color: rgba(168, 199, 250, 0.3);
+}
+
+.bg-done {
+    background-color: var(--bg-badge-done);
+    color: var(--color-green);
+    border-color: rgba(109, 213, 140, 0.3);
+}
+
+.bg-invoiced {
+    background-color: var(--color-bg-tertiary);
+    color: var(--color-gray);
+    border-color: var(--color-border);
+}
+
+.bg-hold {
+    background-color: rgba(255, 180, 171, 0.2);
+    color: var(--color-red);
+    border-color: rgba(255, 180, 171, 0.4);
+}
+
+/* ============================================
+   BUTTONS (Material Style)
+   ============================================ */
+
+/* Action Buttons (Edit Mode) */
+.action-btn {
+    display: none !important;
+}
+
+body.editing-mode .action-btn {
+    display: flex !important;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    color: var(--text-medium-emphasis);
+    transition: var(--hover-transition);
+    cursor: pointer;
+}
+
+body.editing-mode .action-btn:hover {
+    background: var(--color-bg-elevated);
+    color: var(--color-red);
+    border-color: var(--color-red);
+    transform: scale(1.1);
+}
+
+/* Add Order Button */
+.add-order-btn {
+    display: none;
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--card-radius);
+    background: transparent;
+    color: var(--color-cyan);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.editing-mode .add-order-btn {
+    display: flex;
+}
+
+.add-order-btn:hover {
+    background: var(--bg-badge-process);
+    border-color: var(--color-cyan);
+    transform: translateY(-2px);
+}
+
+/* Focus states for accessibility */
+button:focus-visible,
+.edit-field:focus-visible,
+.status-option:focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 2px;
+}
+
+/* Loading skeleton */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--color-bg-secondary) 25%,
+        var(--color-bg-tertiary) 50%,
+        var(--color-bg-secondary) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ============================================
+   INLINE ACTION ICONS
+   ============================================ */
+
+.row-actions-inline {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--color-bg-secondary) 20%);
+    padding-left: 20px;
+    height: 100%;
+    align-items: center;
+    border-radius: 0 var(--card-radius) var(--card-radius) 0;
+}
+
+.order-row:hover .row-actions-inline {
+    opacity: 1;
+    pointer-events: all;
+}
+
+body.editing-mode .row-actions-inline {
+    display: none !important;
+}
+
+.action-icon-inline {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--hover-transition);
+    border: none;
+}
+
+.action-icon-inline i {
+    font-size: 1.1rem;
+}
+
+.action-icon-edit {
+    background: var(--color-bg-tertiary);
+    color: var(--color-cyan);
+}
+
+.action-icon-edit:hover {
+    background: var(--color-cyan);
+    color: var(--color-bg-primary);
+}
+
+.action-icon-duplicate {
+    background: var(--color-bg-tertiary);
+    color: var(--color-purple);
+}
+
+.action-icon-duplicate:hover {
+    background: var(--color-purple);
+    color: var(--color-bg-primary);
+}
+
+.action-icon-delete {
+    background: var(--color-bg-tertiary);
+    color: var(--color-red);
+}
+
+.action-icon-delete:hover {
+    background: var(--color-red);
+    color: var(--color-bg-primary);
+}
+
+/* ============================================
+   DRAG & DROP
+   ============================================ */
+
+.drag-handle {
+    position: absolute;
+    left: 4px;
+    width: 24px;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    color: var(--color-border-light);
+    transition: color 0.2s ease;
+}
+
+body.editing-mode .drag-handle {
+    display: flex;
+}
+
+.drag-handle:hover {
+    color: var(--text-high-emphasis);
+}
+
+.order-row.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+    cursor: grabbing;
+    background: var(--color-bg-elevated);
+    box-shadow: var(--shadow-3);
+    z-index: 10;
+}
+
+.drag-ghost {
+    box-shadow: var(--shadow-3);
+    transform: rotate(2deg) scale(1.05);
+}
+
+/* Drop indicators */
+.drag-over-top {
+    border-top: 3px solid var(--color-cyan);
+    margin-top: -3px;
+}
+
+.drag-over-bottom {
+    border-bottom: 3px solid var(--color-cyan);
+    margin-bottom: -3px;
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--modal-backdrop);
+    backdrop-filter: blur(2px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--color-bg-elevated);
+    border-radius: var(--modal-radius);
+    padding: 32px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    animation: modalSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: var(--shadow-3);
+    border: 1px solid var(--color-border-light);
+}
+
+.modal-content i.fa-exclamation-triangle {
+    font-size: 2rem;
+    color: var(--color-orange);
+    margin-bottom: 16px;
+}
+
+.modal-content h3 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-high-emphasis);
+    margin: 0 0 8px 0;
+}
+
+.modal-content p {
+    font-size: 0.9rem;
+    color: var(--text-medium-emphasis);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end; /* Material dialog actions are usually right-aligned */
+    gap: 8px;
+}
+
+.modal-actions button {
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: var(--hover-transition);
+    border: none;
+}
+
+.modal-actions .cancel {
+    background: transparent;
+    color: var(--color-cyan);
+}
+
+.modal-actions .cancel:hover {
+    background: rgba(168, 199, 250, 0.08);
+}
+
+.modal-actions .confirm-delete {
+    background: var(--color-red);
+    color: #3C0000; /* Dark text on pastel red */
+}
+
+.modal-actions .confirm-delete:hover {
+    box-shadow: var(--shadow-1);
+    opacity: 0.9;
+}
+
+/* ============================================
+   EXPORT INDICATOR
+   ============================================ */
+
+.export-indicator {
+    position: fixed;
+    top: 90px;
+    right: 24px;
+    background: var(--color-bg-elevated);
+    color: var(--color-green);
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-2);
+    font-weight: 500;
+    font-size: 0.9rem;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+
+.export-indicator.show {
+    display: flex;
+}
+
+/* ============================================
+   ROTATION CONTROLS
+   ============================================ */
+
+#rotationControls {
+    transition: all 0.3s ease;
+    background: var(--color-bg-secondary) !important;
+    border-color: var(--color-border) !important;
+    border-radius: 100px !important;
+    padding: 4px 12px !important;
+}
+
+.rotation-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: var(--text-medium-emphasis);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rotation-nav-btn:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--text-high-emphasis);
+}
+
+.rotation-toggle-btn {
+    width: 40px;
+    height: 32px;
+    border-radius: 16px;
+    background: transparent;
+    border: 1px solid var(--color-green);
+    color: var(--color-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rotation-toggle-btn.active {
+    background: var(--color-green);
+    color: #000;
+}
+
+/* ============================================
+   EDIT MODAL STYLES
+   ============================================ */
+
+.edit-modal-content {
+    max-width: 560px;
+    text-align: left;
+    padding: 36px;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-high-emphasis);
+    margin: 0 0 28px 0;
+    text-align: center;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-medium-emphasis);
+    letter-spacing: 0.02em;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.edit-field {
+    padding: 12px 16px;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--text-high-emphasis);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition-fast);
+    outline: none;
+}
+
+.edit-field:focus {
+    border-color: var(--color-cyan);
+    background: var(--color-bg-primary);
+    box-shadow: 0 0 0 3px rgba(168, 199, 250, 0.1);
+}
+
+.edit-field.field-error {
+    border-color: var(--color-red);
+    background: rgba(255, 180, 171, 0.05);
+}
+
+.edit-field.field-success {
+    border-color: var(--color-green);
+}
+
+/* Status Grid */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.status-option {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--hover-transition);
+    border: 2px solid transparent;
+}
+
+.status-option:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+}
+
+.status-option.selected {
+    border-color: currentColor;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+}
+
+.modal-actions .confirm-save {
+    background: var(--color-cyan);
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-actions .confirm-save:hover {
+    background: var(--color-blue);
+    box-shadow: var(--shadow-2);
+}
+
+/* Modal Closing Animation */
+.modal-overlay.closing .modal-content {
+    animation: modalSlideOut 0.35s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.modal-overlay.closing {
+    animation: fadeOut 0.35s ease forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* ============================================
+   NOTIFICATION TOAST
+   ============================================ */
+
+.notification-toast {
+    position: fixed;
+    top: 100px;
+    right: 32px;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border-light);
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-3);
+    z-index: 1100;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.notification-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification-toast i {
+    font-size: 1.2rem;
+}
+
+.notification-success {
+    border-left: 4px solid var(--color-green);
+    color: var(--color-green);
+}
+
+.notification-success i {
+    color: var(--color-green);
+}
+
+.notification-error {
+    border-left: 4px solid var(--color-red);
+    color: var(--color-red);
+}
+
+.notification-error i {
+    color: var(--color-red);
+}
+
+.notification-toast span {
+    color: var(--text-high-emphasis);
+}

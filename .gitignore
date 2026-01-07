@@ -13,3 +13,15 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+
+# Secretos y Configuracion Local
+sync_config.py
+serviceAccountKey.json

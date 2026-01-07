@@ -1,0 +1,79 @@
+/* ============================================
+   BASE STYLES & RESET
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-bg-primary);
+    color: var(--text-high-emphasis);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    overflow: hidden;
+    margin: 0;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 8px 0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 100px;
+    border: 2px solid var(--color-bg-primary);
+    transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-light);
+}
+
+::-webkit-scrollbar-thumb:active {
+    background: var(--color-cyan);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.smv-logo-font {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+/* Typography Scale */
+h1, h2, h3 {
+    margin: 0;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+button {
+    font-family: inherit;
+    letter-spacing: inherit;
+}
+
+.text-medium {
+    color: var(--text-medium-emphasis);
+}
+
+.text-high {
+    color: var(--text-high-emphasis);
+}

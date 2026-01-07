@@ -1,0 +1,184 @@
+/* ============================================
+   ANIMATIONS & KEYFRAMES
+   ============================================ */
+
+@keyframes pulse-red {
+    0% {
+        border-color: rgba(255, 71, 87, 0.5);
+        background-color: rgba(255, 71, 87, 0.1);
+        box-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
+    }
+    50% {
+        border-color: rgba(255, 71, 87, 1);
+        background-color: rgba(255, 71, 87, 0.2);
+        box-shadow: 0 0 20px rgba(255, 71, 87, 0.6);
+    }
+    100% {
+        border-color: rgba(255, 71, 87, 0.5);
+        background-color: rgba(255, 71, 87, 0.1);
+        box-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes modalSlideOut {
+    from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.92) translateY(-30px);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ============================================
+   ANIMATION CLASSES
+   ============================================ */
+
+.order-row.removing {
+    animation: slideOutRight 0.3s ease forwards;
+}
+
+.order-row.adding {
+    animation: slideInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.saving-pulse {
+    animation: pulse 0.6s ease-in-out;
+}
+
+.scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================
+   COMPANY ROTATION TRANSITIONS
+   ============================================ */
+
+/* Transición suave al cambiar de compañía */
+#colLeft, #colRight {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.columns-fading {
+    opacity: 0.3;
+}
+
+/* ============================================
+   HINT TOOLTIP
+   ============================================ */
+
+@keyframes hintPulse {
+    0%, 100% {
+        opacity: 0.7;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-4px);
+    }
+}
+
+.edit-hint {
+    position: fixed;
+    bottom: 140px;
+    right: 32px;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-cyan);
+    border-radius: 12px;
+    padding: 12px 20px;
+    color: var(--text-high-emphasis);
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-3);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+    z-index: 100;
+}
+
+.edit-hint.show {
+    opacity: 1;
+    transform: translateY(0);
+    animation: hintPulse 2s ease-in-out infinite;
+}
+
+.edit-hint i {
+    color: var(--color-cyan);
+    margin-right: 8px;
+}

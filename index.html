@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMV | Dashboard de Producción Masivo</title>
+    
+    <!-- Tailwind CSS (Minimal usage for flex/grid utilities) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS Modules -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body class="h-screen flex flex-col p-4 bg-[#121212]">
+
+    <!-- BARRA SUPERIOR -->
+    <div id="topBar">
+        <div class="flex items-center gap-4">
+            <img src="assets/images/SMV MAQUINADOS LOGO_color azul.PNG" 
+                 alt="SMV Maquinados" 
+                 class="h-20 object-contain rounded-lg"
+                 onerror="this.style.display='none';">
+        </div>
+        
+        <div class="text-center flex flex-col">
+            <div id="clock" class="text-5xl font-medium text-high tracking-widest tabular-nums">00:00</div>
+            <div id="date" class="text-sm text-medium uppercase font-medium mt-1">LUNES, 01 ENERO</div>
+        </div>
+        
+        <div class="flex justify-end items-center gap-4">
+            <div id="companyDisplay" class="flex flex-col items-end">
+                <span id="currentCompany" class="text-xl font-bold text-high">SUPRAJIT</span>
+                <span id="companyPagination" class="text-xs text-medium">1 de 1</span>
+            </div>
+            <div class="h-10 w-10 rounded-full flex items-center justify-center bg-[#252525]">
+                <i class="fas fa-industry text-[#A8C7FA]"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR GRID -->
+    <div class="flex-grow grid grid-cols-2 gap-6 overflow-hidden relative">
+        
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="flex flex-col h-full overflow-hidden">
+            <div class="col-header rounded-t flex justify-between px-4 py-2">
+                <div class="w-po">PO #</div>
+                <div class="w-part">Parte</div>
+                <div class="w-qty">Cant</div>
+                <div class="w-status">Estatus</div>
+                <div class="w-date">Pedido</div>
+            </div>
+            <div id="colLeft" class="overflow-y-auto flex flex-col flex-grow px-1">
+                <div class="add-order-btn" onclick="addOrderAtEnd()">
+                    <i class="fas fa-plus"></i> Agregar Orden
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMNA DERECHA -->
+        <div class="flex flex-col h-full overflow-hidden">
+            <div class="col-header rounded-t flex justify-between px-4 py-2">
+                <div class="w-po">PO #</div>
+                <div class="w-part">Parte</div>
+                <div class="w-qty">Cant</div>
+                <div class="w-status">Estatus</div>
+                <div class="w-date">Pedido</div>
+            </div>
+            <div id="colRight" class="overflow-y-auto flex flex-col flex-grow px-1">
+                <div class="add-order-btn" onclick="addOrderAtEnd()">
+                    <i class="fas fa-plus"></i> Agregar Orden
+                </div>
+            </div>
+        </div>
+
+        <!-- MENSAJE VACÍO -->
+        <div id="emptyMsg" class="hidden">
+            <i class="fas fa-clipboard-list text-6xl text-[#2C2C2C] mb-4"></i>
+            <span>Sin Órdenes Activas</span>
+        </div>
+    </div>
+
+    <!-- INDICADOR DE AUTO-EXPORTACIÓN -->
+    <div id="exportIndicator" class="export-indicator">
+        <i class="fas fa-check-circle"></i> Guardado
+    </div>
+
+    <!-- HINT DE DOBLE-CLICK -->
+    <div id="editHint" class="edit-hint">
+        <i class="fas fa-mouse-pointer"></i>
+        Doble-click para editar
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN -->
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3 id="modalTitle">¿Eliminar orden?</h3>
+            <p id="modalMessage">Esta acción no se puede deshacer.</p>
+            <div class="modal-actions">
+                <button class="cancel" onclick="hideModal()">Cancelar</button>
+                <button class="confirm-delete" id="modalConfirmBtn">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE EDICIÓN -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-content edit-modal-content">
+            <h3 class="modal-title">Editar Orden</h3>
+            
+            <form id="editForm" class="edit-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="editPO">PO #</label>
+                    <input type="text" id="editPO" class="edit-field" list="poList" autocomplete="off">
+                    <datalist id="poList"></datalist>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editPart">Parte</label>
+                    <input type="text" id="editPart" class="edit-field" list="partList" autocomplete="off">
+                    <datalist id="partList"></datalist>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editQty">Cantidad</label>
+                        <input type="text" id="editQty" class="edit-field" autocomplete="off">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editDate">Fecha</label>
+                        <input type="text" id="editDate" class="edit-field" autocomplete="off" placeholder="01/ENE">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editCompany">Compañía</label>
+                    <input type="text" id="editCompany" class="edit-field" list="companyList" autocomplete="off">
+                    <datalist id="companyList"></datalist>
+                </div>
+                
+                <div class="form-group">
+                    <label>Estado</label>
+                    <div class="status-grid">
+                        <div class="status-option bg-process" data-status="process" onclick="selectStatus('process')">
+                            MAQUINADO
+                        </div>
+                        <div class="status-option bg-heat" data-status="heat" onclick="selectStatus('heat')">
+                            TEMPLE
+                        </div>
+                        <div class="status-option bg-qc" data-status="qc" onclick="selectStatus('qc')">
+                            CALIDAD
+                        </div>
+                        <div class="status-option bg-partial" data-status="partial" onclick="selectStatus('partial')">
+                            PARCIAL
+                        </div>
+                        <div class="status-option bg-done" data-status="done" onclick="selectStatus('done')">
+                            LISTO
+                        </div>
+                        <div class="status-option bg-invoiced" data-status="invoiced" onclick="selectStatus('invoiced')">
+                            FACTURADO
+                        </div>
+                        <div class="status-option bg-hold" data-status="hold" onclick="selectStatus('hold')">
+                            PARO
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <div class="modal-actions">
+                <button class="cancel" onclick="cancelEditModal()">Cancelar</button>
+                <button class="confirm-save" onclick="saveEditModal()">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="footer-stats">
+        <div id="totalOrders" class="text-lg font-medium text-high">Total: 0</div>
+        <div class="flex gap-6">
+            <span class="text-[#A8C7FA] font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#A8C7FA]"></span> PARCIAL</span>
+            <span class="text-[#6DD58C] font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#6DD58C]"></span> LISTO</span>
+            <span class="text-[#8E918F] font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#8E918F]"></span> FACTURADO</span>
+            <span class="text-[#FFB4AB] font-medium text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-[#FFB4AB]"></span> PARO</span>
+        </div>
+        <div class="text-xs text-medium">SMV Visual System v4.0</div>
+    </div>
+
+    <!-- CONTROLES -->
+    <div class="fixed bottom-6 right-6 flex gap-2 transition-opacity duration-300 opacity-70 hover:opacity-100 z-50">
+        <!-- Controles de Rotación -->
+        <div id="rotationControls" class="hidden flex gap-2 items-center px-4 py-2 rounded-full border shadow-lg">
+            <!-- Navegación -->
+            <button onclick="previousCompany()" class="rotation-nav-btn" title="Compañía Anterior">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <!-- Play/Pause -->
+            <button onclick="toggleRotation()" id="rotationToggle" class="rotation-toggle-btn" title="Auto-rotar">
+                <i class="fas fa-play"></i>
+            </button>
+            
+            <!-- Siguiente -->
+            <button onclick="nextCompany()" class="rotation-nav-btn" title="Compañía Siguiente">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <!-- Barra de progreso circular -->
+            <div class="relative w-8 h-8 ml-2">
+                <svg class="progress-ring" width="32" height="32">
+                    <circle class="progress-ring-circle" 
+                            stroke="#A8C7FA" 
+                            stroke-width="2" 
+                            fill="transparent"
+                            r="14" 
+                            cx="16" 
+                            cy="16"/>
+                </svg>
+                <span id="rotationTimer" class="absolute inset-0 flex items-center justify-center text-xs text-white font-bold">
+                    15
+                </span>
+            </div>
+        </div>
+
+        <div id="editControls" class="hidden flex gap-2">
+            <button onclick="addNewOrders(1)" class="bg-[#252525] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:bg-[#2C2C2C] hover:scale-110 transition-all" title="Agregar 1 orden">
+                <i class="fas fa-plus text-sm"></i>
+            </button>
+            <button onclick="addNewOrders(5)" class="bg-[#252525] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:bg-[#2C2C2C] hover:scale-110 transition-all" title="Agregar 5 órdenes">
+                <i class="fas fa-layer-group text-sm"></i>
+            </button>
+            <button onclick="exportDataToJSON()" class="bg-[#252525] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:bg-[#2C2C2C] hover:scale-110 transition-all" title="Exportar JSON">
+                <i class="fas fa-download text-sm"></i>
+            </button>
+            <button onclick="triggerImportFile()" class="bg-[#252525] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:bg-[#2C2C2C] hover:scale-110 transition-all" title="Importar JSON">
+                <i class="fas fa-upload text-sm"></i>
+            </button>
+        </div>
+
+        <button onclick="toggleDensityMode()" id="densityBtn" class="bg-[#252525] text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-[#2C2C2C] hover:scale-105 transition-all" title="Cambiar densidad">
+            <i class="fas fa-expand-alt text-lg"></i>
+        </button>
+        <button onclick="toggleEditMode()" id="editBtn" class="bg-[#A8C7FA] text-[#000] w-14 h-14 rounded-full flex items-center justify-center shadow-xl hover:bg-[#D0BCFF] hover:scale-105 transition-all" title="Modo Edición">
+            <i class="fas fa-pen text-xl"></i>
+        </button>
+        <button onclick="saveDataManually()" class="bg-[#6DD58C] text-[#000] w-14 h-14 rounded-full flex items-center justify-center shadow-xl hover:bg-[#B6F2D1] transition hidden">
+            <i class="fas fa-save text-xl"></i>
+        </button>
+        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importDataFromFile(event)">
+        <button onclick="enterFullscreen()" class="bg-[#252525] text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-[#2C2C2C] hover:scale-105 transition-all" title="Pantalla completa">
+            <i class="fas fa-expand text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Application Modules (orden de dependencias) -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/formatters.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/dragdrop.js"></script>
+    <script src="js/ui-render.js"></script>
+    <script src="js/ui-interactions.js"></script>
+    <script src="js/edit-mode.js"></script>
+    <script src="js/edit-modal.js"></script>
+    <script src="js/order-operations.js"></script>
+    <script src="js/export-import.js"></script>
+    <script src="js/clock.js"></script>
+    <script src="js/migration.js"></script>
+    <script src="js/rotation-manager.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>
