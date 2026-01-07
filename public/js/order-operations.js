@@ -4,11 +4,29 @@
  */
 
 /**
+ * Determines the appropriate company for new orders based on current context
+ * @returns {string} Company name to use for new orders
+ */
+function getContextCompany() {
+    if (typeof rotationState !== 'undefined' && 
+        rotationState.companies && 
+        rotationState.companies.length > 0) {
+        const currentCompany = getCurrentCompany();
+        if (currentCompany) {
+            return currentCompany;
+        }
+    }
+    
+    return 'SUPRAJIT';
+}
+
+/**
  * Agrega N órdenes nuevas al inicio
  * @param {number} count - Número de órdenes a agregar
  */
 async function addNewOrders(count) {
     const today = getCurrentDateFormatted();
+    const companyName = getContextCompany();
     
     for (let i = 0; i < count; i++) {
         const newOrder = {
@@ -18,7 +36,7 @@ async function addNewOrders(count) {
             status: 'process',
             date: today,
             notes: '',
-            company: 'SUPRAJIT'
+            company: companyName
         };
         
         state.orders.unshift(newOrder);
@@ -29,9 +47,36 @@ async function addNewOrders(count) {
     // Guardar todas las órdenes con sus nuevos índices
     try {
         await saveAllOrders(state.orders);
-        console.log(`✅ ${count} órdenes agregadas`);
+        console.log(`✅ ${count} órdenes agregadas para ${companyName}`);
+        
+        // Notification feedback
+        showNotification({
+            type: 'success',
+            message: `${count} Order${count > 1 ? 's' : ''} Added for ${companyName}`,
+            duration: 2500
+        });
+        
+        // Scroll to first new order (index 0 since we unshifted)
+        setTimeout(() => {
+            const firstNewRow = document.querySelector('.order-row[data-index="0"]');
+            if (firstNewRow) {
+                firstNewRow.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest',
+                    inline: 'nearest'
+                });
+                firstNewRow.classList.add('adding');
+                setTimeout(() => firstNewRow.classList.remove('adding'), 1000);
+            }
+        }, 100);
+        
     } catch (error) {
         console.error('Error al agregar órdenes:', error);
+        showNotification({
+            type: 'error',
+            message: `Error adding orders: ${error.message}`,
+            duration: 3000
+        });
     }
 }
 
@@ -40,6 +85,7 @@ async function addNewOrders(count) {
  */
 async function addOrderAtEnd() {
     const today = getCurrentDateFormatted();
+    const companyName = getContextCompany();
     
     const newOrder = {
         po: '',
@@ -48,7 +94,7 @@ async function addOrderAtEnd() {
         status: 'process',
         date: today,
         notes: '',
-        company: 'SUPRAJIT'
+        company: companyName
     };
     
     state.orders.push(newOrder);
@@ -57,9 +103,38 @@ async function addOrderAtEnd() {
     // Guardar la nueva orden
     try {
         await saveOrderToStorage(newOrder, state.orders.length - 1);
-        console.log('✅ Orden agregada al final');
+        console.log(`✅ Orden agregada al final para ${companyName}`);
+        
+        // Notification feedback
+        showNotification({
+            type: 'success',
+            message: `New Order Added for ${companyName}`,
+            duration: 2500
+        });
+        
+        // Scroll to the newly added order
+        setTimeout(() => {
+            const newIndex = state.orders.length - 1;
+            const newRow = document.querySelector(`.order-row[data-index="${newIndex}"]`);
+            
+            if (newRow) {
+                newRow.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest',
+                    inline: 'nearest'
+                });
+                newRow.classList.add('adding');
+                setTimeout(() => newRow.classList.remove('adding'), 1000);
+            }
+        }, 100);
+        
     } catch (error) {
         console.error('Error al agregar orden:', error);
+        showNotification({
+            type: 'error',
+            message: `Error adding order: ${error.message}`,
+            duration: 3000
+        });
     }
 }
 
