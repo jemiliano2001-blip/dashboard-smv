@@ -173,6 +173,17 @@ function createOrderRow(order, index) {
     if (order.status === 'hold') specialClass = 'row-urgent';
     if (order.status === 'invoiced') specialClass = 'row-invoiced';
     
+    // Check for aging (orders older than 7 days and not 'done')
+    const orderDate = parseSmartDate(order.date);
+    const currentDate = new Date();
+    const ageInDays = (currentDate - orderDate) / (1000 * 60 * 60 * 24);
+    const isAged = ageInDays > 7 && order.status !== 'done';
+    
+    // Aged styling overrides other statuses
+    if (isAged) {
+        specialClass = 'row-aged';
+    }
+    
     div.className = `order-row ${specialClass}`;
     div.dataset.index = index;
     

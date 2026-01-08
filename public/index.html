@@ -24,7 +24,8 @@
             'css/base.css',
             'css/layout.css',
             'css/components.css',
-            'css/animations.css'
+            'css/animations.css',
+            'css/print.css'
         ];
         cssFiles.forEach(file => {
             document.write('<link rel="stylesheet" href="' + file + '?v=' + cssVersion + '">');
@@ -312,6 +313,9 @@
         </div>
 
         <div id="editControls" class="hidden flex gap-2">
+            <button id="printBtn" onclick="window.print()" class="btn-secondary" title="Imprimir Reporte">
+                <i class="fas fa-print"></i>
+            </button>
             <button onclick="addNewOrders(1)" class="bg-[#252525] text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:bg-[#2C2C2C] hover:scale-110 transition-all" title="Agregar 1 orden">
                 <i class="fas fa-plus text-sm"></i>
             </button>
