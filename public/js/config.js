@@ -4,6 +4,12 @@
  */
 
 /**
+ * @typedef {Object} CompanyConfig
+ * @property {string} logo - Path to company logo
+ * @property {string[]|null} schedule - Delivery schedule times or null
+ */
+
+/**
  * @typedef {Object} StatusOption
  * @property {string} code - Código del estatus
  * @property {string} label - Etiqueta visible del estatus
@@ -12,12 +18,16 @@
 
 /**
  * Company configuration with logos and delivery schedules
- * @type {Object.<string, {logo: string, schedule: string[]|null}>}
+ * @type {Object.<string, CompanyConfig>}
  */
 const COMPANY_CONFIG = {
     'SUPRAJIT': {
         logo: 'assets/images/logo-suprajit.png',
         schedule: ['9:00 - 11:00', '2:00 - 2:45', '3:20 - 4:00']
+    },
+    'TESLA': {
+        logo: 'assets/images/logo-tesla.png',
+        schedule: ['8:00 - 10:00', '1:00 - 3:00']
     },
     'AFX INDUSTRIES': {
         logo: 'assets/images/logo-afx.png',
@@ -91,17 +101,16 @@ const statusOptions = [
  * Configuración de auto-exportación
  */
 const EXPORT_CONFIG = {
-    throttleMs: 180000, // 3 minutos
+    throttleMs: 180000,
     enabled: true
 };
 
 /**
  * Configuración de localStorage
- * Solo se usa para preferencias UI (densidad)
  */
 const LOCALSTORAGE_KEYS = {
     density: 'smv_density_compact',
-    legacyOrders: 'smv_dash_v3_1' // Para migración desde versión anterior
+    legacyOrders: 'smv_dash_v3_1'
 };
 
 /**
@@ -134,14 +143,8 @@ function generateSampleData(count = 4) {
     return samples;
 }
 
-/**
- * Días de la semana en español
- */
 const DAYS_ES = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-/**
- * Meses en español
- */
 const MONTHS_ES = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -152,8 +155,8 @@ const MONTHS_ES = [
  */
 const AI_CONFIG = {
     provider: 'gemini',
-    model: 'gemini-2.5-flash', // Recommended model (June 2025+)
-    enabled: true, // Set to false to disable AI error analysis
+    model: 'gemini-2.5-flash',
+    enabled: true,
     maxRetries: 2,
-    timeout: 15000 // 15 seconds
+    timeout: 15000
 };

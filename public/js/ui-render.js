@@ -3,23 +3,56 @@
  * Maneja el renderizado del DOM y actualización visual
  */
 
-// Flag para prevenir renderizados simultáneos
 let isRendering = false;
 let calculateRowHeightsTimer = null;
+
+// Spanish month abbreviations mapping (0-indexed for Date constructor)
+const MONTH_MAP = {
+    'ENE': 0, 'FEB': 1, 'MAR': 2, 'ABR': 3,
+    'MAY': 4, 'JUN': 5, 'JUL': 6, 'AGO': 7,
+    'SEP': 8, 'OCT': 9, 'NOV': 10, 'DIC': 11
+};
+
+/**
+ * Parses Spanish date formats like '01/ENE', '15/FEB' into Date objects
+ * @param {string} dateStr - Date string in format 'DD/MMM'
+ * @returns {Date} - Parsed date object (uses current year if not specified)
+ */
+function parseSmartDate(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') {
+        return new Date(0); // Return epoch for invalid dates (sorts to beginning)
+    }
+    
+    const parts = dateStr.trim().split('/');
+    if (parts.length < 2) {
+        return new Date(0);
+    }
+    
+    const day = parseInt(parts[0], 10);
+    const monthAbbr = parts[1].toUpperCase();
+    const month = MONTH_MAP[monthAbbr];
+    
+    if (isNaN(day) || month === undefined) {
+        return new Date(0);
+    }
+    
+    // Use current year, or parse year if provided in format 'DD/MMM/YYYY'
+    const year = parts[2] ? parseInt(parts[2], 10) : new Date().getFullYear();
+    
+    return new Date(year, month, day);
+}
 
 /**
  * Renderiza todas las órdenes en las dos columnas
  * Optimizado con DocumentFragment para reducir reflows/repaints
  */
 function renderAllOrders() {
-    // Prevenir renderizados simultáneos
     if (isRendering) {
         return;
     }
     
     isRendering = true;
     
-    // Wrap DOM manipulation in requestAnimationFrame for optimal frame timing
     requestAnimationFrame(() => {
         try {
             const leftCol = document.getElementById('colLeft');
@@ -31,11 +64,9 @@ function renderAllOrders() {
                 return;
             }
 
-            // Remover solo las filas de órdenes, preservando el botón de agregar
             leftCol.querySelectorAll('.order-row').forEach(row => row.remove());
             rightCol.querySelectorAll('.order-row').forEach(row => row.remove());
 
-            // Actualizar contador
             updateTotalOrders();
 
             if (!state.orders || state.orders.length === 0) {
@@ -46,7 +77,6 @@ function renderAllOrders() {
             
             console.log(`📊 Total de órdenes en estado: ${state.orders.length}`);
             
-            // Determinar si hay filtro de compañía activo
             const currentCompany = (typeof rotationState !== 'undefined' && 
                                    rotationState.companies.length > 1 && 
                                    rotationState.isActive) ? getCurrentCompany() : null;
@@ -57,43 +87,30 @@ function renderAllOrders() {
                 console.log(`📋 Mostrando todas las órdenes`);
             }
             
-            // Create DocumentFragments for batch DOM insertion
+            // Sort orders by date before rendering
+            const sortedOrders = [...state.orders].sort((a, b) => {
+                const dateA = parseSmartDate(a.date);
+                const dateB = parseSmartDate(b.date);
+                return dateA - dateB;
+            });
+            
             const leftFragment = document.createDocumentFragment();
             const rightFragment = document.createDocumentFragment();
             
-            // First pass: collect orders to render
-            const ordersToRender = [];
-            state.orders.forEach((order, originalIndex) => {
-                // Check if we should render this order (company filter)
+            let visibleOrderCount = 0;
+            
+            sortedOrders.forEach((order, sortedIndex) => {
+                // Find original index in state.orders for proper data binding
+                const originalIndex = state.orders.findIndex(o => o === order);
                 const shouldRender = !currentCompany || 
                                    !order.company || 
                                    order.company.trim().toUpperCase() === currentCompany.toUpperCase();
                 
-                if (shouldRender) {
-                    ordersToRender.push({ order, originalIndex });
+                if (!shouldRender) {
+                    return;
                 }
-            });
-            
-            // Sort by date (earliest first) - format dd/mm/yy
-            ordersToRender.sort((a, b) => {
-                const parseDate = (dateStr) => {
-                    if (!dateStr) return new Date(9999, 11, 31); // Empty dates go last
-                    const parts = dateStr.split('/');
-                    if (parts.length !== 3) return new Date(9999, 11, 31);
-                    const [day, month, year] = parts.map(Number);
-                    const fullYear = year < 50 ? 2000 + year : 1900 + year;
-                    return new Date(fullYear, month - 1, day);
-                };
-                return parseDate(a.order.date) - parseDate(b.order.date);
-            });
-            
-            // Calculate midpoint for column distribution
-            const midPoint = Math.ceil(ordersToRender.length / 2);
-            
-            // Second pass: render with proper column distribution
-            ordersToRender.forEach(({ order, originalIndex }, renderIndex) => {
+                
                 try {
-                    // Create row with ORIGINAL index from state.orders
                     const row = createOrderRow(order, originalIndex);
                     
                     if (!row) {
@@ -101,20 +118,19 @@ function renderAllOrders() {
                         return;
                     }
                     
-                    // Distribute orders between columns (first half left, second half right)
-                    const targetFragment = renderIndex < midPoint ? leftFragment : rightFragment;
+                    const targetFragment = visibleOrderCount % 2 === 0 ? leftFragment : rightFragment;
                     targetFragment.appendChild(row);
                     
-                    // Habilitar drag & drop si estamos en modo edición
                     if (state.isEditing && typeof enableDragDrop === 'function') {
                         enableDragDrop(row, originalIndex);
                     }
+                    
+                    visibleOrderCount++;
                 } catch (error) {
-                    console.error(`❌ Error renderizando orden ${originalIndex}:`, error);
+                    console.error(`❌ Error renderizando orden ${sortedIndex}:`, error);
                 }
             });
 
-            // Single paint frame append - preserves .add-order-btn
             const leftAddBtn = leftCol.querySelector('.add-order-btn');
             const rightAddBtn = rightCol.querySelector('.add-order-btn');
             
@@ -130,7 +146,6 @@ function renderAllOrders() {
                 rightCol.appendChild(rightFragment);
             }
 
-            // Calcular alturas después de renderizar (con debounce)
             if (calculateRowHeightsTimer) {
                 clearTimeout(calculateRowHeightsTimer);
             }
@@ -138,12 +153,6 @@ function renderAllOrders() {
                 calculateRowHeights();
                 isRendering = false;
             }, 50);
-
-            // Aplicar modo edición si está activo
-            // DISABLED: No longer enabling inline contentEditable during re-renders
-            // if (state.isEditing) {
-            //     applyEditMode(true);
-            // }
         } catch (error) {
             console.error('❌ Error al renderizar órdenes:', error);
             isRendering = false;
@@ -154,13 +163,12 @@ function renderAllOrders() {
 /**
  * Crea el elemento HTML de una fila de orden
  * @param {Object} order - Datos de la orden
- * @param {number} index - Índice de la orden
+ * @param {number} index - Índice de la orden en state.orders
  * @returns {HTMLElement} - Elemento de fila
  */
 function createOrderRow(order, index) {
     const div = document.createElement('div');
     
-    // Determinar clases especiales
     let specialClass = '';
     if (order.status === 'hold') specialClass = 'row-urgent';
     if (order.status === 'invoiced') specialClass = 'row-invoiced';
@@ -170,7 +178,6 @@ function createOrderRow(order, index) {
     
     div.innerHTML = createOrderRowHTML(order, index);
     
-    // Adjuntar event listeners a las celdas editables
     attachCellListeners(div, index);
     
     return div;
@@ -179,7 +186,7 @@ function createOrderRow(order, index) {
 /**
  * Genera el HTML interno de una fila de orden
  * @param {Object} order - Datos de la orden
- * @param {number} index - Índice de la orden
+ * @param {number} index - Índice de la orden en state.orders
  * @returns {string} - HTML string
  */
 function createOrderRowHTML(order, index) {
@@ -217,23 +224,6 @@ function createOrderRowHTML(order, index) {
              data-key="date">
             ${escapeHTML(order.date)}
         </div>
-        
-        ${createEditModeActionsHTML(index)}
-    `;
-}
-
-/**
- * Crea el HTML del botón de eliminar en modo edición
- * @param {number} index - Índice de la orden
- * @returns {string} - HTML string
- */
-function createEditModeActionsHTML(index) {
-    return `
-        <div class="action-btn absolute right-4 cursor-pointer transition hover:scale-110" 
-             onclick="deleteOrderWithConfirmation(${index})" 
-             title="Eliminar orden">
-            <i class="fas fa-times"></i>
-        </div>
     `;
 }
 
@@ -246,16 +236,11 @@ function calculateRowHeights() {
     
     if (!leftCol || !rightCol || state.orders.length === 0) return;
     
-    const midPoint = Math.ceil(state.orders.length / 2);
-    const leftCount = midPoint;
-    const rightCount = state.orders.length - midPoint;
-    
     const leftRows = leftCol.querySelectorAll('.order-row');
     const rightRows = rightCol.querySelectorAll('.order-row');
     
-    // En modo compacto, usar altura fija
     if (state.isDensityCompact) {
-        const compactHeight = 48; // Updated for compact mode
+        const compactHeight = 48;
         leftRows.forEach(row => {
             row.style.height = `${compactHeight}px`;
             row.style.minHeight = `${compactHeight}px`;
@@ -265,10 +250,6 @@ function calculateRowHeights() {
             row.style.minHeight = `${compactHeight}px`;
         });
     } else {
-        // En modo normal, permitir que auto-ajuste o usar una altura mínima confortable
-        // Material design cards don't usually stretch to fill height like tables, 
-        // so we'll just ensure they have the minimum height.
-        // We can remove the forced height calculation for a cleaner card look.
         leftRows.forEach(row => {
             row.style.height = 'auto';
             row.style.minHeight = 'var(--row-min-height)';

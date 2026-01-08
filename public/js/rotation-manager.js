@@ -3,32 +3,14 @@
  * Maneja la rotación automática entre compañías
  */
 
-/**
- * Estado del sistema de rotación
- */
 const rotationState = {
-    /** @type {boolean} Rotación activa/pausada */
     isActive: false,
-    
-    /** @type {number} Índice actual en el array de compañías */
     currentCompanyIndex: 0,
-    
-    /** @type {string[]} Lista de compañías únicas con órdenes */
     companies: [],
-    
-    /** @type {number|null} ID del interval para el timer */
     intervalId: null,
-    
-    /** @type {number} Duración del intervalo en ms */
     intervalDuration: 15000,
-    
-    /** @type {number} Tiempo restante en ms */
     timeRemaining: 15000,
-    
-    /** @type {number|null} Timestamp del último tick */
     lastTickTime: null,
-    
-    /** @type {boolean} Indica si la rotación está visible */
     isVisible: false
 };
 
@@ -77,12 +59,10 @@ function updateCompanyList() {
     const previousCompanies = [...rotationState.companies];
     rotationState.companies = getUniqueCompanies();
     
-    // Ajustar índice si es necesario
     if (rotationState.currentCompanyIndex >= rotationState.companies.length) {
         rotationState.currentCompanyIndex = Math.max(0, rotationState.companies.length - 1);
     }
     
-    // Verificar si cambió la lista de compañías
     const companiesChanged = JSON.stringify(previousCompanies) !== JSON.stringify(rotationState.companies);
     
     if (companiesChanged) {
@@ -101,11 +81,9 @@ function updateProgressIndicator() {
     
     if (!timerElement || !progressCircle) return;
     
-    // Actualizar texto del timer (segundos restantes)
     const secondsRemaining = Math.ceil(rotationState.timeRemaining / 1000);
     timerElement.textContent = secondsRemaining;
     
-    // Actualizar progreso circular
     const radius = 14;
     const circumference = 2 * Math.PI * radius;
     const progress = 1 - (rotationState.timeRemaining / rotationState.intervalDuration);
@@ -136,7 +114,6 @@ function updateCompanyDisplay() {
         paginationElement.textContent = '0 de 0';
     }
     
-    // Actualizar logo y horario de la compañía
     updateCompanyHeader();
 }
 
@@ -144,25 +121,11 @@ function updateCompanyDisplay() {
  * Actualiza el logo y el horario de entrega según la compañía actual
  */
 function updateCompanyHeader() {
-    // #region agent log
-    console.log('[DEBUG] updateCompanyHeader CALLED', {companyConfigExists:typeof COMPANY_CONFIG!=='undefined',companyConfigKeys:typeof COMPANY_CONFIG!=='undefined'?Object.keys(COMPANY_CONFIG):null});
-    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:entry',message:'Function entry',data:{companyConfigExists:typeof COMPANY_CONFIG!=='undefined',companyConfigKeys:typeof COMPANY_CONFIG!=='undefined'?Object.keys(COMPANY_CONFIG):null},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch((e)=>{console.error('[DEBUG] Fetch failed:',e);});
-    // #endregion
-    
     const currentCompany = getCurrentCompany();
     const logoElement = document.getElementById('companyLogo');
     const scheduleElement = document.getElementById('companySchedule');
     
-    // #region agent log
-    console.log('[DEBUG] After DOM query', {currentCompany,logoElementExists:!!logoElement,scheduleElementExists:!!scheduleElement,companyConfigHasKey:currentCompany&&typeof COMPANY_CONFIG!=='undefined'?COMPANY_CONFIG.hasOwnProperty(currentCompany):false});
-    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:afterDomQuery',message:'After DOM query',data:{currentCompany:currentCompany,logoElementExists:!!logoElement,scheduleElementExists:!!scheduleElement,companyConfigHasKey:currentCompany&&typeof COMPANY_CONFIG!=='undefined'?COMPANY_CONFIG.hasOwnProperty(currentCompany):false},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3,H4,H6'})}).catch(()=>{});
-    // #endregion
-    
-    if (!currentCompany || !COMPANY_CONFIG[currentCompany]) {
-        // #region agent log
-        console.log('[DEBUG] Early return - no company or config', {currentCompany,hasConfig:currentCompany&&typeof COMPANY_CONFIG!=='undefined'?!!COMPANY_CONFIG[currentCompany]:false});
-        fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:earlyReturn',message:'Early return - no company or config',data:{currentCompany:currentCompany,hasConfig:currentCompany&&typeof COMPANY_CONFIG!=='undefined'?!!COMPANY_CONFIG[currentCompany]:false},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4,H6'})}).catch(()=>{});
-        // #endregion
+    if (!currentCompany || typeof COMPANY_CONFIG === 'undefined' || !COMPANY_CONFIG[currentCompany]) {
         if (logoElement) logoElement.style.display = 'none';
         if (scheduleElement) scheduleElement.classList.add('hidden');
         return;
@@ -170,30 +133,18 @@ function updateCompanyHeader() {
     
     const config = COMPANY_CONFIG[currentCompany];
     
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:configRetrieved',message:'Config retrieved',data:{currentCompany:currentCompany,logo:config.logo,scheduleIsArray:Array.isArray(config.schedule),scheduleLength:config.schedule?config.schedule.length:0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-    // #endregion
-    
-    // Update logo
     if (logoElement && config.logo) {
         logoElement.src = config.logo;
         logoElement.alt = currentCompany;
         logoElement.style.display = 'block';
-        // #region agent log
-        fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:logoUpdated',message:'Logo updated',data:{src:config.logo,alt:currentCompany},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
-        // #endregion
     } else if (logoElement) {
         logoElement.style.display = 'none';
     }
     
-    // Update schedule
     if (scheduleElement) {
         if (config.schedule && Array.isArray(config.schedule) && config.schedule.length > 0) {
             scheduleElement.classList.remove('hidden');
             const timesContainer = scheduleElement.querySelector('.schedule-times');
-            // #region agent log
-            fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:scheduleUpdate',message:'Schedule update attempt',data:{timesContainerExists:!!timesContainer,scheduleArray:config.schedule},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
-            // #endregion
             if (timesContainer) {
                 timesContainer.innerHTML = config.schedule
                     .map(time => `<span>${time}</span>`)
@@ -201,9 +152,6 @@ function updateCompanyHeader() {
             }
         } else {
             scheduleElement.classList.add('hidden');
-            // #region agent log
-            fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:scheduleHidden',message:'Schedule hidden',data:{hasSchedule:!!config.schedule,isArray:Array.isArray(config.schedule)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
-            // #endregion
         }
     }
 }
@@ -215,7 +163,6 @@ function updateRotationControlsVisibility() {
     const controlsElement = document.getElementById('rotationControls');
     if (!controlsElement) return;
     
-    // Mostrar controles solo si hay más de una compañía
     if (rotationState.companies.length > 1) {
         controlsElement.classList.remove('hidden');
         rotationState.isVisible = true;
@@ -223,7 +170,6 @@ function updateRotationControlsVisibility() {
         controlsElement.classList.add('hidden');
         rotationState.isVisible = false;
         
-        // Pausar rotación si está activa
         if (rotationState.isActive) {
             pauseRotation();
         }
@@ -260,11 +206,9 @@ function applyTransitionAnimation() {
     
     if (!colLeft || !colRight) return;
     
-    // Agregar clase de fade
     colLeft.classList.add('columns-fading');
     colRight.classList.add('columns-fading');
     
-    // Remover después de la transición
     setTimeout(() => {
         colLeft.classList.remove('columns-fading');
         colRight.classList.remove('columns-fading');
@@ -287,10 +231,8 @@ function startRotation() {
     
     console.log('▶️ Rotación automática iniciada');
     
-    // Actualizar UI
     updateToggleButton();
     
-    // Crear interval para actualizar el progreso
     rotationState.intervalId = setInterval(() => {
         if (!rotationState.isActive) {
             clearInterval(rotationState.intervalId);
@@ -305,13 +247,11 @@ function startRotation() {
         
         updateProgressIndicator();
         
-        // Cuando el tiempo se acaba, avanzar a la siguiente compañía
         if (rotationState.timeRemaining === 0) {
             nextCompany();
         }
     }, 100);
     
-    // Guardar preferencias
     saveRotationPreferences();
 }
 
@@ -330,10 +270,8 @@ function pauseRotation() {
     
     console.log('⏸️ Rotación automática pausada');
     
-    // Actualizar UI
     updateToggleButton();
     
-    // Guardar preferencias
     saveRotationPreferences();
 }
 
@@ -354,24 +292,19 @@ function toggleRotation() {
 function nextCompany() {
     if (rotationState.companies.length === 0) return;
     
-    // Avanzar al siguiente índice (circular)
     rotationState.currentCompanyIndex = (rotationState.currentCompanyIndex + 1) % rotationState.companies.length;
     
     console.log(`⏭️ Avanzando a: ${getCurrentCompany()}`);
     
-    // Resetear timer
     rotationState.timeRemaining = rotationState.intervalDuration;
     rotationState.lastTickTime = Date.now();
     
-    // Actualizar UI
     updateCompanyDisplay();
     updateProgressIndicator();
     applyTransitionAnimation();
     
-    // Re-renderizar con filtro
     renderAllOrders();
     
-    // Guardar preferencias
     saveRotationPreferences();
 }
 
@@ -381,24 +314,19 @@ function nextCompany() {
 function previousCompany() {
     if (rotationState.companies.length === 0) return;
     
-    // Retroceder al índice anterior (circular)
     rotationState.currentCompanyIndex = (rotationState.currentCompanyIndex - 1 + rotationState.companies.length) % rotationState.companies.length;
     
     console.log(`⏮️ Retrocediendo a: ${getCurrentCompany()}`);
     
-    // Resetear timer
     rotationState.timeRemaining = rotationState.intervalDuration;
     rotationState.lastTickTime = Date.now();
     
-    // Actualizar UI
     updateCompanyDisplay();
     updateProgressIndicator();
     applyTransitionAnimation();
     
-    // Re-renderizar con filtro
     renderAllOrders();
     
-    // Guardar preferencias
     saveRotationPreferences();
 }
 
@@ -416,19 +344,15 @@ function goToCompany(index) {
     
     console.log(`🎯 Saltando a: ${getCurrentCompany()}`);
     
-    // Resetear timer
     rotationState.timeRemaining = rotationState.intervalDuration;
     rotationState.lastTickTime = Date.now();
     
-    // Actualizar UI
     updateCompanyDisplay();
     updateProgressIndicator();
     applyTransitionAnimation();
     
-    // Re-renderizar con filtro
     renderAllOrders();
     
-    // Guardar preferencias
     saveRotationPreferences();
 }
 
@@ -449,7 +373,6 @@ function updateRotationInterval(duration) {
     
     console.log(`⏱️ Intervalo de rotación actualizado a ${newDuration / 1000}s`);
     
-    // Guardar preferencias
     saveRotationPreferences();
 }
 
@@ -459,22 +382,12 @@ function updateRotationInterval(duration) {
 function initializeRotationSystem() {
     console.log('🔄 Inicializando sistema de rotación...');
     
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:initializeRotationSystem:entry',message:'Initialization started',data:{stateOrdersCount:state?.orders?.length||0,domReady:document.readyState},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2,H3'})}).catch(()=>{});
-    // #endregion
-    
-    // Actualizar lista de compañías
     updateCompanyList();
     
-    // Actualizar UI
     updateCompanyDisplay();
     updateRotationControlsVisibility();
     updateToggleButton();
     updateProgressIndicator();
-    
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:initializeRotationSystem:exit',message:'Initialization complete',data:{companiesCount:rotationState.companies.length,currentCompanyIndex:rotationState.currentCompanyIndex,currentCompany:getCurrentCompany()},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2,H4'})}).catch(()=>{});
-    // #endregion
     
     console.log(`✅ Sistema de rotación inicializado con ${rotationState.companies.length} compañía(s)`);
 }

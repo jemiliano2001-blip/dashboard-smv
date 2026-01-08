@@ -38,8 +38,6 @@ function toggleEditMode() {
         btn.title = 'Modo edición';
         controls.classList.add('hidden');
         
-        applyEditMode(false);
-        
         // Deshabilitar edición inline si hay alguna fila siendo editada
         if (state.editingRowIndex !== null) {
             const row = document.querySelector(`.order-row[data-index="${state.editingRowIndex}"]`);
