@@ -14,7 +14,10 @@ const firebaseConfig = {
     projectId: "smv-dashboard",
     storageBucket: "smv-dashboard.firebasestorage.app",
     messagingSenderId: "440198838976",
-    appId: "1:440198838976:web:a0576dc7baf3b8ada3cb25"
+    appId: "1:440198838976:web:a0576dc7baf3b8ada3cb25",
+    
+    // AI Error Assistant - Get your free API key at https://aistudio.google.com/apikey
+    geminiApiKey: "AIzaSyBA8KTdrpHVzCORaQFdJRXpljrAxZuV6R8" // Replace with your actual Gemini API key
 };
 
 // NO MODIFICAR DEBAJO DE ESTA LÍNEA

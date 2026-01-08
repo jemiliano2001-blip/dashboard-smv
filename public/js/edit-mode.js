@@ -22,7 +22,7 @@ function toggleEditMode() {
         btn.title = 'Salir del modo edición';
         controls.classList.remove('hidden');
         
-        applyEditMode(true);
+        // applyEditMode(true); // DISABLED: No longer enabling inline contentEditable
         
         // Habilitar drag & drop en todas las filas
         document.querySelectorAll('.order-row').forEach((row, index) => {
@@ -68,11 +68,11 @@ function toggleEditMode() {
 /**
  * Aplica o remueve el estado editable de las celdas
  * @param {boolean} enable - true para habilitar edición
+ * DISABLED: This function no longer enables inline editing
  */
 function applyEditMode(enable) {
-    document.querySelectorAll('.editable-cell').forEach(cell => {
-        cell.contentEditable = enable;
-    });
+    // Inline editing disabled - use modal editing instead
+    return;
 }
 
 /**
@@ -168,3 +168,5 @@ function initializeDensityMode() {
     
     updateDensityButton();
 }
+
+

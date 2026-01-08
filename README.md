@@ -7,6 +7,7 @@ Dashboard visual moderno para gestión de órdenes de producción multi-cliente 
 ## ✨ Características
 
 - 🔥 **Sincronización en tiempo real** con Firebase Firestore
+- 🤖 **AI Error Assistant** con Google Gemini para análisis inteligente de errores
 - 📱 **Diseño responsive** optimizado para pantallas grandes (TV/monitores)
 - ✏️ **Edición inline** de órdenes con confirmación visual
 - 🎨 **Sistema de estados** con código de colores intuitivo
@@ -14,7 +15,7 @@ Dashboard visual moderno para gestión de órdenes de producción multi-cliente 
 - 💾 **Auto-guardado** con respaldo automático en JSON
 - 📦 **Importación/Exportación** de datos en formato JSON
 - 🌓 **Modo de densidad** (Normal/Compacto)
-- 🎯 **Arquitectura modular** con 14 módulos JavaScript independientes
+- 🎯 **Arquitectura modular** con 16 módulos JavaScript independientes
 - 🏢 **Multi-cliente** con rotación automática entre empresas cliente
 - ⏱️ **Horarios de entrega** personalizados por cliente
 
@@ -53,6 +54,8 @@ tv-dashboard/
     ├── export-import.js         # Exportación/importación
     ├── clock.js                 # Reloj en tiempo real
     ├── migration.js             # Migración de datos legacy
+    ├── error-monitor.js         # Monitoreo de errores con contexto
+    ├── ai-assistant.js          # Asistente AI con Google Gemini
     └── main.js                  # Inicialización y orquestación
 ```
 
@@ -66,7 +69,31 @@ tv-dashboard/
 2. Copia tus credenciales en `js/firebase-config.js`
 3. Configura las reglas de seguridad en Firebase Console
 
-### 2. Abrir la Aplicación
+### 2. Configurar AI Error Assistant (Opcional)
+
+🤖 **RECOMENDADO**: El AI Error Assistant analiza errores automáticamente y sugiere soluciones.
+
+1. Obtén tu API key gratuita de Google Gemini:
+   - Ve a https://aistudio.google.com/apikey
+   - Inicia sesión con tu cuenta Google
+   - Crea una nueva API key
+   
+2. Agrega la API key a `js/firebase-config.js`:
+   ```javascript
+   const firebaseConfig = {
+       // ... tus credenciales Firebase ...
+       geminiApiKey: "TU_API_KEY_AQUI"
+   };
+   ```
+
+3. (Opcional) Restringe tu API key:
+   - Ve a Google Cloud Console
+   - Restricciones → Sitios web
+   - Agrega tu dominio de producción
+
+**Nota**: El AI Assistant funciona sin requerir configuración adicional. Si no agregas la API key, simplemente no mostrará análisis AI cuando ocurran errores.
+
+### 3. Abrir la Aplicación
 
 Simplemente abre `index.html` en tu navegador web:
 
@@ -218,6 +245,53 @@ El dashboard utiliza Firebase Firestore con listeners en tiempo real:
 - ✅ Throttling en auto-exportación
 - ✅ Lazy loading de imágenes
 
+## 🤖 AI Error Assistant
+
+El dashboard incluye un asistente de IA que analiza errores automáticamente usando Google Gemini.
+
+### ¿Cómo Funciona?
+
+1. **Detección Automática**: Cuando ocurre un error JavaScript, el sistema lo captura automáticamente
+2. **Análisis Contextual**: Recopila información del error, estado de la aplicación, y acciones recientes del usuario
+3. **Consulta a Gemini**: Envía el contexto a Google Gemini para análisis inteligente
+4. **Sugerencias Prácticas**: Muestra un modal con:
+   - 🎯 Causa raíz del error
+   - 🔧 Pasos específicos para solucionar
+   - 💻 Código sugerido (si aplica)
+   - 🛡️ Consejos de prevención
+
+### Características
+
+- ✅ **Análisis inteligente** con contexto completo de la aplicación
+- ✅ **Sugerencias accionables** paso a paso
+- ✅ **Privacidad**: No envía datos sensibles, solo contexto del error
+- ✅ **Sin interrupciones**: Análisis en segundo plano
+- ✅ **Modo de prueba**: Botón 🤖 en modo edición para probar
+
+### Configuración
+
+Edita `js/config.js` para personalizar:
+
+```javascript
+const AI_CONFIG = {
+    enabled: true,        // Activar/desactivar
+    model: 'gemini-1.5-flash',  // Modelo a usar
+    timeout: 15000        // Timeout en ms
+};
+```
+
+### Ejemplo de Uso
+
+1. Activa el **modo edición** (botón ✏️)
+2. Haz clic en el botón **🤖 Test AI**
+3. El sistema simulará un error y mostrará el análisis AI
+
+### Límites y Costos
+
+- **Plan Gratuito Gemini**: 15 consultas/minuto, 1500/día
+- **Suficiente para**: Uso normal en producción
+- **Sin costos**: Completamente gratuito con límites generosos
+
 ## 🐛 Solución de Problemas
 
 ### Firebase no conecta
@@ -249,6 +323,23 @@ El dashboard utiliza Firebase Firestore con listeners en tiempo real:
 2. Abre consola del navegador (F12) y busca errores
 3. Refresca la página (F5)
 4. Verifica que Firebase esté inicializado
+
+### AI Error Assistant no funciona
+
+**Síntoma**: Modal de error aparece pero sin análisis AI
+
+**Solución**:
+1. Verifica que agregaste `geminiApiKey` en `firebase-config.js`
+2. Comprueba tu API key en https://aistudio.google.com/apikey
+3. Revisa la consola del navegador (F12) para mensajes de error
+4. Asegúrate de que `AI_CONFIG.enabled = true` en `config.js`
+
+**Síntoma**: Error "API_KEY invalid"
+
+**Solución**:
+1. Regenera tu API key en Google AI Studio
+2. Copia la nueva key exactamente como aparece (sin espacios)
+3. Recarga la página
 
 ## 📊 Límites de Firebase (Plan Gratuito)
 
@@ -307,11 +398,17 @@ modal.js         dragdrop.js         ui-render.js
 
 ## 📝 Changelog
 
-### v4.0 (Actual) - Arquitectura Modular
+### v4.1 (Actual) - AI Error Assistant
+- 🤖 Asistente AI con Google Gemini para análisis de errores
+- 🔍 Monitoreo contextual de errores en tiempo real
+- 💡 Sugerencias inteligentes de solución
+- 🧪 Herramienta de prueba para desarrolladores
+
+### v4.0 - Arquitectura Modular
 - ✨ Refactorización completa a arquitectura modular
 - 🔥 Integración Firebase Firestore
 - 🎨 CSS separado en 5 archivos temáticos
-- 📦 14 módulos JavaScript independientes
+- 📦 16 módulos JavaScript independientes
 - 🔄 Sincronización en tiempo real
 - 💾 Sistema de migración desde localStorage
 - 📱 Mejoras en UI/UX
@@ -346,4 +443,4 @@ Para problemas técnicos:
 
 **Desarrollado con ❤️ para Maquinados Vázquez**
 
-v4.0 - Arquitectura Modular Multi-Cliente con Firebase Firestore
+v4.1 - Arquitectura Modular Multi-Cliente con Firebase Firestore + AI Error Assistant

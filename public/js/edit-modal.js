@@ -23,6 +23,9 @@ function openEditModal(index) {
     const modal = document.getElementById('editModal');
     const form = document.getElementById('editForm');
     
+    // Actualizar autocomplete antes de abrir
+    setupAutocomplete();
+    
     // Llenar campos con datos actuales
     document.getElementById('editPO').value = state.orders[index].po || '';
     document.getElementById('editPart').value = state.orders[index].part || '';
@@ -277,8 +280,13 @@ function setupAutocomplete() {
     const companyList = document.getElementById('companyList');
     
     if (companyInput && companyList) {
-        const uniqueCompanies = getUniqueValues('company');
-        companyList.innerHTML = uniqueCompanies.map(company => `<option value="${company}">`).join('');
+        // Combine predefined companies with existing companies from orders
+        const existingCompanies = getUniqueValues('company');
+        const predefinedCompanies = Object.keys(COMPANY_CONFIG);
+        const allCompanies = [...new Set([...predefinedCompanies, ...existingCompanies])];
+        // Sort alphabetically
+        const sortedCompanies = allCompanies.sort();
+        companyList.innerHTML = sortedCompanies.map(company => `<option value="${company}">`).join('');
     }
 }
 
@@ -299,10 +307,8 @@ function initializeEditModal() {
         });
     }
     
-    // Configurar autocomplete cuando haya órdenes
-    if (state.orders.length > 0) {
-        setupAutocomplete();
-    }
+    // Configurar autocomplete siempre (incluye companies predefinidas)
+    setupAutocomplete();
     
     console.log('✅ Sistema de modal inicializado');
 }

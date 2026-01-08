@@ -130,25 +130,6 @@ body.compact-mode .col-header {
     padding-right: 4px; /* Space for scrollbar */
 }
 
-/* Empty State */
-#emptyMsg {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    flex-direction: column;
-    gap: 16px;
-}
-
-#emptyMsg span {
-    color: var(--color-bg-elevated);
-    font-size: 2rem;
-    font-weight: 500;
-    text-transform: none; /* Sentence case looks friendlier */
-}
-
 /* Footer Stats - Glassmorphism */
 .footer-stats {
     margin-top: 20px;

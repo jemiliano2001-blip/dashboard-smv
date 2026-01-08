@@ -47,7 +47,7 @@
         </div>
         
         <div class="flex justify-end items-center gap-3">
-            <div id="suprajitSchedule" class="delivery-schedule">
+            <div id="companySchedule" class="delivery-schedule">
                 <div class="schedule-title">Horarios de Entrega</div>
                 <div class="schedule-times">
                     <span>9:00 - 11:00</span>
@@ -55,7 +55,8 @@
                     <span>3:20 - 4:00</span>
                 </div>
             </div>
-            <img src="assets/images/logo-suprajit.png" 
+            <img id="companyLogo"
+                 src="assets/images/logo-suprajit.png" 
                  alt="Suprajit" 
                  class="h-10 object-contain rounded-lg"
                  onerror="this.style.display='none';">
@@ -97,11 +98,6 @@
             </div>
         </div>
 
-        <!-- MENSAJE VACÍO -->
-        <div id="emptyMsg" class="hidden">
-            <i class="fas fa-clipboard-list text-6xl text-[#2C2C2C] mb-4"></i>
-            <span>Sin Órdenes Activas</span>
-        </div>
     </div>
 
     <!-- INDICADOR DE AUTO-EXPORTACIÓN -->
@@ -222,6 +218,51 @@
         </div>
     </div>
 
+    <!-- AI ERROR ASSISTANT MODAL -->
+    <div id="errorAssistantModal" class="modal-overlay">
+        <div class="modal-content error-assistant-modal">
+            <div class="error-assistant-header">
+                <i class="fas fa-robot"></i>
+                <h3>AI Error Assistant</h3>
+            </div>
+            
+            <div class="error-details">
+                <div class="error-message"></div>
+                <div class="error-stack"></div>
+            </div>
+            
+            <div class="ai-analysis">
+                <div class="analysis-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Analyzing error with AI...
+                </div>
+                <div class="analysis-result" style="display:none;">
+                    <h4>Root Cause</h4>
+                    <p class="cause-text"></p>
+                    
+                    <h4>Suggested Fixes</h4>
+                    <ol class="fixes-list"></ol>
+                    
+                    <div class="code-suggestion"></div>
+                    
+                    <div class="prevention-section" style="margin-top: 16px; padding: 12px; background: rgba(109, 213, 140, 0.1); border-left: 3px solid var(--color-green); border-radius: 4px;">
+                        <strong style="color: var(--color-green); display: block; margin-bottom: 4px;">
+                            <i class="fas fa-shield-alt"></i> Prevention
+                        </strong>
+                        <p class="prevention-text" style="margin: 0; color: var(--text-medium-emphasis);"></p>
+                    </div>
+                </div>
+                <div class="analysis-error" style="display:none;"></div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="cancel" onclick="closeErrorAssistant()">Dismiss</button>
+                <button class="action-btn" onclick="copyErrorDetails()">
+                    <i class="fas fa-copy"></i> Copy Details
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ESTADÍSTICAS -->
     <div class="footer-stats">
         <div id="totalOrders" class="text-lg font-medium text-high">Total: 0</div>
@@ -304,6 +345,22 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
+    <!-- Google Gemini AI SDK -->
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    <script type="module">
+      import { GoogleGenerativeAI } from '@google/generative-ai';
+      window.google = { generativeai: { getGenerativeModel: (config) => {
+        const genAI = new GoogleGenerativeAI(config.apiKey);
+        return genAI.getGenerativeModel({ model: config.model });
+      }}};
+    </script>
+    
     <!-- Application Modules (orden de dependencias) -->
     <script src="js/firebase-config.js"></script>
     <script src="js/firebase.js"></script>
@@ -323,6 +380,8 @@
     <script src="js/clock.js"></script>
     <script src="js/migration.js"></script>
     <script src="js/rotation-manager.js"></script>
+    <script src="js/error-monitor.js"></script>
+    <script src="js/ai-assistant.js"></script>
     <script src="js/main.js"></script>
 
 </body>

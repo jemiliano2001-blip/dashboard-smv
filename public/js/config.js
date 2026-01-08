@@ -11,6 +11,69 @@
  */
 
 /**
+ * Company configuration with logos and delivery schedules
+ * @type {Object.<string, {logo: string, schedule: string[]|null}>}
+ */
+const COMPANY_CONFIG = {
+    'SUPRAJIT': {
+        logo: 'assets/images/logo-suprajit.png',
+        schedule: ['9:00 - 11:00', '2:00 - 2:45', '3:20 - 4:00']
+    },
+    'AFX INDUSTRIES': {
+        logo: 'assets/images/logo-afx.png',
+        schedule: null
+    },
+    'FISHER': {
+        logo: 'assets/images/logo-fisher.png',
+        schedule: null
+    },
+    'SILICONE TECHNOLOGIES': {
+        logo: 'assets/images/logo-silicone.png',
+        schedule: null
+    },
+    'OHD OPERATORS DE MEXICO': {
+        logo: 'assets/images/logo-ohd.png',
+        schedule: null
+    },
+    'KOHLER REYNOSA': {
+        logo: 'assets/images/logo-kohler.png',
+        schedule: null
+    },
+    'SENSATA TECHNOLOGIES': {
+        logo: 'assets/images/logo-sensata.png',
+        schedule: null
+    },
+    'DECOFIMEX': {
+        logo: 'assets/images/logo-decofimex.png',
+        schedule: null
+    },
+    'SYPRESS': {
+        logo: 'assets/images/logo-sypress.png',
+        schedule: null
+    },
+    'CONTROLES TEMEX': {
+        logo: 'assets/images/logo-temex.png',
+        schedule: null
+    },
+    'CONTROLES LATINOAMERICANAS': {
+        logo: 'assets/images/logo-latinoamericanas.png',
+        schedule: null
+    },
+    'BULK PACK': {
+        logo: 'assets/images/logo-bulkpack.png',
+        schedule: null
+    },
+    'TERMOFORMADOS': {
+        logo: 'assets/images/logo-termoformados.png',
+        schedule: null
+    },
+    'MECALUX': {
+        logo: 'assets/images/logo-mecalux.png',
+        schedule: null
+    }
+};
+
+/**
  * Opciones de estatus disponibles para las órdenes
  * @type {StatusOption[]}
  */
@@ -83,3 +146,14 @@ const MONTHS_ES = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ];
+
+/**
+ * AI Error Assistant Configuration
+ */
+const AI_CONFIG = {
+    provider: 'gemini',
+    model: 'gemini-2.5-flash', // Recommended model (June 2025+)
+    enabled: true, // Set to false to disable AI error analysis
+    maxRetries: 2,
+    timeout: 15000 // 15 seconds
+};

@@ -203,16 +203,42 @@ function cleanup() {
 
 /**
  * Maneja errores globales no capturados
+ * Integrado con AI Error Assistant para análisis inteligente
  */
-window.addEventListener('error', (event) => {
+window.addEventListener('error', async (event) => {
     console.error('❌ Error global:', event.error);
+    
+    // Capture and analyze with AI
+    if (typeof handleRuntimeError === 'function') {
+        await handleRuntimeError({
+            message: event.message,
+            error: event.error,
+            filename: event.filename,
+            lineno: event.lineno,
+            colno: event.colno,
+            promise: false
+        });
+    }
 });
 
 /**
  * Maneja promesas rechazadas no capturadas
+ * Integrado con AI Error Assistant para análisis inteligente
  */
-window.addEventListener('unhandledrejection', (event) => {
+window.addEventListener('unhandledrejection', async (event) => {
     console.error('❌ Promesa rechazada:', event.reason);
+    
+    // Capture and analyze with AI
+    if (typeof handleRuntimeError === 'function') {
+        await handleRuntimeError({
+            message: 'Unhandled Promise Rejection',
+            error: event.reason,
+            filename: 'promise',
+            lineno: 0,
+            colno: 0,
+            promise: true
+        });
+    }
 });
 
 /**

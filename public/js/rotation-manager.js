@@ -136,23 +136,75 @@ function updateCompanyDisplay() {
         paginationElement.textContent = '0 de 0';
     }
     
-    // Actualizar visibilidad del horario de Suprajit
-    updateSuprajitScheduleVisibility();
+    // Actualizar logo y horario de la compañía
+    updateCompanyHeader();
 }
 
 /**
- * Actualiza la visibilidad del horario de entrega de Suprajit
+ * Actualiza el logo y el horario de entrega según la compañía actual
  */
-function updateSuprajitScheduleVisibility() {
-    const scheduleElement = document.getElementById('suprajitSchedule');
-    if (!scheduleElement) return;
+function updateCompanyHeader() {
+    // #region agent log
+    console.log('[DEBUG] updateCompanyHeader CALLED', {companyConfigExists:typeof COMPANY_CONFIG!=='undefined',companyConfigKeys:typeof COMPANY_CONFIG!=='undefined'?Object.keys(COMPANY_CONFIG):null});
+    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:entry',message:'Function entry',data:{companyConfigExists:typeof COMPANY_CONFIG!=='undefined',companyConfigKeys:typeof COMPANY_CONFIG!=='undefined'?Object.keys(COMPANY_CONFIG):null},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch((e)=>{console.error('[DEBUG] Fetch failed:',e);});
+    // #endregion
     
     const currentCompany = getCurrentCompany();
+    const logoElement = document.getElementById('companyLogo');
+    const scheduleElement = document.getElementById('companySchedule');
     
-    if (currentCompany === 'SUPRAJIT') {
-        scheduleElement.classList.remove('hidden');
-    } else {
-        scheduleElement.classList.add('hidden');
+    // #region agent log
+    console.log('[DEBUG] After DOM query', {currentCompany,logoElementExists:!!logoElement,scheduleElementExists:!!scheduleElement,companyConfigHasKey:currentCompany&&typeof COMPANY_CONFIG!=='undefined'?COMPANY_CONFIG.hasOwnProperty(currentCompany):false});
+    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:afterDomQuery',message:'After DOM query',data:{currentCompany:currentCompany,logoElementExists:!!logoElement,scheduleElementExists:!!scheduleElement,companyConfigHasKey:currentCompany&&typeof COMPANY_CONFIG!=='undefined'?COMPANY_CONFIG.hasOwnProperty(currentCompany):false},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3,H4,H6'})}).catch(()=>{});
+    // #endregion
+    
+    if (!currentCompany || !COMPANY_CONFIG[currentCompany]) {
+        // #region agent log
+        console.log('[DEBUG] Early return - no company or config', {currentCompany,hasConfig:currentCompany&&typeof COMPANY_CONFIG!=='undefined'?!!COMPANY_CONFIG[currentCompany]:false});
+        fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:earlyReturn',message:'Early return - no company or config',data:{currentCompany:currentCompany,hasConfig:currentCompany&&typeof COMPANY_CONFIG!=='undefined'?!!COMPANY_CONFIG[currentCompany]:false},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H4,H6'})}).catch(()=>{});
+        // #endregion
+        if (logoElement) logoElement.style.display = 'none';
+        if (scheduleElement) scheduleElement.classList.add('hidden');
+        return;
+    }
+    
+    const config = COMPANY_CONFIG[currentCompany];
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:configRetrieved',message:'Config retrieved',data:{currentCompany:currentCompany,logo:config.logo,scheduleIsArray:Array.isArray(config.schedule),scheduleLength:config.schedule?config.schedule.length:0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
+    
+    // Update logo
+    if (logoElement && config.logo) {
+        logoElement.src = config.logo;
+        logoElement.alt = currentCompany;
+        logoElement.style.display = 'block';
+        // #region agent log
+        fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:logoUpdated',message:'Logo updated',data:{src:config.logo,alt:currentCompany},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
+        // #endregion
+    } else if (logoElement) {
+        logoElement.style.display = 'none';
+    }
+    
+    // Update schedule
+    if (scheduleElement) {
+        if (config.schedule && Array.isArray(config.schedule) && config.schedule.length > 0) {
+            scheduleElement.classList.remove('hidden');
+            const timesContainer = scheduleElement.querySelector('.schedule-times');
+            // #region agent log
+            fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:scheduleUpdate',message:'Schedule update attempt',data:{timesContainerExists:!!timesContainer,scheduleArray:config.schedule},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+            // #endregion
+            if (timesContainer) {
+                timesContainer.innerHTML = config.schedule
+                    .map(time => `<span>${time}</span>`)
+                    .join('');
+            }
+        } else {
+            scheduleElement.classList.add('hidden');
+            // #region agent log
+            fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:updateCompanyHeader:scheduleHidden',message:'Schedule hidden',data:{hasSchedule:!!config.schedule,isArray:Array.isArray(config.schedule)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H5'})}).catch(()=>{});
+            // #endregion
+        }
     }
 }
 
@@ -407,6 +459,10 @@ function updateRotationInterval(duration) {
 function initializeRotationSystem() {
     console.log('🔄 Inicializando sistema de rotación...');
     
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:initializeRotationSystem:entry',message:'Initialization started',data:{stateOrdersCount:state?.orders?.length||0,domReady:document.readyState},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2,H3'})}).catch(()=>{});
+    // #endregion
+    
     // Actualizar lista de compañías
     updateCompanyList();
     
@@ -415,6 +471,10 @@ function initializeRotationSystem() {
     updateRotationControlsVisibility();
     updateToggleButton();
     updateProgressIndicator();
+    
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/164765ad-565d-458e-821f-c5e98dadf668',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'rotation-manager.js:initializeRotationSystem:exit',message:'Initialization complete',data:{companiesCount:rotationState.companies.length,currentCompanyIndex:rotationState.currentCompanyIndex,currentCompany:getCurrentCompany()},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2,H4'})}).catch(()=>{});
+    // #endregion
     
     console.log(`✅ Sistema de rotación inicializado con ${rotationState.companies.length} compañía(s)`);
 }
