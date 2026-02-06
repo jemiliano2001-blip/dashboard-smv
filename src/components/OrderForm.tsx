@@ -2,8 +2,9 @@ import { useState, useEffect, useRef, FormEvent, ChangeEvent, useMemo } from 're
 import { Save, X, Trash2, AlertCircle, AlertTriangle, CheckCircle } from 'lucide-react'
 import { useKeyboardShortcut } from '../hooks/useKeyboardShortcuts'
 import { ConfirmDialog } from './ConfirmDialog'
-import { VALIDATION_MESSAGES, INPUT_LIMITS } from '../utils/constants'
-import { isoToLocalDateString, localDateStringToISO } from '../utils/dateFormatter'
+import { validateWorkOrder } from '../utils/validationSchemas'
+import { VALIDATION_MESSAGES } from '../utils/constants'
+import { isoToLocalDateString } from '../utils/dateFormatter'
 import { debounce } from '../utils/debounce'
 import type { WorkOrder, WorkOrderFormData, Priority, Status } from '../types'
 
@@ -64,73 +65,10 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
 
   const isEditMode = !!order
 
-  const validateField = (name: string, value: string | number): string | undefined => {
-    switch (name) {
-      case 'company_name':
-        if (!value || String(value).trim() === '') {
-          return VALIDATION_MESSAGES.COMPANY_NAME_REQUIRED
-        }
-        if (String(value).length > INPUT_LIMITS.COMPANY_NAME_MAX) {
-          return `El nombre debe tener máximo ${INPUT_LIMITS.COMPANY_NAME_MAX} caracteres`
-        }
-        return undefined
-      case 'po_number':
-        if (!value || String(value).trim() === '') {
-          return VALIDATION_MESSAGES.PO_NUMBER_REQUIRED
-        }
-        if (String(value).length > INPUT_LIMITS.PO_NUMBER_MAX) {
-          return `El número de PO debe tener máximo ${INPUT_LIMITS.PO_NUMBER_MAX} caracteres`
-        }
-        return undefined
-      case 'part_name':
-        if (!value || String(value).trim() === '') {
-          return VALIDATION_MESSAGES.PART_NAME_REQUIRED
-        }
-        if (String(value).length > INPUT_LIMITS.PART_NAME_MAX) {
-          return `El nombre de pieza debe tener máximo ${INPUT_LIMITS.PART_NAME_MAX} caracteres`
-        }
-        return undefined
-      case 'quantity_total':
-        if (typeof value === 'number' && value < 0) {
-          return VALIDATION_MESSAGES.QUANTITY_TOTAL_INVALID
-        }
-        return undefined
-      case 'quantity_completed':
-        if (typeof value === 'number' && value < 0) {
-          return VALIDATION_MESSAGES.QUANTITY_COMPLETED_INVALID
-        }
-        return undefined
-      default:
-        return undefined
-    }
-  }
-
-  const validateForm = (data: WorkOrderFormData): ValidationErrors => {
-    const errors: ValidationErrors = {}
-    
-    const companyError = validateField('company_name', data.company_name)
-    if (companyError) errors.company_name = companyError
-
-    const poError = validateField('po_number', data.po_number)
-    if (poError) errors.po_number = poError
-
-    const partError = validateField('part_name', data.part_name)
-    if (partError) errors.part_name = partError
-
-    const totalError = validateField('quantity_total', data.quantity_total)
-    if (totalError) errors.quantity_total = totalError
-
-    const completedError = validateField('quantity_completed', data.quantity_completed)
-    if (completedError) errors.quantity_completed = completedError
-
-    if (!data.created_at) {
-      errors.created_at = 'La fecha de creación es requerida'
-    }
-
-    return errors
-  }
-
-  const errors = useMemo(() => validateForm(formData), [formData])
+  const errors = useMemo((): ValidationErrors => {
+    const result = validateWorkOrder(formData)
+    return result.valid ? {} : (result.errors as ValidationErrors)
+  }, [formData])
 
   const validationWarnings = useMemo((): ValidationWarnings => {
     const w: ValidationWarnings = {}
@@ -245,20 +183,14 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     const newValue = name.includes('quantity') ? parseInt(value) || 0 : value
-    
-    setFormData((prev) => {
-      const updated = { ...prev, [name]: newValue }
-      setIsDirty(true)
-      return updated
-    })
+    const updated = { ...formData, [name]: newValue }
 
+    setFormData(updated)
+    setIsDirty(true)
     setTouchedFields((prev) => new Set(prev).add(name))
-    
-    const error = validateField(name, newValue)
-    setValidationErrors((prev) => ({
-      ...prev,
-      [name]: error,
-    }))
+
+    const result = validateWorkOrder(updated)
+    setValidationErrors(result.valid ? {} : (result.errors as ValidationErrors))
   }
 
   const handleBlur = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -268,21 +200,17 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const allErrors = validateForm(formData)
-    
-    if (Object.keys(allErrors).length === 0) {
+    const result = validateWorkOrder(formData)
+
+    if (result.valid && result.sanitized) {
       if (!isEditMode) {
         localStorage.removeItem(DRAFT_STORAGE_KEY)
       }
       setIsDirty(false)
-      const payload: WorkOrderFormData = {
-        ...formData,
-        created_at: localDateStringToISO(formData.created_at),
-      }
-      onSave(payload)
+      onSave(result.sanitized)
     } else {
       setTouchedFields(new Set(Object.keys(formData)))
-      setValidationErrors(allErrors)
+      setValidationErrors((result.errors ?? {}) as ValidationErrors)
     }
   }
 

@@ -9,12 +9,20 @@ import { OrderCard } from './OrderCard'
 import { SkeletonCard } from './SkeletonCard'
 import { TIMINGS } from '../utils/constants'
 import { weightedSort } from '../utils/weightedSort'
+import type { WorkOrder } from '../types'
+
+interface TVView {
+  companyName: string
+  orders: WorkOrder[]
+  pageIndex: number
+  totalPages: number
+}
 
 export function TVDashboard() {
   const { workOrders, ordersByCompany, companies, loading, error, refetch } = useWorkOrders()
   const { enterFullscreen } = useFullscreen()
   const settings = useSettings()
-  const [currentCompanyIndex, setCurrentCompanyIndex] = useState(0)
+  const [currentViewIndex, setCurrentViewIndex] = useState(0)
   const [isOnline, setIsOnline] = useState(
     typeof navigator !== 'undefined' ? navigator.onLine : true
   )
@@ -30,20 +38,26 @@ export function TVDashboard() {
     }
   }, [])
 
-  const companyRotation = (settings.companyRotation || TIMINGS.COMPANY_ROTATION / 1000) * 1000
+  const ordersPerPage = settings.ordersPerPage ?? 20
+  const pageRotationMs = (settings.pageRotation ?? TIMINGS.PAGE_ROTATION / 1000) * 1000
 
-  const currentCompany = useMemo(() => {
-    return companies[currentCompanyIndex] || null
-  }, [companies, currentCompanyIndex])
+  const views = useMemo((): TVView[] => {
+    const result: TVView[] = []
+    for (const company of companies) {
+      const raw = ordersByCompany[company] || []
+      const sorted = weightedSort(raw)
+      const totalPages = Math.max(1, Math.ceil(sorted.length / ordersPerPage))
+      for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+        const start = pageIndex * ordersPerPage
+        const orders = sorted.slice(start, start + ordersPerPage)
+        result.push({ companyName: company, orders, pageIndex: pageIndex + 1, totalPages })
+      }
+    }
+    return result
+  }, [companies, ordersByCompany, ordersPerPage])
 
-  const currentCompanyOrdersRaw = useMemo(() => {
-    return currentCompany ? ordersByCompany[currentCompany] || [] : []
-  }, [currentCompany, ordersByCompany])
-
-  const currentCompanyOrders = useMemo(
-    () => weightedSort(currentCompanyOrdersRaw),
-    [currentCompanyOrdersRaw]
-  )
+  const currentView = useMemo(() => views[currentViewIndex] ?? null, [views, currentViewIndex])
+  const currentCompanyOrders = currentView?.orders ?? []
 
   const tvGridColumns =
     settings.columnDensity === 'auto'
@@ -54,32 +68,27 @@ export function TVDashboard() {
   const gridAutoRows = fitToScreen ? 'minmax(0, 1fr)' : 'minmax(96px, 1fr)'
 
   useEffect(() => {
-    if (companies.length === 0) return
+    if (views.length === 0) return
 
-    // Rotate between companies
     const timer = setInterval(() => {
-      setCurrentCompanyIndex((prevIndex) => (prevIndex + 1) % companies.length)
-    }, companyRotation)
+      setCurrentViewIndex((prev) => (prev + 1) % views.length)
+    }, pageRotationMs)
 
     return () => clearInterval(timer)
-  }, [companies.length, companyRotation])
+  }, [views.length, pageRotationMs])
 
   useEffect(() => {
-    if (companies.length > 0) {
-      if (currentCompanyIndex >= companies.length) {
-        setCurrentCompanyIndex(0)
-      }
-    } else {
-      setCurrentCompanyIndex(0)
+    if (views.length > 0 && currentViewIndex >= views.length) {
+      setCurrentViewIndex(0)
     }
-  }, [companies.length, currentCompanyIndex])
+  }, [views.length, currentViewIndex])
 
   useEffect(() => {
-    if (currentCompany && currentCompanyOrders.length === 0) {
-      const nextIndex = (currentCompanyIndex + 1) % companies.length
-      setCurrentCompanyIndex(nextIndex)
+    if (currentView && currentView.orders.length === 0 && views.length > 1) {
+      const nextIndex = (currentViewIndex + 1) % views.length
+      setCurrentViewIndex(nextIndex)
     }
-  }, [currentCompany, currentCompanyOrders.length, currentCompanyIndex, companies.length])
+  }, [currentView, currentViewIndex, views.length])
 
   // Auto-refresco según configuración
   useEffect(() => {
@@ -178,11 +187,18 @@ export function TVDashboard() {
           Sin conexión
         </div>
       )}
-      <Header companyName={currentCompany} />
+      <Header
+        companyName={currentView?.companyName ?? null}
+        pageLabel={
+          currentView && currentView.totalPages > 1
+            ? `Página ${currentView.pageIndex} de ${currentView.totalPages}`
+            : null
+        }
+      />
 
       <main className="flex-1 min-h-0 flex flex-col overflow-hidden p-[clamp(1rem,2vh,2rem)] relative z-10">
         <div
-          key={currentCompany}
+          key={`${currentView?.companyName ?? ''}-${currentView?.pageIndex ?? 0}`}
           className={fitToScreen ? 'grid gap-[clamp(4px,0.5vh,12px)] flex-1 min-h-0 transition-all duration-500 ease-in-out animate-fade-in-smooth' : 'flex-1 min-h-0 overflow-y-scroll'}
         >
           <div

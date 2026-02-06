@@ -5,9 +5,10 @@ import { useFullscreen } from '../hooks/useFullscreen'
 
 interface HeaderProps {
   companyName: string | null
+  pageLabel?: string | null
 }
 
-function HeaderComponent({ companyName }: HeaderProps) {
+function HeaderComponent({ companyName, pageLabel }: HeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date())
   const { toggleFullscreen } = useFullscreen()
 
@@ -40,10 +41,15 @@ function HeaderComponent({ companyName }: HeaderProps) {
   return (
     <header className="h-16 flex-shrink-0 !bg-slate-900 glass-strong border-b border-slate-700/50 flex items-center justify-between px-8 shadow-multi relative z-20 backdrop-blur-xl">
       <div className="flex items-center gap-4">
-        <div className="relative">
+        <div className="relative flex items-baseline gap-3">
           <h1 className="text-5xl font-black tracking-tight text-white text-shadow-lg transition-opacity duration-300">
             {companyName || 'Visual Factory Dashboard'}
           </h1>
+          {pageLabel && (
+            <span className="text-sm text-blue-300 font-medium" aria-label={pageLabel}>
+              {pageLabel}
+            </span>
+          )}
           <button
             onClick={toggleFullscreen}
             className="absolute inset-0 opacity-0 cursor-pointer z-10"

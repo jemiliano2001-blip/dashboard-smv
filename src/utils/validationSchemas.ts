@@ -1,11 +1,13 @@
 /**
  * Validation schemas for runtime type checking and data validation
- * This can be migrated to Zod in the future for better type inference
+ * Uses Zod for schema validation and type inference
  */
 
+import { z } from 'zod'
 import { sanitizeText, sanitizeNumber, sanitizeDate, sanitizeEnum } from './sanitize'
 import type { WorkOrderFormData, Priority, Status } from '../types'
 import { INPUT_LIMITS } from './constants'
+import { localDateStringToISO } from './dateFormatter'
 
 const VALID_PRIORITIES: readonly Priority[] = ['low', 'normal', 'high', 'critical'] as const
 const VALID_STATUSES: readonly Status[] = ['scheduled', 'production', 'quality', 'hold'] as const
@@ -15,88 +17,146 @@ export interface ValidationResult {
   errors: Record<string, string>
 }
 
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
+function isValidDateString(str: string): boolean {
+  if (DATE_REGEX.test(str)) {
+    const [y, m, d] = str.split('-').map(Number)
+    const date = new Date(y!, m! - 1, d!, 12, 0, 0, 0)
+    return !isNaN(date.getTime()) && date.getUTCFullYear() === y && date.getUTCMonth() + 1 === m
+  }
+  const parsed = new Date(str)
+  return !isNaN(parsed.getTime())
+}
+
+export const workOrderSchema = z
+  .object({
+    company_name: z
+      .string()
+      .min(1, 'El nombre de la compañía es requerido')
+      .max(INPUT_LIMITS.COMPANY_NAME_MAX, `El nombre debe tener máximo ${INPUT_LIMITS.COMPANY_NAME_MAX} caracteres`)
+      .transform((s) => s.trim()),
+    po_number: z
+      .string()
+      .min(1, 'El número de PO es requerido')
+      .max(INPUT_LIMITS.PO_NUMBER_MAX, `El número de PO debe tener máximo ${INPUT_LIMITS.PO_NUMBER_MAX} caracteres`)
+      .transform((s) => s.trim()),
+    part_name: z
+      .string()
+      .min(1, 'El nombre de la pieza es requerido')
+      .max(INPUT_LIMITS.PART_NAME_MAX, `El nombre de pieza debe tener máximo ${INPUT_LIMITS.PART_NAME_MAX} caracteres`)
+      .transform((s) => s.trim()),
+    quantity_total: z
+      .number()
+      .int('La cantidad total debe ser un número entero')
+      .min(0, 'La cantidad total debe ser mayor o igual a 0'),
+    quantity_completed: z
+      .number()
+      .int('La cantidad completada debe ser un número entero')
+      .min(0, 'La cantidad completada debe ser mayor o igual a 0'),
+    priority: z.enum(['low', 'normal', 'high', 'critical'], {
+      errorMap: () => ({ message: 'Prioridad inválida' }),
+    }),
+    status: z.enum(['scheduled', 'production', 'quality', 'hold'], {
+      errorMap: () => ({ message: 'Estado inválido' }),
+    }),
+    created_at: z.string().refine(isValidDateString, 'La fecha de creación no es válida'),
+  })
+  .refine(
+    (data) => data.quantity_completed <= data.quantity_total,
+    {
+      message: 'La cantidad completada no puede ser mayor que la cantidad total',
+      path: ['quantity_completed'],
+    }
+  )
+
+export type WorkOrderSchemaOutput = z.infer<typeof workOrderSchema>
+
+function zodErrorsToRecord(
+  error: z.ZodError
+): Record<string, string> {
+  const result: Record<string, string> = {}
+  const flat = error.flatten().fieldErrors
+  for (const [key, messages] of Object.entries(flat)) {
+    if (messages && messages.length > 0 && typeof messages[0] === 'string') {
+      result[key] = messages[0]
+    }
+  }
+  return result
+}
+
 /**
- * Validates and sanitizes a WorkOrderFormData object
- * @param data - Data to validate
+ * Validates a work order using Zod schema
+ * @param data - Data to validate (unknown, can include raw form values)
  * @returns Validation result with sanitized data and errors
  */
-export function validateWorkOrderFormData(data: unknown): ValidationResult & { sanitized?: WorkOrderFormData } {
-  const errors: Record<string, string> = {}
-
+export function validateWorkOrder(
+  data: unknown
+): ValidationResult & { sanitized?: WorkOrderFormData } {
   if (!data || typeof data !== 'object') {
     return { valid: false, errors: { _general: 'Invalid data format' } }
   }
 
   const input = data as Record<string, unknown>
 
-  // Validate and sanitize company_name
-  const companyName = sanitizeText(input.company_name, INPUT_LIMITS.COMPANY_NAME_MAX)
-  if (!companyName || companyName.trim() === '') {
-    errors.company_name = 'El nombre de la compañía es requerido'
+  const preprocess: Record<string, unknown> = {
+    company_name: typeof input.company_name === 'string' ? input.company_name : '',
+    po_number: typeof input.po_number === 'string' ? input.po_number : '',
+    part_name: typeof input.part_name === 'string' ? input.part_name : '',
+    quantity_total:
+      typeof input.quantity_total === 'number'
+        ? input.quantity_total
+        : sanitizeNumber(input.quantity_total, 0, Number.MAX_SAFE_INTEGER, 0),
+    quantity_completed:
+      typeof input.quantity_completed === 'number'
+        ? input.quantity_completed
+        : sanitizeNumber(input.quantity_completed, 0, Number.MAX_SAFE_INTEGER, 0),
+    priority: sanitizeEnum(input.priority, VALID_PRIORITIES, 'normal'),
+    status: sanitizeEnum(input.status, VALID_STATUSES, 'scheduled'),
+    created_at:
+      input.created_at != null
+        ? String(input.created_at)
+        : new Date().toISOString().slice(0, 10),
   }
 
-  // Validate and sanitize po_number
-  const poNumber = sanitizeText(input.po_number, INPUT_LIMITS.PO_NUMBER_MAX)
-  if (!poNumber || poNumber.trim() === '') {
-    errors.po_number = 'El número de PO es requerido'
-  }
+  const result = workOrderSchema.safeParse(preprocess)
 
-  // Validate and sanitize part_name
-  const partName = sanitizeText(input.part_name, INPUT_LIMITS.PART_NAME_MAX)
-  if (!partName || partName.trim() === '') {
-    errors.part_name = 'El nombre de la pieza es requerido'
-  }
+  if (result.success) {
+    const validated = result.data
+    const createdAt =
+      DATE_REGEX.test(validated.created_at)
+        ? localDateStringToISO(validated.created_at)
+        : (sanitizeDate(validated.created_at) ?? new Date().toISOString())
 
-  // Validate and sanitize quantity_total
-  const quantityTotal = sanitizeNumber(input.quantity_total, 0, Number.MAX_SAFE_INTEGER, 0)
-  if (quantityTotal < 0) {
-    errors.quantity_total = 'La cantidad total debe ser mayor o igual a 0'
-  }
-
-  // Validate and sanitize quantity_completed
-  const quantityCompleted = sanitizeNumber(input.quantity_completed, 0, Number.MAX_SAFE_INTEGER, 0)
-  if (quantityCompleted < 0) {
-    errors.quantity_completed = 'La cantidad completada debe ser mayor o igual a 0'
-  }
-  if (quantityCompleted > quantityTotal) {
-    errors.quantity_completed = 'La cantidad completada no puede ser mayor que la cantidad total'
-  }
-
-  // Validate and sanitize priority
-  const priority = sanitizeEnum(input.priority, VALID_PRIORITIES, 'normal')
-
-  // Validate and sanitize status
-  const status = sanitizeEnum(input.status, VALID_STATUSES, 'scheduled')
-
-  // Validate and sanitize created_at
-  const createdAt = input.created_at
-    ? sanitizeDate(String(input.created_at))
-    : new Date().toISOString()
-  
-  if (!createdAt) {
-    errors.created_at = 'La fecha de creación no es válida'
-  }
-
-  const valid = Object.keys(errors).length === 0
-
-  if (valid) {
     return {
       valid: true,
       errors: {},
       sanitized: {
-        company_name: companyName,
-        po_number: poNumber,
-        part_name: partName,
-        quantity_total: quantityTotal,
-        quantity_completed: quantityCompleted,
-        priority,
-        status,
-        created_at: createdAt || new Date().toISOString(),
+        company_name: sanitizeText(validated.company_name, INPUT_LIMITS.COMPANY_NAME_MAX),
+        po_number: sanitizeText(validated.po_number, INPUT_LIMITS.PO_NUMBER_MAX),
+        part_name: sanitizeText(validated.part_name, INPUT_LIMITS.PART_NAME_MAX),
+        quantity_total: validated.quantity_total,
+        quantity_completed: validated.quantity_completed,
+        priority: validated.priority,
+        status: validated.status,
+        created_at: createdAt,
       },
     }
   }
 
-  return { valid: false, errors }
+  return {
+    valid: false,
+    errors: zodErrorsToRecord(result.error),
+  }
+}
+
+/**
+ * @deprecated Use validateWorkOrder instead. Kept for backwards compatibility.
+ */
+export function validateWorkOrderFormData(
+  data: unknown
+): ValidationResult & { sanitized?: WorkOrderFormData } {
+  return validateWorkOrder(data)
 }
 
 /**
@@ -106,7 +166,6 @@ export function validateWorkOrderFormData(data: unknown): ValidationResult & { s
  */
 export function validateWorkOrderId(id: unknown): boolean {
   if (typeof id !== 'string') return false
-  // UUID v4 pattern
   const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
   return uuidPattern.test(id)
 }
