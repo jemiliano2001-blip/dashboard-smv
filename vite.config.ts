@@ -7,34 +7,27 @@ import path from 'path'
 // Permitir deshabilitar HTTPS con variable de entorno (útil para desarrollo local)
 const useHttps = process.env.VITE_USE_HTTPS !== 'false'
 
-// Configuración HTTPS
-const httpsConfig = (() => {
+// Configuración HTTPS (undefined = HTTP; Vite no acepta false en server.https)
+const httpsConfig = ((): { cert: Buffer; key: Buffer } | undefined => {
   if (!useHttps) {
-    return false
+    return undefined
   }
 
   const certPath = path.resolve(__dirname, 'certs/localhost.crt')
   const keyPath = path.resolve(__dirname, 'certs/localhost.key')
-  
-  // Si los certificados existen, usarlos
+
   if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
     try {
       return {
         cert: fs.readFileSync(certPath),
         key: fs.readFileSync(keyPath),
       }
-    } catch (error) {
-      console.warn('⚠️  Error al leer certificados, usando HTTP en lugar de HTTPS')
-      return false
+    } catch {
+      return undefined
     }
   }
-  
-  // Si no existen certificados, usar HTTP por defecto para evitar problemas de compatibilidad
-  // Para usar HTTPS automático, descomenta la siguiente línea:
-  // return true
-  console.warn('⚠️  No se encontraron certificados SSL. Usando HTTP.')
-  console.warn('   Para usar HTTPS, ejecuta: npm run generate-cert')
-  return false
+
+  return undefined
 })()
 
 // Base path for Supabase Storage: set VITE_BASE_URL=/storage/v1/object/public/<bucket>/ when deploying to Storage
@@ -61,55 +54,42 @@ export default defineConfig(({ mode }) => {
   server: {
     host: hostMode,
     port: parseInt(process.env.PORT || '3000'),
-    https: httpsConfig,
+    ...(httpsConfig && { https: httpsConfig }),
     open: false,
     cors: true,
   },
   preview: {
     host: hostMode,
     port: parseInt(process.env.PORT || '3000'),
-    https: httpsConfig,
+    ...(httpsConfig && { https: httpsConfig }),
     cors: true,
   },
   build: {
-    target: 'esnext',
-    sourcemap: mode === 'production' ? false : true,
+    // CRÍTICO PARA TV: compatibilidad con navegadores Smart TV antiguos (aprox. 2017+)
+    target: 'es2015',
+    outDir: 'dist',
+    sourcemap: false,
     minify: 'esbuild',
     cssMinify: true,
+    chunkSizeWarningLimit: 1000,
+    reportCompressedSize: false,
+    emptyOutDir: true,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          if (!id.includes('node_modules/')) return
-          if (id.includes('react-dom') || id.includes('react-router-dom') || id.includes('/react/')) {
-            return 'react-vendor'
-          }
-          if (
-            id.includes('lucide-react') ||
-            id.includes('framer-motion') ||
-            id.includes('clsx') ||
-            id.includes('tailwind-merge')
-          ) {
-            return 'ui-vendor'
-          }
-          if (id.includes('@tanstack/react-query') || id.includes('@supabase/supabase-js')) {
-            return 'data-vendor'
-          }
-          if (id.includes('recharts') || id.includes('d3-')) {
-            return 'charts-vendor'
-          }
-          if (id.includes('jspdf') || id.includes('html2canvas') || id.includes('xlsx')) {
-            return 'export-vendor'
-          }
-          return 'vendor'
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'charts-vendor': ['recharts'],
+          'data-vendor': ['@supabase/supabase-js', '@tanstack/react-query'],
+          'ui-vendor': ['lucide-react', 'clsx', 'tailwind-merge'],
         },
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    chunkSizeWarningLimit: 1000,
-    reportCompressedSize: true,
-    emptyOutDir: true,
+  },
+  esbuild: {
+    drop: ['console', 'debugger'],
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
