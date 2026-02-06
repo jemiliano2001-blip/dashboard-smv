@@ -16,7 +16,14 @@ export const PRIORITY_COLORS: Record<Priority, string> = {
   critical: 'text-red-500 bg-red-500/10 border-red-500',
   high: 'text-orange-500 bg-orange-500/10 border-orange-500',
   normal: 'text-blue-500 bg-blue-500/10 border-blue-500',
-  low: 'text-gray-400 bg-gray-400/10 border-gray-400',
+  low: 'text-zinc-500 bg-zinc-500/10 border-zinc-500',
+}
+
+export const STATUS_COLORS: Record<Status, string> = {
+  scheduled: 'text-blue-500 bg-blue-500/10 border-blue-500',
+  production: 'text-amber-500 bg-amber-500/10 border-amber-500',
+  quality: 'text-green-500 bg-green-500/10 border-green-500',
+  hold: 'text-red-500 bg-red-500/10 border-red-500',
 }
 
 export const STATUS_ICONS: Record<Status, string> = {

@@ -148,7 +148,7 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-bold text-white">Presets Guardados</h3>
+        <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Presets Guardados</h3>
         <button
           onClick={() => setShowSaveModal(true)}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors text-sm"
@@ -162,11 +162,11 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
         {presets.map((preset) => (
           <div
             key={preset.id}
-            className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg border border-slate-600 hover:bg-slate-700 transition-colors"
+            className="flex items-center justify-between p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
           >
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h4 className="font-bold text-white">{preset.name}</h4>
+                <h4 className="font-bold text-zinc-900 dark:text-zinc-100">{preset.name}</h4>
                 {preset.isDefault && (
                   <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded">
                     Predefinido
@@ -174,9 +174,9 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
                 )}
               </div>
               {preset.description && (
-                <p className="text-xs text-gray-400 mt-1">{preset.description}</p>
+                <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1">{preset.description}</p>
               )}
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                 Creado: {new Date(preset.createdAt).toLocaleDateString('es-ES')}
               </p>
             </div>
@@ -207,7 +207,7 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
               )}
               <button
                 onClick={() => handleExportPreset(preset)}
-                className="p-1.5 text-gray-400 hover:text-white hover:bg-slate-600 rounded transition-colors"
+                className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors"
                 title="Exportar preset"
               >
                 <Download className="w-4 h-4" />
@@ -216,7 +216,7 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
           </div>
         ))}
         {presets.length === 0 && (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-zinc-500 dark:text-zinc-400">
             <p>No hay presets guardados</p>
             <p className="text-sm mt-2">Crea un preset para guardar tu configuración actual</p>
           </div>
@@ -235,7 +235,7 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-gray-300 mb-2">
+            <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2">
               Nombre del Preset *
             </label>
             <input
@@ -243,12 +243,12 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
               value={presetName}
               onChange={(e: ChangeEvent<HTMLInputElement>) => setPresetName(e.target.value)}
               placeholder="Ej: Mi Configuración"
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               autoFocus
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-gray-300 mb-2">
+            <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2">
               Descripción (opcional)
             </label>
             <textarea
@@ -256,7 +256,7 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
               onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setPresetDescription(e.target.value)}
               placeholder="Descripción del preset..."
               rows={3}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
           </div>
           <div className="flex justify-end gap-3">
@@ -266,14 +266,14 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
                 setPresetName('')
                 setPresetDescription('')
               }}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 font-bold rounded-lg transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleSavePreset}
               disabled={!presetName.trim()}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors"
             >
               Guardar
             </button>

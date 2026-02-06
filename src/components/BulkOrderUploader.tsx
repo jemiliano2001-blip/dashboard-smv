@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { FileSpreadsheet, Upload, Loader2 } from 'lucide-react'
 import { parseBulkUploadFile } from '../utils/bulkUploadParser'
-import { insertWorkOrdersBulk } from '../api/workOrders'
+import { insertWorkOrdersBulk } from '@/features/orders/api/workOrders'
 import { orderKeyByPo } from '../utils/formatUtils'
 import type { WorkOrderCreateInput } from '../types'
 
@@ -137,7 +137,7 @@ export function BulkOrderUploader({
   return (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+        <label className="block text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-2">
           Compañía por defecto (solo si el archivo no trae columna compañía o la celda está vacía)
         </label>
         <input
@@ -145,7 +145,7 @@ export function BulkOrderUploader({
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
           placeholder="Importación"
-          className="w-full px-4 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+          className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-xl text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
         />
       </div>
 
@@ -155,11 +155,11 @@ export function BulkOrderUploader({
         onDragLeave={onDragLeave}
         className={`
           border-2 border-dashed rounded-xl p-8 text-center transition-colors
-          ${isDragging ? 'border-blue-500 bg-blue-500/10' : 'border-white/20 bg-white/5 hover:bg-white/10'}
+          ${isDragging ? 'border-blue-500 bg-blue-500/10' : 'border-zinc-200 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800'}
         `}
       >
-        <FileSpreadsheet className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-        <p className="text-gray-300 mb-2">
+        <FileSpreadsheet className="w-12 h-12 text-zinc-500 dark:text-zinc-400 mx-auto mb-3" />
+        <p className="text-zinc-700 dark:text-zinc-300 mb-2">
           Arrastra aquí un Excel o CSV, o haz clic para seleccionar
         </p>
         <input
@@ -173,7 +173,7 @@ export function BulkOrderUploader({
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white font-medium rounded-xl border border-white/20 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-xl border border-zinc-200 dark:border-zinc-600 transition-colors"
         >
           <Upload className="w-4 h-4" />
           Seleccionar archivo
@@ -181,13 +181,13 @@ export function BulkOrderUploader({
       </div>
 
       {errorMessage && (
-        <div className="px-4 py-3 bg-red-500/20 border border-red-500/30 rounded-xl text-red-300 text-sm">
+        <div className="px-4 py-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-600 dark:text-red-400 text-sm">
           {errorMessage}
         </div>
       )}
 
       {parseErrors.length > 0 && (
-        <div className="px-4 py-3 bg-amber-500/20 border border-amber-500/30 rounded-xl text-amber-200 text-sm">
+        <div className="px-4 py-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-700 dark:text-amber-300 text-sm">
           <p className="font-medium mb-1">Advertencias de validación:</p>
           <ul className="list-disc list-inside space-y-0.5">
             {parseErrors.slice(0, 10).map((e, i) => (
@@ -204,45 +204,45 @@ export function BulkOrderUploader({
 
       {fileName && rows.length > 0 && (
         <>
-          <p className="text-sm text-gray-400">
-            <strong className="text-white">{fileName}</strong> — {rows.length} fila(s) leída(s).
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            <strong className="text-zinc-900 dark:text-zinc-100">{fileName}</strong> — {rows.length} fila(s) leída(s).
             {newRows.length > 0 && (
-              <span className="block mt-1 text-white">
+              <span className="block mt-1 text-zinc-700 dark:text-zinc-300">
                 Vista previa: <strong>{newRows.length}</strong> orden(es) a agregar.
               </span>
             )}
             {skippedCount > 0 && (
-              <span className="block mt-1 text-amber-400">
+              <span className="block mt-1 text-amber-600 dark:text-amber-400">
                 {skippedCount} línea(s) omitida(s) (orden + parte ya existen).
               </span>
             )}
           </p>
 
           {newRows.length > 0 && (
-            <div className="max-h-[60vh] overflow-auto rounded-xl border border-white/20">
+            <div className="max-h-[60vh] overflow-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                  <thead className="sticky top-0 z-10 bg-white/10">
+                  <thead className="sticky top-0 z-10 bg-zinc-50 dark:bg-zinc-900">
                     <tr className="text-left">
-                      <th className="px-4 py-2 text-gray-300 font-medium">Compañía</th>
-                      <th className="px-4 py-2 text-gray-300 font-medium">Orden / PO</th>
-                      <th className="px-4 py-2 text-gray-300 font-medium">Número de parte</th>
-                      <th className="px-4 py-2 text-gray-300 font-medium">Cantidad</th>
-                      <th className="px-4 py-2 text-gray-300 font-medium">Fecha</th>
-                      <th className="px-4 py-2 text-gray-300 font-medium">Estatus</th>
+                      <th className="px-4 py-2 text-zinc-600 dark:text-zinc-400 font-medium">Compañía</th>
+                      <th className="px-4 py-2 text-zinc-600 dark:text-zinc-400 font-medium">Orden / PO</th>
+                      <th className="px-4 py-2 text-zinc-600 dark:text-zinc-400 font-medium">Número de parte</th>
+                      <th className="px-4 py-2 text-zinc-600 dark:text-zinc-400 font-medium">Cantidad</th>
+                      <th className="px-4 py-2 text-zinc-600 dark:text-zinc-400 font-medium">Fecha</th>
+                      <th className="px-4 py-2 text-zinc-600 dark:text-zinc-400 font-medium">Estatus</th>
                     </tr>
                   </thead>
                   <tbody>
                     {newRows.map((r, i) => (
-                      <tr key={i} className="border-t border-white/10">
-                        <td className="px-4 py-2 text-white">{r.company_name}</td>
-                        <td className="px-4 py-2 text-white">{r.po_number}</td>
-                        <td className="px-4 py-2 text-white">{r.part_name}</td>
-                        <td className="px-4 py-2 text-white">{r.quantity_total}</td>
-                        <td className="px-4 py-2 text-gray-400">
+                      <tr key={i} className="border-t border-zinc-200 dark:border-zinc-700">
+                        <td className="px-4 py-2 text-zinc-700 dark:text-zinc-300">{r.company_name}</td>
+                        <td className="px-4 py-2 text-zinc-700 dark:text-zinc-300">{r.po_number}</td>
+                        <td className="px-4 py-2 text-zinc-700 dark:text-zinc-300">{r.part_name}</td>
+                        <td className="px-4 py-2 text-zinc-700 dark:text-zinc-300">{r.quantity_total}</td>
+                        <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">
                           {r.created_at ? new Date(r.created_at).toLocaleDateString() : '—'}
                         </td>
-                        <td className="px-4 py-2 text-gray-400">{r.status}</td>
+                        <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">{r.status}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -275,7 +275,7 @@ export function BulkOrderUploader({
           )}
 
           {successCount !== null && successCount > 0 && (
-            <p className="text-green-400 font-medium">
+            <p className="text-green-600 dark:text-green-400 font-medium">
               Éxito: {successCount} orden(es) agregada(s).
             </p>
           )}

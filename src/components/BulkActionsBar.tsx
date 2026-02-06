@@ -90,20 +90,20 @@ export function BulkActionsBar({
 
   return (
     <>
-      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 bg-slate-800 border-2 border-blue-500 rounded-lg shadow-2xl p-4">
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg p-4">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-3 py-2 bg-blue-600/20 rounded-lg">
-            <CheckCircle className="w-5 h-5 text-blue-400" />
-            <span className="text-white font-bold">
+          <div className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 rounded-lg">
+            <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <span className="text-zinc-900 dark:text-zinc-100 font-bold">
               {selectedCount} {selectedCount === 1 ? 'orden seleccionada' : 'órdenes seleccionadas'}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 border-l border-slate-700 pl-3">
+          <div className="flex items-center gap-2 border-l border-zinc-200 dark:border-zinc-700 pl-3">
             <button
               onClick={() => setShowStatusModal(true)}
               disabled={loading}
-              className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 text-white text-sm font-bold rounded-lg transition-colors"
+              className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-400 dark:disabled:bg-zinc-600 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
               title="Cambiar estado"
             >
               Estado
@@ -112,7 +112,7 @@ export function BulkActionsBar({
             <button
               onClick={() => setShowPriorityModal(true)}
               disabled={loading}
-              className="px-3 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-slate-600 text-white text-sm font-bold rounded-lg transition-colors"
+              className="px-3 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-zinc-400 dark:disabled:bg-zinc-600 text-white text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
               title="Cambiar prioridad"
             >
               Prioridad
@@ -121,7 +121,7 @@ export function BulkActionsBar({
             <button
               onClick={() => setShowCompanyModal(true)}
               disabled={loading}
-              className="px-3 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-600 text-white text-sm font-bold rounded-lg transition-colors"
+              className="px-3 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 disabled:opacity-50 text-zinc-900 dark:text-zinc-100 text-sm font-bold rounded-lg transition-colors"
               title="Cambiar compañía"
             >
               Compañía
@@ -130,7 +130,7 @@ export function BulkActionsBar({
             <button
               onClick={() => setShowDeleteConfirm(true)}
               disabled={loading}
-              className="px-3 py-2 bg-red-600 hover:bg-red-700 disabled:bg-slate-600 text-white text-sm font-bold rounded-lg transition-colors"
+              className="px-3 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white text-sm font-bold rounded-lg transition-colors"
               title="Eliminar seleccionadas"
             >
               Eliminar
@@ -139,7 +139,7 @@ export function BulkActionsBar({
             <button
               onClick={onSelectionClear}
               disabled={loading}
-              className="p-2 text-gray-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors"
+              className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
               title="Limpiar selección"
             >
               <X className="w-5 h-5" />
@@ -155,13 +155,13 @@ export function BulkActionsBar({
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
+          <p className="text-zinc-600 dark:text-zinc-400">
             Cambiar el estado de {selectedCount} {selectedCount === 1 ? 'orden' : 'órdenes'} a:
           </p>
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value as Status)}
-            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -172,14 +172,14 @@ export function BulkActionsBar({
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setShowStatusModal(false)}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 font-bold rounded-lg transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleBulkStatusUpdate}
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-lg transition-colors"
             >
               {loading ? 'Actualizando...' : 'Actualizar'}
             </button>
@@ -194,13 +194,13 @@ export function BulkActionsBar({
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
+          <p className="text-zinc-600 dark:text-zinc-400">
             Cambiar la prioridad de {selectedCount} {selectedCount === 1 ? 'orden' : 'órdenes'} a:
           </p>
           <select
             value={selectedPriority}
             onChange={(e) => setSelectedPriority(e.target.value as Priority)}
-            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {PRIORITY_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -211,14 +211,14 @@ export function BulkActionsBar({
           <div className="flex justify-end gap-3">
             <button
               onClick={() => setShowPriorityModal(false)}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 font-bold rounded-lg transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleBulkPriorityUpdate}
               disabled={loading}
-              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-slate-600 text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white font-bold rounded-lg transition-colors"
             >
               {loading ? 'Actualizando...' : 'Actualizar'}
             </button>
@@ -236,7 +236,7 @@ export function BulkActionsBar({
         size="sm"
       >
         <div className="space-y-4">
-          <p className="text-gray-300">
+          <p className="text-zinc-600 dark:text-zinc-400">
             Cambiar la compañía de {selectedCount} {selectedCount === 1 ? 'orden' : 'órdenes'} a:
           </p>
           <input
@@ -244,7 +244,7 @@ export function BulkActionsBar({
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             placeholder="Nombre de la compañía"
-            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             autoFocus
           />
           <div className="flex justify-end gap-3">
@@ -253,14 +253,14 @@ export function BulkActionsBar({
                 setShowCompanyModal(false)
                 setCompanyName('')
               }}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 font-bold rounded-lg transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleBulkCompanyUpdate}
               disabled={loading || !companyName.trim()}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors"
             >
               {loading ? 'Actualizando...' : 'Actualizar'}
             </button>

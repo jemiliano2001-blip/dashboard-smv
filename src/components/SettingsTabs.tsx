@@ -41,7 +41,7 @@ export function SettingsTabs({
   return (
     <div className="flex flex-col h-full">
       {/* Tab Navigation */}
-      <div className="flex items-center gap-2 border-b border-white/10 mb-6 overflow-x-auto pb-1">
+      <div className="flex items-center gap-2 border-b border-zinc-200 dark:border-zinc-700 mb-6 overflow-x-auto pb-1">
         {tabs.map((tab) => {
           const Icon = tab.icon
           const isActive = activeTab === tab.id
@@ -55,8 +55,8 @@ export function SettingsTabs({
                 relative focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-xl
                 ${
                   isActive
-                    ? 'text-white bg-white/10 border-b-2 border-blue-500'
-                    : 'text-gray-400 hover:text-gray-300 hover:bg-white/5'
+                    ? 'text-zinc-900 dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-800 border-b-2 border-blue-500'
+                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/50'
                 }
               `}
               aria-selected={isActive}

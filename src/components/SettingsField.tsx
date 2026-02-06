@@ -54,20 +54,20 @@ export function SettingsField({
       case 'info':
         return 'border-blue-500 focus:ring-blue-500'
       default:
-        return 'border-slate-600 focus:ring-blue-500'
+        return 'border-zinc-200 dark:border-zinc-600 focus:ring-blue-500'
     }
   }
 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="block text-sm font-bold text-gray-300">
+        <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400">
           {label}
           {required && <span className="text-red-400 ml-1">*</span>}
         </label>
         {value !== undefined && (
           <span className="text-sm font-bold text-blue-400">
-            {value} {unit && <span className="text-gray-400 font-normal">{unit}</span>}
+            {value} {unit && <span className="text-zinc-500 dark:text-zinc-400 font-normal">{unit}</span>}
           </span>
         )}
       </div>
@@ -82,7 +82,7 @@ export function SettingsField({
       </div>
 
       {description && (
-        <p className="text-xs text-gray-400">{description}</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">{description}</p>
       )}
 
       {error && (
@@ -126,14 +126,14 @@ export function ValidatedInput({ validationState, className = '', ...props }: Va
       case 'info':
         return 'border-blue-500 focus:ring-blue-500'
       default:
-        return 'border-slate-600 focus:ring-blue-500'
+        return 'border-zinc-200 dark:border-zinc-600 focus:ring-blue-500'
     }
   }
 
   return (
     <input
       {...props}
-      className={`w-full px-4 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${getValidationColor()} ${className}`}
+      className={`w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 ${getValidationColor()} ${className}`}
     />
   )
 }
@@ -168,13 +168,13 @@ export function SettingsSlider({
         step={step}
         value={value}
         onChange={(e) => onChange(parseInt(e.target.value))}
-        className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+        className="w-full h-2 bg-zinc-200 dark:bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
         style={{
           background: `linear-gradient(to right, #2563eb 0%, #2563eb ${((value - min) / (max - min)) * 100}%, #475569 ${((value - min) / (max - min)) * 100}%, #475569 100%)`,
         }}
       />
       {showLabels && (
-        <div className="flex justify-between text-xs text-gray-400 mt-1">
+        <div className="flex justify-between text-xs text-zinc-500 dark:text-zinc-400 mt-1">
           <span>{min} {unit}</span>
           <span className="font-bold text-blue-400">{value} {unit}</span>
           <span>{max} {unit}</span>
@@ -200,13 +200,13 @@ export function SettingsSwitch({
   className = '',
 }: SettingsSwitchProps) {
   return (
-    <div className={`flex items-center justify-between p-4 bg-slate-700/50 rounded-lg hover:bg-slate-700 transition-colors ${className}`}>
+    <div className={`flex items-center justify-between p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors ${className}`}>
       <div className="flex-1">
-        <label className="block text-sm font-bold text-gray-300 mb-1 cursor-pointer">
+        <label className="block text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1 cursor-pointer">
           {label}
         </label>
         {description && (
-          <p className="text-xs text-gray-400">{description}</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">{description}</p>
         )}
       </div>
       <label className="relative inline-flex items-center cursor-pointer">
@@ -216,7 +216,7 @@ export function SettingsSwitch({
           onChange={(e) => onChange(e.target.checked)}
           className="sr-only peer"
         />
-        <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+        <div className="w-11 h-6 bg-zinc-200 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
       </label>
     </div>
   )
@@ -241,11 +241,11 @@ export function SettingsSelector<T extends string | number>({
 }: SettingsSelectorProps<T>) {
   return (
     <div className={className}>
-      <label className="block text-sm font-bold text-gray-300 mb-2">
+      <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2">
         {label}
       </label>
       {description && (
-        <p className="text-xs text-gray-400 mb-3">{description}</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-3">{description}</p>
       )}
       <div className="flex flex-wrap gap-2">
         {options.map((option) => (
@@ -255,7 +255,7 @@ export function SettingsSelector<T extends string | number>({
             className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
               value === option.value
                 ? 'bg-blue-600 text-white shadow-lg scale-105'
-                : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-600'
             }`}
           >
             {option.label}

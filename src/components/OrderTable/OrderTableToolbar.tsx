@@ -21,7 +21,7 @@ export const OrderTableToolbar = memo(function OrderTableToolbar({
       <div className="flex items-center justify-end">
         <button
           onClick={onColumnManagerClick}
-          className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm font-medium rounded-xl transition-all duration-200 border border-white/10 hover:border-white/20"
+          className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium rounded-xl transition-all duration-200 border border-zinc-200 dark:border-zinc-700"
           title="Gestionar columnas"
         >
           <Settings className="w-4 h-4" />
@@ -35,7 +35,7 @@ export const OrderTableToolbar = memo(function OrderTableToolbar({
     <div className="flex items-center gap-2">
       <button
         onClick={onExportSelected}
-        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm font-medium rounded-xl transition-all duration-200 border border-white/10 hover:border-white/20"
+        className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium rounded-xl transition-all duration-200 border border-zinc-200 dark:border-zinc-700"
         title="Exportar seleccionadas"
       >
         <Download className="w-4 h-4" />
@@ -43,7 +43,7 @@ export const OrderTableToolbar = memo(function OrderTableToolbar({
       </button>
       <button
         onClick={onBulkDelete}
-        className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-sm font-medium rounded-xl transition-all duration-200 border border-red-500/20 hover:border-red-500/30"
+        className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 text-sm font-medium rounded-xl transition-all duration-200 border border-red-500/30 dark:border-red-500/30"
         aria-label={`Eliminar ${selectedCount} órdenes seleccionadas`}
       >
         <Trash className="w-4 h-4" />
@@ -51,7 +51,7 @@ export const OrderTableToolbar = memo(function OrderTableToolbar({
       </button>
       <button
         onClick={onColumnManagerClick}
-        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm font-medium rounded-xl transition-all duration-200 border border-white/10 hover:border-white/20"
+        className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium rounded-xl transition-all duration-200 border border-zinc-200 dark:border-zinc-700"
         title="Gestionar columnas"
       >
         <Settings className="w-4 h-4" />

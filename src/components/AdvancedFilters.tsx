@@ -130,7 +130,7 @@ export function AdvancedFilters({ isOpen, onClose, onApply, companies, currentFi
     <Modal isOpen={isOpen} onClose={onClose} title="Filtros Avanzados" size="lg">
       <div className="space-y-6">
         <div>
-          <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
             <Filter className="w-5 h-5" />
             Campos de Búsqueda
           </h3>
@@ -140,53 +140,53 @@ export function AdvancedFilters({ isOpen, onClose, onApply, companies, currentFi
                 type="checkbox"
                 checked={filters.searchFields.poNumber}
                 onChange={() => handleFieldToggle('poNumber')}
-                className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-blue-600"
+                className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800 text-blue-600"
               />
-              <span className="text-gray-300">Número de PO</span>
+              <span className="text-zinc-700 dark:text-zinc-300">Número de PO</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={filters.searchFields.partName}
                 onChange={() => handleFieldToggle('partName')}
-                className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-blue-600"
+                className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800 text-blue-600"
               />
-              <span className="text-gray-300">Nombre de Pieza</span>
+              <span className="text-zinc-700 dark:text-zinc-300">Nombre de Pieza</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={filters.searchFields.companyName}
                 onChange={() => handleFieldToggle('companyName')}
-                className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-blue-600"
+                className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-800 text-blue-600"
               />
-              <span className="text-gray-300">Nombre de Compañía</span>
+              <span className="text-zinc-700 dark:text-zinc-300">Nombre de Compañía</span>
             </label>
           </div>
         </div>
 
         <div>
-          <h3 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
             <Calendar className="w-5 h-5" />
             Rango de Fechas
           </h3>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-bold text-gray-300 mb-2">Fecha Inicio</label>
+              <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2">Fecha Inicio</label>
               <input
                 type="date"
                 value={filters.dateRange.start}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleDateChange('start', e.target.value)}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-300 mb-2">Fecha Fin</label>
+              <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2">Fecha Fin</label>
               <input
                 type="date"
                 value={filters.dateRange.end}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleDateChange('end', e.target.value)}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -194,11 +194,11 @@ export function AdvancedFilters({ isOpen, onClose, onApply, companies, currentFi
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-gray-300 mb-2">Compañía</label>
+            <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2">Compañía</label>
             <select
               value={filters.company}
               onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilters((prev) => ({ ...prev, company: e.target.value }))}
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas</option>
               {companies.map((company) => (
@@ -210,11 +210,11 @@ export function AdvancedFilters({ isOpen, onClose, onApply, companies, currentFi
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-300 mb-2">Modo de Combinación</label>
+            <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2">Modo de Combinación</label>
             <select
               value={filters.combineMode}
               onChange={(e: ChangeEvent<HTMLSelectElement>) => setFilters((prev) => ({ ...prev, combineMode: e.target.value as 'AND' | 'OR' }))}
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="AND">Y (AND)</option>
               <option value="OR">O (OR)</option>
@@ -224,13 +224,13 @@ export function AdvancedFilters({ isOpen, onClose, onApply, companies, currentFi
 
         {presets.length > 0 && (
           <div>
-            <h3 className="text-lg font-bold text-white mb-3">Presets Guardados</h3>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-3">Presets Guardados</h3>
             <div className="space-y-2">
               {presets.map((preset) => (
-                <div key={preset.id} className="flex items-center justify-between p-2 bg-slate-700 rounded-lg">
+                <div key={preset.id} className="flex items-center justify-between p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
                   <button
                     onClick={() => handleLoadPreset(preset)}
-                    className="flex-1 text-left text-gray-300 hover:text-white"
+                    className="flex-1 text-left text-zinc-700 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100"
                   >
                     {preset.name}
                   </button>
@@ -247,16 +247,16 @@ export function AdvancedFilters({ isOpen, onClose, onApply, companies, currentFi
           </div>
         )}
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-700">
           <button
             onClick={handleReset}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors"
+            className="px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 font-bold rounded-lg transition-colors"
           >
             Restablecer
           </button>
           <button
             onClick={handleSavePreset}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg transition-colors flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors flex items-center gap-2"
           >
             <Save className="w-4 h-4" />
             Guardar Preset

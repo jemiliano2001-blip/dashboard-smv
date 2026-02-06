@@ -61,7 +61,7 @@ export function AdminPanelSettingsTab({
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
               handleChange('defaultItemsPerPage', parseInt(e.target.value))
             }
-            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="10">10 órdenes (rápido)</option>
             <option value="25">25 órdenes (recomendado)</option>
@@ -80,7 +80,7 @@ export function AdminPanelSettingsTab({
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 handleChange('defaultSortColumn', e.target.value as SortColumn)
               }
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {SORT_COLUMN_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -99,7 +99,7 @@ export function AdminPanelSettingsTab({
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 handleChange('defaultSortOrder', e.target.value as SortOrder)
               }
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {SORT_ORDER_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -147,10 +147,10 @@ export function AdminPanelSettingsTab({
       >
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <label className="block text-sm font-bold text-gray-300 mb-1">
+            <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-1">
               Habilitar Operaciones en Lote
             </label>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Permite editar, cambiar estado/prioridad o eliminar múltiples órdenes a la vez. Útil para gestionar grandes volúmenes de órdenes eficientemente.
             </p>
           </div>
@@ -163,7 +163,7 @@ export function AdminPanelSettingsTab({
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-zinc-200 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
           </label>
         </div>
       </SettingsSection>
@@ -177,10 +177,10 @@ export function AdminPanelSettingsTab({
       >
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <label className="block text-sm font-bold text-gray-300 mb-1">
+            <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-1">
               Habilitar Acciones Rápidas
             </label>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Menú contextual (click derecho) y botón de acciones rápidas en cada fila. Permite cambiar estado o prioridad sin abrir el formulario completo.
             </p>
           </div>
@@ -193,7 +193,7 @@ export function AdminPanelSettingsTab({
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-zinc-200 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
           </label>
         </div>
       </SettingsSection>
@@ -207,10 +207,10 @@ export function AdminPanelSettingsTab({
       >
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <label className="block text-sm font-bold text-gray-300 mb-1">
+            <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-1">
               Mostrar Métricas por Defecto
             </label>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Mostrar el dashboard de métricas al abrir el admin panel. Proporciona una vista general rápida del estado de todas las órdenes.
             </p>
           </div>
@@ -223,7 +223,7 @@ export function AdminPanelSettingsTab({
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-zinc-200 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
           </label>
         </div>
       </SettingsSection>

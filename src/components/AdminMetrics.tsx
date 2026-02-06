@@ -63,73 +63,73 @@ export const AdminMetrics = memo(function AdminMetrics({ orders }: AdminMetricsP
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {/* Metric Cards */}
-      <div className="group bg-white/5 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 cursor-default border border-white/10 hover:border-white/20">
+      <div className="group bg-white dark:bg-zinc-900/50 rounded-2xl p-6 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all duration-300 cursor-default border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <div className="flex items-start justify-between mb-4">
-          <div className="p-3 bg-blue-500/20 rounded-xl group-hover:bg-blue-500/30 transition-colors duration-300">
-            <BarChart3 className="w-6 h-6 text-blue-400" />
+          <div className="p-3 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors duration-300">
+            <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-3xl font-bold text-white tracking-tight">{metrics.total}</p>
-          <p className="text-sm text-gray-400 font-medium">Total de Órdenes</p>
+          <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">{metrics.total}</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">Total de Órdenes</p>
         </div>
       </div>
 
-      <div className="group bg-white/5 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 cursor-default border border-white/10 hover:border-white/20">
+      <div className="group bg-white dark:bg-zinc-900/50 rounded-2xl p-6 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all duration-300 cursor-default border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <div className="flex items-start justify-between mb-4">
-          <div className="p-3 bg-green-500/20 rounded-xl group-hover:bg-green-500/30 transition-colors duration-300">
-            <TrendingUp className="w-6 h-6 text-green-400" />
+          <div className="p-3 bg-green-500/10 rounded-xl group-hover:bg-green-500/20 transition-colors duration-300">
+            <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-3xl font-bold text-white tracking-tight">{metrics.overallProgress}%</p>
-          <p className="text-sm text-gray-400 font-medium">Progreso General</p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">{metrics.overallProgress}%</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">Progreso General</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
             {metrics.completedQuantity.toLocaleString()} / {metrics.totalQuantity.toLocaleString()} unidades
           </p>
         </div>
       </div>
 
-      <div className="group bg-white/5 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 cursor-default border border-white/10 hover:border-white/20">
+      <div className="group bg-white dark:bg-zinc-900/50 rounded-2xl p-6 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all duration-300 cursor-default border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <div className="flex items-start justify-between mb-4">
-          <div className="p-3 bg-orange-500/20 rounded-xl group-hover:bg-orange-500/30 transition-colors duration-300">
-            <Clock className="w-6 h-6 text-orange-400" />
+          <div className="p-3 bg-orange-500/10 rounded-xl group-hover:bg-orange-500/20 transition-colors duration-300">
+            <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-3xl font-bold text-white tracking-tight">{metrics.inProduction}</p>
-          <p className="text-sm text-gray-400 font-medium">En Producción</p>
+          <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">{metrics.inProduction}</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">En Producción</p>
         </div>
       </div>
 
-      <div className="group bg-white/5 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 cursor-default border border-white/10 hover:border-white/20">
+      <div className="group bg-white dark:bg-zinc-900/50 rounded-2xl p-6 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all duration-300 cursor-default border border-zinc-200 dark:border-zinc-800 shadow-sm">
         <div className="flex items-start justify-between mb-4">
-          <div className="p-3 bg-red-500/20 rounded-xl group-hover:bg-red-500/30 transition-colors duration-300">
-            <AlertTriangle className="w-6 h-6 text-red-400" />
+          <div className="p-3 bg-red-500/10 rounded-xl group-hover:bg-red-500/20 transition-colors duration-300">
+            <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
           </div>
         </div>
         <div className="space-y-1">
-          <p className="text-3xl font-bold text-white tracking-tight">{metrics.urgent}</p>
-          <p className="text-sm text-gray-400 font-medium">Urgentes</p>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">{metrics.urgent}</p>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">Urgentes</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
             {metrics.byPriority.critical || 0} crítica{metrics.byPriority.critical === 1 ? '' : 's'}, {metrics.byPriority.high || 0} alta{metrics.byPriority.high === 1 ? '' : 's'}
           </p>
         </div>
       </div>
 
       {/* Distribution Cards */}
-      <div className="md:col-span-2 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-        <h3 className="text-xs font-semibold text-gray-400 mb-6 uppercase tracking-wider">Distribución por Estado</h3>
+      <div className="md:col-span-2 bg-white dark:bg-zinc-900/50 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+        <h3 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-6 uppercase tracking-wider">Distribución por Estado</h3>
         <div className="space-y-4">
           {Object.entries(metrics.byStatus).map(([status, count]) => {
             const percentage = metrics.total > 0 ? Math.round((count / metrics.total) * 100) : 0
             return (
               <div key={status} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-300">{statusLabels[status] || status}</span>
-                  <span className="text-sm font-semibold text-white">{count} <span className="text-gray-400">({percentage}%)</span></span>
+                  <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{statusLabels[status] || status}</span>
+                  <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{count} <span className="text-zinc-500 dark:text-zinc-400">({percentage}%)</span></span>
                 </div>
-                <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-1.5 overflow-hidden">
                   <div
                     className="bg-blue-500 h-1.5 rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${percentage}%` }}
@@ -141,8 +141,8 @@ export const AdminMetrics = memo(function AdminMetrics({ orders }: AdminMetricsP
         </div>
       </div>
 
-      <div className="md:col-span-2 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-        <h3 className="text-xs font-semibold text-gray-400 mb-6 uppercase tracking-wider">Distribución por Prioridad</h3>
+      <div className="md:col-span-2 bg-white dark:bg-zinc-900/50 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+        <h3 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-6 uppercase tracking-wider">Distribución por Prioridad</h3>
         <div className="space-y-4">
           {(['critical', 'high', 'normal', 'low'] as const).map((priority) => {
             const count = metrics.byPriority[priority] || 0
@@ -152,17 +152,17 @@ export const AdminMetrics = memo(function AdminMetrics({ orders }: AdminMetricsP
               critical: 'bg-red-500',
               high: 'bg-orange-500',
               normal: 'bg-blue-500',
-              low: 'bg-gray-500',
+              low: 'bg-zinc-500',
             }
-            const bgColorClass = priorityColorMap[priority] || 'bg-gray-500'
+            const bgColorClass = priorityColorMap[priority] || 'bg-zinc-500'
 
             return (
               <div key={priority} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-300">{priorityLabels[priority] || priority}</span>
-                  <span className="text-sm font-semibold text-white">{count} <span className="text-gray-400">({percentage}%)</span></span>
+                  <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{priorityLabels[priority] || priority}</span>
+                  <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">{count} <span className="text-zinc-500 dark:text-zinc-400">({percentage}%)</span></span>
                 </div>
-                <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-1.5 overflow-hidden">
                   <div
                     className={`${bgColorClass} h-1.5 rounded-full transition-all duration-500 ease-out`}
                     style={{ width: `${percentage}%` }}

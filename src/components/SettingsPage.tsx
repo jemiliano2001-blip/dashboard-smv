@@ -185,7 +185,7 @@ export function SettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-gray-400">Cargando configuraciones...</div>
+        <div className="text-zinc-600 dark:text-zinc-400">Cargando configuraciones...</div>
       </div>
     )
   }
@@ -225,15 +225,15 @@ export function SettingsPage() {
       />
 
       {/* Footer Actions */}
-      <div className="flex items-center justify-between pt-6 mt-6 border-t border-white/10">
-        <div className="flex items-center gap-3 text-sm text-gray-400">
+      <div className="flex items-center justify-between pt-6 mt-6 border-t border-zinc-200 dark:border-zinc-700">
+        <div className="flex items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
           {hasChanges && (
-            <span className="px-3 py-1.5 bg-blue-500/10 text-blue-300 rounded-xl font-medium border border-blue-500/20">
+            <span className="px-3 py-1.5 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl font-medium border border-blue-500/20">
               Cambios sin guardar
             </span>
           )}
           {settings.lastModified && (
-            <span className="text-gray-500">
+            <span className="text-zinc-500 dark:text-zinc-400">
               Última modificación: {new Date(settings.lastModified).toLocaleString('es-ES')}
             </span>
           )}
@@ -241,7 +241,7 @@ export function SettingsPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/15 text-white font-semibold rounded-xl transition-all duration-200 border border-white/10 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 font-semibold rounded-xl transition-all duration-200 border border-zinc-200 dark:border-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             aria-label="Restablecer configuración a valores por defecto"
           >
             <RotateCcw className="w-4 h-4" />
@@ -250,7 +250,7 @@ export function SettingsPage() {
           <button
             onClick={handleSave}
             disabled={!hasChanges}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-white/10 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             aria-label="Guardar configuración"
           >
             <Save className="w-4 h-4" />

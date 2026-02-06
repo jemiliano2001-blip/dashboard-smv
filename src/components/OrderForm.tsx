@@ -315,17 +315,17 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
     <div className="h-full overflow-y-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight mb-1">
+          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">
             {isEditMode ? 'Editar Orden' : 'Nueva Orden'}
           </h2>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             {isEditMode ? 'Modifica los detalles de la orden' : 'Completa los campos para crear una nueva orden'}
           </p>
         </div>
         {isEditMode && (
           <button
             onClick={onCancel}
-            className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"
+            className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all duration-200"
             title="Cancelar edición"
           >
             <X className="w-5 h-5" />
@@ -351,7 +351,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
 
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-semibold text-gray-300 mb-3">
+          <label className="block text-sm font-semibold text-zinc-600 dark:text-zinc-400 mb-3">
             Nombre de Compañía *
           </label>
           <div className="relative">
@@ -362,12 +362,12 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all duration-200 ${
+              className={`w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border rounded-xl text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 transition-all duration-200 ${
                 touchedFields.has('company_name') && validationErrors.company_name
-                  ? 'border-red-500/50 focus:ring-red-500/50 focus:bg-white/15'
+                  ? 'border-red-500/50 focus:ring-red-500/50'
                   : touchedFields.has('company_name') && !validationErrors.company_name
-                  ? 'border-green-500/50 focus:ring-green-500/50 focus:bg-white/15'
-                  : 'border-white/20 focus:ring-blue-500/50 focus:bg-white/15 focus:border-blue-500/50'
+                  ? 'border-green-500/50 focus:ring-green-500/50'
+                  : 'border-zinc-200 dark:border-zinc-600 focus:ring-blue-500/50 focus:border-blue-500'
               }`}
               placeholder="Ej: Acme Corp"
               aria-label="Nombre de compañía"
@@ -393,7 +393,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-gray-300 mb-2">
+          <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2">
             Número de PO *
           </label>
           <div className="relative">
@@ -404,12 +404,12 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full px-4 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
+              className={`w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 ${
                 touchedFields.has('po_number') && validationErrors.po_number
                   ? 'border-red-500 focus:ring-red-500'
                   : touchedFields.has('po_number') && !validationErrors.po_number
                   ? 'border-green-500 focus:ring-green-500'
-                  : 'border-slate-600 focus:ring-blue-500'
+                  : 'border-zinc-200 dark:border-zinc-600 focus:ring-blue-500'
               }`}
               placeholder="Ej: PO-2024-001"
               aria-invalid={!!validationErrors.po_number}
@@ -433,7 +433,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-300 mb-3">
+          <label className="block text-sm font-semibold text-zinc-600 dark:text-zinc-400 mb-3">
             Nombre de Pieza *
           </label>
           <div className="relative">
@@ -444,12 +444,12 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all duration-200 ${
+              className={`w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border rounded-xl text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 transition-all duration-200 ${
                 touchedFields.has('part_name') && validationErrors.part_name
-                  ? 'border-red-500/50 focus:ring-red-500/50 focus:bg-white/15'
+                  ? 'border-red-500/50 focus:ring-red-500/50'
                   : touchedFields.has('part_name') && !validationErrors.part_name
-                  ? 'border-green-500/50 focus:ring-green-500/50 focus:bg-white/15'
-                  : 'border-white/20 focus:ring-blue-500/50 focus:bg-white/15 focus:border-blue-500/50'
+                  ? 'border-green-500/50 focus:ring-green-500/50'
+                  : 'border-zinc-200 dark:border-zinc-600 focus:ring-blue-500/50 focus:border-blue-500'
               }`}
               placeholder="Ej: Brazo Robótico A-123"
               aria-invalid={!!validationErrors.part_name}
@@ -473,7 +473,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-300 mb-3">
+          <label className="block text-sm font-semibold text-zinc-600 dark:text-zinc-400 mb-3">
             Fecha de Creación *
           </label>
           <input
@@ -482,13 +482,13 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
             value={formData.created_at}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/15 focus:border-blue-500/50 transition-all duration-200"
+            className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-3">
+            <label className="block text-sm font-semibold text-zinc-600 dark:text-zinc-400 mb-3">
               Cantidad Total *
             </label>
             <input
@@ -498,12 +498,12 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
               onChange={handleChange}
               min="0"
               required
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/15 focus:border-blue-500/50 transition-all duration-200"
+              className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-3">
+            <label className="block text-sm font-semibold text-zinc-600 dark:text-zinc-400 mb-3">
               Cantidad Completada *
             </label>
             <div className="relative">
@@ -516,12 +516,12 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
                 min="0"
                 max={formData.quantity_total}
                 required
-                className={`w-full px-4 py-3 bg-white/10 border rounded-xl text-white focus:outline-none focus:ring-2 transition-all duration-200 ${
+                className={`w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 transition-all duration-200 ${
                   touchedFields.has('quantity_completed') && validationErrors.quantity_completed
-                    ? 'border-red-500/50 focus:ring-red-500/50 focus:bg-white/15'
+                    ? 'border-red-500/50 focus:ring-red-500/50'
                     : touchedFields.has('quantity_completed') && !validationErrors.quantity_completed
-                    ? 'border-green-500/50 focus:ring-green-500/50 focus:bg-white/15'
-                    : 'border-white/20 focus:ring-blue-500/50 focus:bg-white/15 focus:border-blue-500/50'
+                    ? 'border-green-500/50 focus:ring-green-500/50'
+                    : 'border-zinc-200 dark:border-zinc-600 focus:ring-blue-500/50 focus:border-blue-500'
                 }`}
                 aria-invalid={!!validationErrors.quantity_completed}
               />
@@ -547,10 +547,10 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
         {formData.quantity_total > 0 && (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-gray-300">Progreso</span>
-              <span className="text-sm font-semibold text-blue-400">{progress}%</span>
+              <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">Progreso</span>
+              <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{progress}%</span>
             </div>
-            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2 overflow-hidden">
               <div
                 className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
@@ -561,7 +561,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
 
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-3">
+            <label className="block text-sm font-semibold text-zinc-600 dark:text-zinc-400 mb-3">
               Prioridad *
             </label>
             <select
@@ -569,10 +569,10 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
               value={formData.priority}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/15 focus:border-blue-500/50 transition-all duration-200"
+              className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
             >
               {PRIORITY_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-slate-800">
+                <option key={opt.value} value={opt.value} className="bg-white dark:bg-zinc-800">
                   {opt.label}
                 </option>
               ))}
@@ -580,7 +580,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-3">
+            <label className="block text-sm font-semibold text-zinc-600 dark:text-zinc-400 mb-3">
               Estado *
             </label>
             <select
@@ -588,10 +588,10 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
               value={formData.status}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white/15 focus:border-blue-500/50 transition-all duration-200"
+              className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
             >
               {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-slate-800">
+                <option key={opt.value} value={opt.value} className="bg-white dark:bg-zinc-800">
                   {opt.label}
                 </option>
               ))}
@@ -599,11 +599,11 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
           </div>
         </div>
 
-        <div className="flex gap-4 pt-6 border-t border-white/10">
+        <div className="flex gap-4 pt-6 border-t border-zinc-200 dark:border-zinc-700">
           <button
             type="submit"
             disabled={loading || !isFormValid}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-white/10 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:shadow-none"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:shadow-none"
             aria-label="Guardar orden"
           >
             <Save className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
@@ -615,7 +615,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
               type="button"
               onClick={() => onDelete && order && onDelete(order.id)}
               disabled={loading}
-              className="px-6 py-3.5 bg-red-500/20 hover:bg-red-500/30 disabled:bg-white/10 disabled:cursor-not-allowed text-red-400 font-semibold rounded-xl transition-all duration-200 border border-red-500/20 hover:border-red-500/30 disabled:border-white/10"
+              className="px-6 py-3.5 bg-red-500/10 hover:bg-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-red-600 dark:text-red-400 font-semibold rounded-xl transition-all duration-200 border border-red-500/20 hover:border-red-500/30"
             >
               <Trash2 className="w-5 h-5" />
             </button>

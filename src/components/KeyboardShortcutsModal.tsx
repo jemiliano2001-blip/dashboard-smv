@@ -71,24 +71,24 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
       <div className="space-y-6">
         {categories.map((category) => (
           <div key={category}>
-            <h3 className="text-lg font-bold text-white mb-3">{category}</h3>
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100 mb-3">{category}</h3>
             <div className="space-y-2">
               {shortcuts
                 .filter((s) => s.category === category)
                 .map((shortcut, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-slate-700/50"
+                    className="flex items-center justify-between p-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-600"
                   >
-                    <span className="text-gray-300">{shortcut.description}</span>
+                    <span className="text-zinc-700 dark:text-zinc-300">{shortcut.description}</span>
                     <div className="flex items-center gap-1">
                       {shortcut.keys.map((key, keyIndex) => (
                         <span key={keyIndex}>
-                          <kbd className="px-2 py-1 bg-slate-700 border border-slate-600 rounded text-sm font-mono text-white">
+                          <kbd className="px-2 py-1 bg-zinc-200 dark:bg-zinc-700 border border-zinc-300 dark:border-zinc-600 rounded text-sm font-mono text-zinc-900 dark:text-zinc-100">
                             {formatKey(key)}
                           </kbd>
                           {keyIndex < shortcut.keys.length - 1 && (
-                            <span className="mx-1 text-gray-500">+</span>
+                            <span className="mx-1 text-zinc-500 dark:text-zinc-400">+</span>
                           )}
                         </span>
                       ))}
@@ -98,8 +98,8 @@ export function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShortcutsMod
             </div>
           </div>
         ))}
-        <div className="pt-4 border-t border-slate-700">
-          <p className="text-sm text-gray-400">
+        <div className="pt-4 border-t border-zinc-200 dark:border-zinc-700">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             <Keyboard className="w-4 h-4 inline mr-2" />
             Los atajos de teclado están disponibles en todas las páginas de la aplicación
           </p>

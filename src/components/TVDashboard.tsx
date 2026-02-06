@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { RefreshCw, WifiOff } from 'lucide-react'
-import { useWorkOrders } from '../hooks/useWorkOrders'
+import { useWorkOrders } from '@/features/orders'
 import { useFullscreen } from '../hooks/useFullscreen'
 import { useSettings } from './SettingsPanel'
 import { Header } from './Header'

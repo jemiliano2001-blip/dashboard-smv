@@ -104,7 +104,7 @@ export function SettingsImportExport({ currentSettings, onImport }: SettingsImpo
         icon={<Download className="w-5 h-5" />}
       >
         <div className="space-y-3">
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Exporta todas tus configuraciones actuales a un archivo JSON que puedes guardar o compartir.
           </p>
           <button
@@ -130,7 +130,7 @@ export function SettingsImportExport({ currentSettings, onImport }: SettingsImpo
         icon={<Upload className="w-5 h-5" />}
       >
         <div className="space-y-3">
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Importa configuraciones desde un archivo JSON. Se creará un backup automático antes de importar.
           </p>
           <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors cursor-pointer inline-block">
@@ -176,8 +176,8 @@ export function SettingsImportExport({ currentSettings, onImport }: SettingsImpo
                 </div>
               </div>
 
-              <div className="max-h-64 overflow-y-auto bg-slate-900 rounded-lg border border-slate-700 p-3">
-                <pre className="text-xs text-gray-300 whitespace-pre-wrap font-mono">
+              <div className="max-h-64 overflow-y-auto bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3">
+                <pre className="text-xs text-zinc-700 dark:text-zinc-300 whitespace-pre-wrap font-mono">
                   {JSON.stringify(importPreview, null, 2)}
                 </pre>
               </div>
@@ -193,8 +193,8 @@ export function SettingsImportExport({ currentSettings, onImport }: SettingsImpo
 
           {!importPreview && !importError && (
             <div className="text-center py-8">
-              <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-300 mb-2">Selecciona un archivo JSON</p>
+              <Upload className="w-12 h-12 text-zinc-500 dark:text-zinc-400 mx-auto mb-4" />
+              <p className="text-zinc-600 dark:text-zinc-400 mb-2">Selecciona un archivo JSON</p>
               <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors cursor-pointer">
                 <Upload className="w-4 h-4" />
                 Seleccionar Archivo
@@ -208,10 +208,10 @@ export function SettingsImportExport({ currentSettings, onImport }: SettingsImpo
             </div>
           )}
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-slate-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-700">
             <button
               onClick={handleCancelImport}
-              className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors"
+              className="px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 font-bold rounded-lg transition-colors"
             >
               Cancelar
             </button>

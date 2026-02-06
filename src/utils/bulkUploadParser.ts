@@ -3,7 +3,7 @@
  * Report columns: orden, fecha, cantidad, descripción o número de parte, compañía.
  */
 
-import * as XLSX from 'xlsx'
+import * as XLSX from 'xlsx-js-style'
 import Papa from 'papaparse'
 import type { WorkOrderCreateInput, Status } from '../types'
 import { INPUT_LIMITS, VALID_STATUSES, VALID_PRIORITIES } from './constants'

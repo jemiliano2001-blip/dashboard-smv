@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { supabase } from '../utils/supabase'
+import { supabase } from '@/lib/supabase'
 import { logger } from '../utils/logger'
 import type { Priority, Status, WorkOrder } from '../types'
 

@@ -1,14 +1,14 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
-import { useWorkOrders } from '../hooks/useWorkOrders'
-import { useWorkOrderActions } from '../hooks/useWorkOrderActions'
+import { useWorkOrders, useWorkOrderActions } from '@/features/orders'
 import { useToast } from '../hooks/useToast'
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
 import { useAppSettings } from '../hooks/useAppSettings'
-import { OrderForm } from './OrderForm'
-import { OrderTable } from './OrderTable'
+import { OrderForm, OrderTable } from '@/features/orders'
 import { SkeletonTable } from './SkeletonTable'
-import { SettingsPage } from './SettingsPage'
+const SettingsPage = lazy(() =>
+  import('@/features/settings').then((m) => ({ default: m.SettingsPage }))
+)
 import { LogsPanel } from './LogsPanel'
 import { AdminMetrics } from './AdminMetrics'
 import { Modal } from './Modal'
@@ -16,9 +16,9 @@ import { ToastContainer } from './Toast'
 import { PageHeader } from '../layouts/PageHeader'
 import { Plus, Download, FileText, FileSpreadsheet, History, Printer, Keyboard, BarChart3, Upload } from 'lucide-react'
 import { LoadingState } from './LoadingState'
-import { OrderHistory } from './OrderHistory'
+import { OrderHistory } from '@/features/orders'
 import { KeyboardShortcutsModal } from './KeyboardShortcutsModal'
-import { BulkOrderUploader } from './BulkOrderUploader'
+import { BulkOrderUploader } from '@/features/orders'
 import { SUCCESS_MESSAGES } from '../utils/constants'
 import { orderKeyByPo } from '../utils/formatUtils'
 import { exportWorkOrdersToCSV, exportWorkOrdersToPDF, exportWorkOrdersToExcel } from '../utils/exportUtils'
@@ -295,10 +295,10 @@ export function AdminPanel() {
 
   if (ordersError) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950">
-        <div className="text-center max-w-md p-8 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10">
-          <div className="text-red-400 text-xl font-bold mb-4">Error</div>
-          <div className="text-gray-400 mb-6">{ordersError}</div>
+      <div className="flex items-center justify-center h-screen bg-zinc-50 dark:bg-zinc-950">
+        <div className="text-center max-w-md p-8 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-lg">
+          <div className="text-red-500 dark:text-red-400 text-xl font-bold mb-4">Error</div>
+          <div className="text-zinc-600 dark:text-zinc-400 mb-6">{ordersError}</div>
           <button
             onClick={() => window.location.reload()}
             className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-600/20"
@@ -341,7 +341,7 @@ export function AdminPanel() {
   return (
     <>
       <div className="flex-1 flex flex-col min-h-0">
-        <header className="bg-white/5 backdrop-blur-xl border-b border-white/10 px-4 md:px-8 py-4 md:py-6">
+        <header className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 px-4 md:px-8 py-4 md:py-6 shadow-sm">
           <PageHeader
             title={
               isManageOrdersView ? 'Órdenes' : isLogsView ? 'Registros del sistema' : 'Configuración'
@@ -359,7 +359,7 @@ export function AdminPanel() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShortcutsOpen(true)}
-                    className="p-2.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/10"
+                    className="p-2.5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all duration-200 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
                     title="Ver atajos de teclado"
                     aria-label="Ver atajos de teclado"
                   >
@@ -370,16 +370,16 @@ export function AdminPanel() {
                   <>
                     <button
                       onClick={() => setShowMetrics(!showMetrics)}
-                      className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-white text-sm font-medium rounded-xl transition-all duration-200 border border-white/10"
+                      className="flex items-center gap-2 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium rounded-xl transition-all duration-200 border border-zinc-200 dark:border-zinc-700"
                       title={showMetrics ? 'Ocultar métricas' : 'Mostrar métricas'}
                     >
                       <BarChart3 className="w-4 h-4" />
                       <span className="hidden sm:inline">{showMetrics ? 'Ocultar' : 'Mostrar'} Métricas</span>
                     </button>
-                    <div className="flex items-center gap-2 pl-0 md:pl-3 border-0 md:border-l border-white/10">
+                    <div className="flex items-center gap-2 pl-0 md:pl-3 border-0 md:border-l border-zinc-200 dark:border-zinc-700">
                       <button
                         onClick={handlePrint}
-                        className="p-2.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200 border border-transparent hover:border-white/10"
+                        className="p-2.5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition-all duration-200 border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
                         title="Imprimir órdenes"
                         aria-label="Imprimir órdenes"
                       >
@@ -388,7 +388,7 @@ export function AdminPanel() {
                       <div className="relative">
                         <button
                           onClick={() => setExportMenuOpen(!exportMenuOpen)}
-                          className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white font-medium rounded-xl transition-all duration-200 border border-white/10 hover:border-white/20 text-sm md:text-base"
+                          className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-xl transition-all duration-200 border border-zinc-200 dark:border-zinc-700 text-sm md:text-base"
                           title="Exportar órdenes"
                           aria-label="Exportar órdenes"
                         >
@@ -401,24 +401,24 @@ export function AdminPanel() {
                               className="fixed inset-0 z-10"
                               onClick={() => setExportMenuOpen(false)}
                             />
-                            <div className="absolute right-0 mt-2 w-52 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl z-20 overflow-hidden">
+                            <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-lg z-20 overflow-hidden">
                               <button
                                 onClick={handleExportCSV}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-left text-white hover:bg-white/10 transition-colors duration-200"
+                                className="w-full flex items-center gap-3 px-4 py-3 text-left text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200"
                               >
                                 <Download className="w-4 h-4" />
                                 Exportar CSV
                               </button>
                               <button
                                 onClick={handleExportPDF}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-left text-white hover:bg-white/10 transition-colors duration-200 border-t border-white/10"
+                                className="w-full flex items-center gap-3 px-4 py-3 text-left text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200 border-t border-zinc-200 dark:border-zinc-800"
                               >
                                 <FileText className="w-4 h-4" />
                                 Exportar PDF
                               </button>
                               <button
                                 onClick={handleExportExcel}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-left text-white hover:bg-white/10 transition-colors duration-200 border-t border-white/10"
+                                className="w-full flex items-center gap-3 px-4 py-3 text-left text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors duration-200 border-t border-zinc-200 dark:border-zinc-800"
                               >
                                 <FileSpreadsheet className="w-4 h-4" />
                                 Exportar Excel
@@ -429,7 +429,7 @@ export function AdminPanel() {
                       </div>
                       <button
                         onClick={() => setBulkUploadOpen(true)}
-                        className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white font-medium rounded-xl transition-all duration-200 border border-white/10 hover:border-white/20 text-sm md:text-base"
+                        className="flex items-center gap-2 px-3 md:px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium rounded-xl transition-all duration-200 border border-zinc-200 dark:border-zinc-700 text-sm md:text-base"
                         title="Carga masiva"
                         aria-label="Carga masiva"
                       >
@@ -478,7 +478,14 @@ export function AdminPanel() {
               }
             />
             <Route path="logs" element={<LogsPanel />} />
-            <Route path="settings" element={<SettingsPage />} />
+            <Route
+              path="settings"
+              element={
+                <Suspense fallback={<LoadingState />}>
+                  <SettingsPage />
+                </Suspense>
+              }
+            />
           </Routes>
         </main>
       </div>
@@ -494,7 +501,7 @@ export function AdminPanel() {
           {editingOrder && (
             <button
               onClick={() => setHistoryOpen(true)}
-              className="absolute -top-2 -right-2 z-10 flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors text-sm"
+              className="absolute -top-2 -right-2 z-10 flex items-center gap-2 px-3 py-1.5 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 rounded-lg transition-colors text-sm"
               title="Ver historial de cambios"
             >
               <History className="w-4 h-4" />

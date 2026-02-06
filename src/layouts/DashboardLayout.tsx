@@ -29,11 +29,11 @@ export const DashboardLayout = memo(function DashboardLayout() {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 flex">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex">
       {/* Mobile menu button */}
       <button
         onClick={() => setIsMobileOpen(!isMobileOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white rounded-xl border border-white/10 transition-all duration-200 shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-800 shadow-sm backdrop-blur-sm text-zinc-900 dark:text-zinc-100 transition-all duration-200"
         aria-label="Abrir menú"
       >
         {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -44,24 +44,24 @@ export const DashboardLayout = memo(function DashboardLayout() {
         className={`
           fixed lg:static inset-y-0 left-0 z-40
           ${isCollapsed ? 'w-20' : 'w-72'}
-          bg-white/5 backdrop-blur-xl border-r border-white/10
+          bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-r border-zinc-200 dark:border-zinc-800
           transform transition-all duration-300 ease-in-out
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           ${isCollapsed ? 'lg:w-20' : 'lg:w-72'}
         `}
       >
         <div className="h-full flex flex-col">
-          <div className="px-6 py-8 border-b border-white/10">
+          <div className="px-6 py-8 border-b border-zinc-200 dark:border-zinc-800">
             <div
               className={`flex items-center gap-4 transition-all duration-300 ${isCollapsed ? 'justify-center' : ''}`}
             >
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 flex-shrink-0">
-                <span className="text-white font-black text-xl">V</span>
+              <div className="w-10 h-10 bg-zinc-900 dark:bg-zinc-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span className="text-white dark:text-zinc-900 font-bold text-lg">V</span>
               </div>
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-xl font-bold text-white tracking-tight">Panel</h1>
-                  <p className="text-xs text-gray-400 mt-0.5">Control y estadísticas</p>
+                  <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 tracking-tight">Panel</h1>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Control y estadísticas</p>
                 </div>
               )}
             </div>
@@ -77,39 +77,32 @@ export const DashboardLayout = memo(function DashboardLayout() {
                   to={item.path}
                   onClick={() => setIsMobileOpen(false)}
                   className={`
-                    group relative flex items-center gap-4 px-4 py-3.5 rounded-xl
+                    group relative flex items-center gap-3 px-3 py-2.5 rounded-lg
                     transition-all duration-200
                     ${
                       active
-                        ? 'bg-white/10 text-white shadow-lg shadow-blue-500/10'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 font-medium'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
                     }
-                    ${isCollapsed ? 'justify-center px-3' : ''}
+                    ${isCollapsed ? 'justify-center px-2' : ''}
                   `}
                   title={isCollapsed ? item.label : undefined}
                 >
                   <Icon
-                    className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${active ? 'scale-110' : 'group-hover:scale-105'}`}
+                    className={`w-5 h-5 flex-shrink-0 ${active ? 'text-zinc-900 dark:text-zinc-100' : ''}`}
                   />
                   {!isCollapsed && (
-                    <span
-                      className={`font-medium text-sm transition-all duration-200 ${active ? 'font-semibold' : ''}`}
-                    >
-                      {item.label}
-                    </span>
-                  )}
-                  {active && !isCollapsed && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full" />
+                    <span className="text-sm">{item.label}</span>
                   )}
                 </Link>
               )
             })}
           </nav>
 
-          <div className="px-4 py-4 border-t border-white/10">
+          <div className="px-4 py-4 border-t border-zinc-200 dark:border-zinc-800">
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all duration-200"
+              className="w-full flex items-center justify-center gap-3 px-3 py-2.5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-lg transition-all duration-200"
               aria-label={isCollapsed ? 'Expandir menú' : 'Contraer menú'}
             >
               <ChevronLeft
@@ -122,7 +115,7 @@ export const DashboardLayout = memo(function DashboardLayout() {
 
         {isMobileOpen && (
           <div
-            className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 transition-opacity duration-300"
+            className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-30 transition-opacity duration-300"
             onClick={() => setIsMobileOpen(false)}
             aria-hidden
           />

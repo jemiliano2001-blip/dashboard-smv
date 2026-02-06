@@ -28,6 +28,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'Roboto', 'system-ui', 'sans-serif'],
+        mono: ['ui-monospace', 'JetBrains Mono', 'monospace'],
       },
       colors: {
         industrial: {

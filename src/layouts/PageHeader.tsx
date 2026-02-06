@@ -22,13 +22,13 @@ export function PageHeader({ title, description, breadcrumbs, actions }: PageHea
           <nav className="flex items-center gap-2 mb-3 text-sm overflow-x-auto" aria-label="Breadcrumb">
             {breadcrumbs.map((crumb, index) => (
               <div key={crumb.path} className="flex items-center gap-2 flex-shrink-0">
-                {index > 0 && <ChevronRight className="w-4 h-4 text-gray-500" aria-hidden />}
+                {index > 0 && <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-zinc-500" aria-hidden />}
                 <Link
                   to={crumb.path}
                   className={`transition-colors duration-200 whitespace-nowrap ${
                     index === breadcrumbs.length - 1
-                      ? 'text-white font-medium'
-                      : 'text-gray-400 hover:text-gray-300'
+                      ? 'text-zinc-900 dark:text-zinc-100 font-medium'
+                      : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
                   }`}
                 >
                   {crumb.label}
@@ -37,8 +37,8 @@ export function PageHeader({ title, description, breadcrumbs, actions }: PageHea
             ))}
           </nav>
         )}
-        <h1 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-1">{title}</h1>
-        {description && <p className="text-sm text-gray-400">{description}</p>}
+        <h1 className="text-2xl md:text-3xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight mb-1">{title}</h1>
+        {description && <p className="text-sm text-zinc-500 dark:text-zinc-400">{description}</p>}
       </div>
       {actions && <div className="flex items-center gap-2 md:gap-3 flex-wrap md:flex-nowrap md:ml-6">{actions}</div>}
     </div>

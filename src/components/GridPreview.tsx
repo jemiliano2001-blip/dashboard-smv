@@ -57,8 +57,8 @@ export function GridPreview({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Grid3x3 className="w-5 h-5 text-gray-400" />
-          <h3 className="text-sm font-bold text-gray-300">Vista Previa del Grid</h3>
+          <Grid3x3 className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
+          <h3 className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Vista Previa del Grid</h3>
         </div>
         <div
           className={`px-3 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-2 ${statusColors[capacityStatus.status]}`}
@@ -68,7 +68,7 @@ export function GridPreview({
         </div>
       </div>
 
-      <div className="p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+      <div className="p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-600">
         <div
           className="grid gap-2"
           style={{
@@ -79,33 +79,33 @@ export function GridPreview({
           {gridItems.map((i) => (
             <div
               key={i}
-              className="bg-slate-700/50 border border-slate-600 rounded p-2 flex flex-col items-center justify-center min-h-[60px]"
+              className="bg-zinc-200 dark:bg-zinc-700 border border-zinc-200 dark:border-zinc-600 rounded p-2 flex flex-col items-center justify-center min-h-[60px]"
             >
-              <div className="text-[10px] text-gray-500 font-mono">{mockOrder.po_number}</div>
-              <div className="text-[8px] text-gray-600 mt-1">{mockOrder.part_name}</div>
+              <div className="text-[10px] text-zinc-600 dark:text-zinc-400 font-mono">{mockOrder.po_number}</div>
+              <div className="text-[8px] text-zinc-500 dark:text-zinc-400 mt-1">{mockOrder.part_name}</div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="text-xs text-gray-400 space-y-1">
+      <div className="text-xs text-zinc-500 dark:text-zinc-400 space-y-1">
         <div className="flex justify-between">
           <span>Columnas:</span>
-          <span className="text-gray-300 font-medium">{currentColumns}</span>
+          <span className="text-zinc-700 dark:text-zinc-300 font-medium">{currentColumns}</span>
         </div>
         <div className="flex justify-between">
           <span>Filas:</span>
-          <span className="text-gray-300 font-medium">
+          <span className="text-zinc-700 dark:text-zinc-300 font-medium">
             {dynamicGridEnabled ? `${currentRows}+ (dinámico)` : currentRows}
           </span>
         </div>
         <div className="flex justify-between">
           <span>Capacidad:</span>
-          <span className="text-gray-300 font-medium">{capacity} tarjetas</span>
+          <span className="text-zinc-700 dark:text-zinc-300 font-medium">{capacity} tarjetas</span>
         </div>
         <div className="flex justify-between">
           <span>Órdenes por página:</span>
-          <span className="text-gray-300 font-medium">{ordersPerPage}</span>
+          <span className="text-zinc-700 dark:text-zinc-300 font-medium">{ordersPerPage}</span>
         </div>
       </div>
     </div>

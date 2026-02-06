@@ -51,7 +51,7 @@ export function AppearanceSettingsTab({
               className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                 settings.density === option.value
                   ? 'bg-blue-600/20 border-2 border-blue-600'
-                  : 'bg-slate-700/50 border-2 border-transparent hover:bg-slate-700'
+                  : 'bg-zinc-100 dark:bg-zinc-800 border-2 border-transparent hover:bg-zinc-200 dark:hover:bg-zinc-700'
               }`}
             >
               <input
@@ -62,18 +62,18 @@ export function AppearanceSettingsTab({
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   handleChange('density', e.target.value as Density)
                 }
-                className="mt-1 w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 focus:ring-2 focus:ring-blue-500"
+                className="mt-1 w-4 h-4 text-blue-600 bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 focus:ring-2 focus:ring-blue-500"
               />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-bold text-white">{option.label}</div>
+                  <div className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{option.label}</div>
                   {settings.density === option.value && (
                     <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
                       Activo
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-gray-400 mt-1">{option.description}</div>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{option.description}</div>
                 <div className="mt-2 flex gap-1">
                   {[1, 2, 3].map((i) => (
                     <div
@@ -90,7 +90,7 @@ export function AppearanceSettingsTab({
                       }}
                     />
                   ))}
-                  <span className="text-xs text-gray-500 ml-2">
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400 ml-2">
                     {option.value === 'compact' && 'Espaciado mínimo'}
                     {option.value === 'comfortable' && 'Espaciado medio'}
                     {option.value === 'spacious' && 'Espaciado amplio'}
@@ -110,7 +110,7 @@ export function AppearanceSettingsTab({
         icon={<Type className="w-5 h-5" />}
       >
         <div>
-          <label className="block text-sm font-bold text-gray-300 mb-2">
+          <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-2">
             Tamaño de Fuente
           </label>
           <select
@@ -118,7 +118,7 @@ export function AppearanceSettingsTab({
             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
               handleChange('fontSize', e.target.value as FontSize)
             }
-            className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {FONT_SIZE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -126,10 +126,10 @@ export function AppearanceSettingsTab({
               </option>
             ))}
           </select>
-          <div className="mt-3 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
-            <p className="text-xs text-gray-400 mb-2">Vista previa:</p>
+          <div className="mt-3 p-4 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">Vista previa:</p>
             <div
-              className={`text-white ${
+              className={`text-zinc-900 dark:text-zinc-100 ${
                 settings.fontSize === 'small'
                   ? 'text-xs'
                   : settings.fontSize === 'medium'
@@ -141,7 +141,7 @@ export function AppearanceSettingsTab({
               <p className="mt-1">Texto normal de ejemplo para ver el tamaño de fuente seleccionado.</p>
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
             Esto afecta el tamaño del texto en toda la aplicación. Pequeño = más contenido visible, Grande = mejor legibilidad.
           </p>
         </div>
@@ -161,7 +161,7 @@ export function AppearanceSettingsTab({
               className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                 settings.contrast === option.value
                   ? 'bg-blue-600/20 border-2 border-blue-600'
-                  : 'bg-slate-700/50 border-2 border-transparent hover:bg-slate-700'
+                  : 'bg-zinc-100 dark:bg-zinc-800 border-2 border-transparent hover:bg-zinc-200 dark:hover:bg-zinc-700'
               }`}
             >
               <input
@@ -172,29 +172,29 @@ export function AppearanceSettingsTab({
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   handleChange('contrast', e.target.value as Contrast)
                 }
-                className="mt-1 w-4 h-4 text-blue-600 bg-slate-700 border-slate-600 focus:ring-2 focus:ring-blue-500"
+                className="mt-1 w-4 h-4 text-blue-600 bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 focus:ring-2 focus:ring-blue-500"
               />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <div className="text-sm font-bold text-white">{option.label}</div>
+                  <div className="text-sm font-bold text-zinc-900 dark:text-zinc-100">{option.label}</div>
                   {settings.contrast === option.value && (
                     <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
                       Activo
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-gray-400 mt-1">{option.description}</div>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{option.description}</div>
                 <div className="mt-2 flex items-center gap-2">
                   <div
                     className={`px-3 py-1.5 rounded ${
                       option.value === 'normal'
-                        ? 'bg-slate-600 text-gray-300'
-                        : 'bg-slate-800 text-white border-2 border-white'
+                        ? 'bg-zinc-200 dark:bg-zinc-600 text-zinc-700 dark:text-zinc-300'
+                        : 'bg-zinc-800 text-zinc-100 border-2 border-zinc-200 dark:border-zinc-600'
                     }`}
                   >
                     <span className="text-xs font-bold">Ejemplo</span>
                   </div>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
                     {option.value === 'normal' && 'Contraste estándar para uso general'}
                     {option.value === 'high' && 'Alto contraste recomendado para accesibilidad'}
                   </span>
@@ -214,10 +214,10 @@ export function AppearanceSettingsTab({
       >
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <label className="block text-sm font-bold text-gray-300 mb-1">
+            <label className="block text-sm font-bold text-zinc-600 dark:text-zinc-400 mb-1">
               Habilitar Animaciones
             </label>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Activa transiciones suaves y efectos de animación en toda la aplicación
             </p>
           </div>
@@ -230,7 +230,7 @@ export function AppearanceSettingsTab({
               }
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-zinc-200 dark:bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-500/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
           </label>
         </div>
       </SettingsSection>

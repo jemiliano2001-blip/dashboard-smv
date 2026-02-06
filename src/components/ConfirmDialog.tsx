@@ -47,13 +47,13 @@ export function ConfirmDialog({
               variant === 'danger' ? 'text-red-500' : variant === 'warning' ? 'text-yellow-500' : 'text-blue-500'
             }`}
           />
-          <p className="text-gray-300 flex-1">{message}</p>
+          <p className="text-zinc-600 dark:text-zinc-300 flex-1">{message}</p>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-zinc-200 dark:border-zinc-700">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors"
+            className="px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 font-bold rounded-lg transition-colors"
           >
             {cancelText}
           </button>

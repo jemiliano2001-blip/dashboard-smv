@@ -192,7 +192,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     return (
       <Modal isOpen={isOpen} onClose={onClose} title="Configuración" size="xl">
         <div className="flex items-center justify-center py-12">
-          <div className="text-gray-400">Cargando configuraciones...</div>
+          <div className="text-zinc-500 dark:text-zinc-400">Cargando configuraciones...</div>
         </div>
       </Modal>
     )
@@ -232,8 +232,8 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
         />
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-4 mt-4 border-t border-slate-700">
-          <div className="flex items-center gap-2 text-sm text-gray-400">
+        <div className="flex items-center justify-between pt-4 mt-4 border-t border-zinc-200 dark:border-zinc-700">
+          <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
             {hasChanges && (
               <span className="px-2 py-1 bg-blue-600/20 text-blue-300 rounded">
                 Cambios sin guardar
@@ -248,7 +248,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
           <div className="flex items-center gap-3">
             <button
               onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex items-center gap-2 px-4 py-2 bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 font-bold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="Restablecer configuración a valores por defecto"
             >
               <RotateCcw className="w-4 h-4" />
@@ -257,7 +257,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             <button
               onClick={handleSave}
               disabled={!hasChanges}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label="Guardar configuración"
             >
               <Save className="w-4 h-4" />

@@ -135,7 +135,7 @@ export function AdvancedSettingsTab({
             </button>
           </div>
 
-          <p className="text-xs text-gray-400 mt-4">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-4">
             <strong>Nota:</strong> El backup se guarda automáticamente antes de restablecer. 
             Puedes recuperarlo desde la sección de Importar.
           </p>

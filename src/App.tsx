@@ -4,7 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { LoadingState } from './components/LoadingState'
 import { EnvSetupError } from './components/EnvSetupError'
-import { getEnvValidationResult } from './utils/supabase'
+import { getEnvValidationResult } from '@/lib/supabase'
 import { useAppearanceSettings } from './hooks/useAppearanceSettings'
 import { queryClient } from './lib/queryClient'
 import './styles/index.css'
@@ -12,7 +12,7 @@ import './styles/print.css'
 
 const TVDashboard = lazy(() => import('./components/TVDashboard').then(module => ({ default: module.TVDashboard })))
 const AdminPanel = lazy(() => import('./components/AdminPanel').then(module => ({ default: module.AdminPanel })))
-const StatsDashboard = lazy(() => import('./components/StatsDashboard').then(module => ({ default: module.StatsDashboard })))
+const StatsDashboard = lazy(() => import('@/features/analytics').then(m => ({ default: m.StatsDashboard })))
 const DashboardLayout = lazy(() => import('./layouts/DashboardLayout').then(module => ({ default: module.DashboardLayout })))
 
 const THEME_STORAGE_KEY = 'theme-preference'

@@ -164,9 +164,9 @@ export function LogsPanel({ className = '' }: { className?: string }) {
       case 'info':
         return <Info className="w-4 h-4 text-blue-400" />
       case 'debug':
-        return <AlertCircle className="w-4 h-4 text-gray-400" />
+        return <AlertCircle className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
       default:
-        return <Info className="w-4 h-4 text-gray-400" />
+        return <Info className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
     }
   }
 
@@ -181,18 +181,18 @@ export function LogsPanel({ className = '' }: { className?: string }) {
       case 'debug':
         return 'bg-gray-500/10 border-gray-500/50'
       default:
-        return 'bg-slate-700/50 border-slate-600'
+        return 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-600'
     }
   }
 
   return (
-    <div className={`bg-slate-800 rounded-lg border border-slate-700 p-6 h-full flex flex-col ${className}`}>
+    <div className={`bg-zinc-50 dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700 p-6 h-full flex flex-col ${className}`}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <FileText className="w-6 h-6 text-blue-400" />
+          <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
           <div>
-            <h2 className="text-2xl font-black text-white">Logs del Sistema</h2>
-            <p className="text-sm text-gray-400">Registros de actividad del sistema</p>
+            <h2 className="text-2xl font-black text-zinc-900 dark:text-zinc-100">Logs del Sistema</h2>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">Registros de actividad del sistema</p>
           </div>
         </div>
 
@@ -202,9 +202,9 @@ export function LogsPanel({ className = '' }: { className?: string }) {
               type="checkbox"
               checked={autoRefresh}
               onChange={(e) => setAutoRefresh(e.target.checked)}
-              className="w-4 h-4 rounded border-slate-600 bg-slate-700 text-blue-600"
+              className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-600 bg-zinc-100 dark:bg-zinc-800 text-blue-600"
             />
-            <span className="text-sm text-gray-300">Auto-refresh</span>
+            <span className="text-sm text-zinc-700 dark:text-zinc-300">Auto-refresh</span>
           </label>
           <button
             onClick={handleExport}
@@ -227,21 +227,21 @@ export function LogsPanel({ className = '' }: { className?: string }) {
 
       <div className="flex items-center gap-3 mb-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
           <input
             type="text"
             placeholder="Buscar en logs..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div className="relative">
-          <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-zinc-500 dark:text-zinc-400" />
           <select
             value={levelFilter}
             onChange={(e) => setLevelFilter(e.target.value as LogLevel | 'all')}
-            className="pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+            className="pl-10 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
           >
             <option value="all">Todos los niveles</option>
             <option value="error">Error</option>
@@ -252,9 +252,9 @@ export function LogsPanel({ className = '' }: { className?: string }) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto bg-slate-900 rounded-lg border border-slate-700 p-4 font-mono text-sm">
+      <div className="flex-1 overflow-auto bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 p-4 font-mono text-sm">
         {filteredLogs.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
+          <div className="text-center py-12 text-zinc-500 dark:text-zinc-400">
             <FileText className="w-16 h-16 mx-auto mb-4 opacity-50" />
             <p className="text-lg font-bold mb-2">No hay logs disponibles</p>
             <p className="text-sm">
@@ -272,30 +272,30 @@ export function LogsPanel({ className = '' }: { className?: string }) {
                   {getLevelIcon(log.level)}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs text-gray-400 font-bold">
+                      <span className="text-xs text-zinc-500 dark:text-zinc-400 font-bold">
                         {new Date(log.timestamp).toLocaleString('es-ES')}
                       </span>
-                      <span className="text-xs px-2 py-0.5 rounded bg-slate-700 text-gray-300 uppercase font-bold">
+                      <span className="text-xs px-2 py-0.5 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 uppercase font-bold">
                         {log.level}
                       </span>
                       {log.feature && (
-                        <span className="text-xs px-2 py-0.5 rounded bg-slate-700 text-gray-300">
+                        <span className="text-xs px-2 py-0.5 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
                           {log.feature}
                         </span>
                       )}
                       {log.action && (
-                        <span className="text-xs px-2 py-0.5 rounded bg-slate-700 text-gray-300">
+                        <span className="text-xs px-2 py-0.5 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300">
                           {log.action}
                         </span>
                       )}
                     </div>
-                    <p className="text-white mb-1 break-words">{log.message}</p>
+                    <p className="text-zinc-900 dark:text-zinc-100 mb-1 break-words">{log.message}</p>
                     {log.error && (
-                      <div className="mt-2 p-2 bg-slate-800/50 rounded border border-slate-700">
-                        <p className="text-red-400 font-bold text-xs mb-1">{log.error.name}</p>
-                        <p className="text-red-300 text-xs mb-1">{log.error.message}</p>
+                      <div className="mt-2 p-2 bg-zinc-200 dark:bg-zinc-800 rounded border border-zinc-200 dark:border-zinc-700">
+                        <p className="text-red-600 dark:text-red-400 font-bold text-xs mb-1">{log.error.name}</p>
+                        <p className="text-red-500 dark:text-red-300 text-xs mb-1">{log.error.message}</p>
                         {log.error.stack && (
-                          <pre className="text-xs text-gray-400 overflow-x-auto whitespace-pre-wrap">
+                          <pre className="text-xs text-zinc-500 dark:text-zinc-400 overflow-x-auto whitespace-pre-wrap">
                             {log.error.stack}
                           </pre>
                         )}
@@ -310,7 +310,7 @@ export function LogsPanel({ className = '' }: { className?: string }) {
         )}
       </div>
 
-      <div className="mt-4 text-xs text-gray-400 text-center">
+      <div className="mt-4 text-xs text-zinc-500 dark:text-zinc-400 text-center">
         Mostrando {filteredLogs.length} de {logs.length} logs
         {autoRefresh && <span className="ml-2 text-green-400">• Auto-refresh activo</span>}
       </div>

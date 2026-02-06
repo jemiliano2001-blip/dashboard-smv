@@ -117,12 +117,12 @@ export function ColumnManager({ isOpen, onClose, onColumnsChange }: ColumnManage
     <Modal isOpen={isOpen} onClose={onClose} title="Gestionar Columnas" size="md">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-300">
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
             Arrastra para reordenar o haz clic en el icono de ojo para mostrar/ocultar columnas
           </p>
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 rounded-lg transition-colors"
             title="Restablecer a valores por defecto"
           >
             <RotateCcw className="w-4 h-4" />
@@ -143,16 +143,16 @@ export function ColumnManager({ isOpen, onClose, onColumnsChange }: ColumnManage
                   onDragOver={(e) => handleDragOver(e, columns.indexOf(column))}
                   onDragEnd={handleDragEnd}
                   className={`
-                    flex items-center gap-3 p-3 bg-slate-700 rounded-lg cursor-move
-                    transition-all hover:bg-slate-600
+                    flex items-center gap-3 p-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg cursor-move
+                    transition-all hover:bg-zinc-200 dark:hover:bg-zinc-700
                     ${draggedIndex === columns.indexOf(column) ? 'opacity-50' : ''}
                   `}
                 >
-                  <GripVertical className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  <span className="flex-1 text-white font-medium">{column.label}</span>
+                  <GripVertical className="w-5 h-5 text-zinc-500 dark:text-zinc-400 flex-shrink-0" />
+                  <span className="flex-1 text-zinc-900 dark:text-zinc-100 font-medium">{column.label}</span>
                   <button
                     onClick={() => handleToggleVisibility(column.id)}
-                    className="p-1.5 text-gray-400 hover:text-white rounded transition-colors"
+                    className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded transition-colors"
                     title={column.visible ? 'Ocultar columna' : 'Mostrar columna'}
                   >
                     {column.visible ? (
@@ -166,8 +166,8 @@ export function ColumnManager({ isOpen, onClose, onColumnsChange }: ColumnManage
             })}
         </div>
 
-        <div className="pt-4 border-t border-slate-700">
-          <p className="text-sm text-gray-400">
+        <div className="pt-4 border-t border-zinc-200 dark:border-zinc-700">
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">
             Mostrando {visibleColumns.length} de {columns.length} columnas
           </p>
         </div>

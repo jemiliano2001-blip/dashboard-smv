@@ -51,10 +51,10 @@ export class SectionErrorBoundary extends Component<SectionErrorBoundaryProps, S
       }
 
       return (
-        <div className="bg-slate-800 border border-red-500/50 rounded-lg p-6 text-center">
+        <div className="bg-zinc-800 dark:bg-zinc-900 border border-red-500/50 rounded-lg p-6 text-center">
           <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-3" />
-          <h3 className="text-lg font-bold text-white mb-2">Error en {this.props.sectionName}</h3>
-          <p className="text-gray-400 text-sm mb-4">
+          <h3 className="text-lg font-bold text-zinc-100 mb-2">Error en {this.props.sectionName}</h3>
+          <p className="text-zinc-300 dark:text-zinc-400 text-sm mb-4">
             Ha ocurrido un error en esta sección. El resto de la aplicación sigue funcionando.
           </p>
           <button

@@ -2,8 +2,9 @@
  * Utility functions for exporting data
  */
 
-import jsPDF from 'jspdf'
-import * as XLSX from 'xlsx'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
+import * as XLSX from 'xlsx-js-style'
 import type { WorkOrder, Priority, Status } from '../types'
 
 const PRIORITY_LABELS: Record<Priority, string> = {
@@ -66,7 +67,8 @@ export function arrayToCSV<T extends Record<string, unknown>>(
  * @param filename - Name of the file (without extension)
  */
 export function downloadCSV(csvContent: string, filename = 'export'): void {
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const bom = '\uFEFF'
+  const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' })
   const link = document.createElement('a')
   const url = URL.createObjectURL(blob)
 
@@ -81,31 +83,53 @@ export function downloadCSV(csvContent: string, filename = 'export'): void {
   URL.revokeObjectURL(url)
 }
 
+const CSV_HEADERS = [
+  'Compañía',
+  'Número PO',
+  'Nombre Pieza',
+  'Cantidad Total',
+  'Cantidad Completada',
+  'Progreso %',
+  'Prioridad',
+  'Estado',
+  'Fecha Creación',
+] as const
+
 /**
  * Export work orders to CSV
  * @param orders - Array of work orders
  * @param filename - Optional filename (default: 'work_orders')
  */
 export function exportWorkOrdersToCSV(orders: WorkOrder[], filename = 'work_orders'): void {
-  const columns: (keyof WorkOrder)[] = [
-    'id',
-    'company_name',
-    'po_number',
-    'part_name',
-    'quantity_total',
-    'quantity_completed',
-    'priority',
-    'status',
-    'created_at',
-  ]
+  const escapeCSV = (value: unknown): string => {
+    if (value === null || value === undefined) return ''
+    const s = String(value)
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) return `"${s.replace(/"/g, '""')}"`
+    return s
+  }
 
-  // Format dates for CSV
-  const formattedOrders = orders.map((order) => ({
-    ...order,
-    created_at: order.created_at ? new Date(order.created_at).toLocaleString('es-ES') : '',
-  }))
+  const headerRow = CSV_HEADERS.join(',')
+  const dataRows = orders.map((order) => {
+    const progress =
+      order.quantity_total > 0
+        ? Math.round((order.quantity_completed / order.quantity_total) * 100)
+        : 0
+    const created =
+      order.created_at ? new Date(order.created_at).toLocaleString('es-ES') : ''
+    return [
+      escapeCSV(order.company_name || ''),
+      escapeCSV(order.po_number || ''),
+      escapeCSV(order.part_name || ''),
+      escapeCSV(order.quantity_total ?? 0),
+      escapeCSV(order.quantity_completed ?? 0),
+      escapeCSV(progress),
+      escapeCSV(PRIORITY_LABELS[order.priority] || order.priority),
+      escapeCSV(STATUS_LABELS[order.status] || order.status),
+      escapeCSV(created),
+    ].join(',')
+  })
 
-  const csvContent = arrayToCSV(formattedOrders, columns)
+  const csvContent = [headerRow, ...dataRows].join('\n')
   downloadCSV(csvContent, filename)
 }
 
@@ -132,31 +156,31 @@ export function exportWorkOrdersToPDF(
   filename = 'work_orders',
   options: { landscape?: boolean; includeSummary?: boolean } = {}
 ): void {
-  const { landscape = false, includeSummary = true } = options
+  const { landscape = true, includeSummary = true } = options
   const doc = new jsPDF(landscape ? 'landscape' : 'portrait', 'mm', 'a4')
-  
+
   const pageWidth = doc.internal.pageSize.getWidth()
   const pageHeight = doc.internal.pageSize.getHeight()
-  const margin = 15
-  const startY = 20
-  let yPos = startY
+  const tableMargin = 14
+  const tableWidth = pageWidth - 2 * tableMargin
+  let yPos = 20
 
-  // Header
+  // Header (centered)
   doc.setFontSize(18)
-  doc.setTextColor(59, 130, 246) // blue-500
-  doc.text('Reporte de Órdenes de Trabajo', margin, yPos)
+  doc.setTextColor(59, 130, 246)
+  doc.text('Reporte de Órdenes de Trabajo', pageWidth / 2, yPos, { align: 'center' })
   yPos += 10
 
   doc.setFontSize(10)
   doc.setTextColor(100, 100, 100)
-  doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, margin, yPos)
-  yPos += 15
+  doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, pageWidth / 2, yPos, { align: 'center' })
+  yPos += 12
 
   // Summary section
   if (includeSummary && orders.length > 0) {
     doc.setFontSize(12)
     doc.setTextColor(0, 0, 0)
-    doc.text('Resumen', margin, yPos)
+    doc.text('Resumen', tableMargin, yPos)
     yPos += 8
 
     doc.setFontSize(10)
@@ -166,89 +190,96 @@ export function exportWorkOrdersToPDF(
     const onHold = orders.filter((o) => o.status === 'hold').length
     const totalQuantity = orders.reduce((sum, o) => sum + (o.quantity_total || 0), 0)
     const completedQuantity = orders.reduce((sum, o) => sum + (o.quantity_completed || 0), 0)
-    const progress = totalQuantity > 0 ? Math.round((completedQuantity / totalQuantity) * 100) : 0
+    const progress =
+      totalQuantity > 0 ? Math.round((completedQuantity / totalQuantity) * 100) : 0
 
-    doc.text(`Total de órdenes: ${total}`, margin, yPos)
+    doc.text(`Total de órdenes: ${total}`, tableMargin, yPos)
     yPos += 6
-    doc.text(`En producción: ${inProduction}`, margin, yPos)
+    doc.text(`En producción: ${inProduction}`, tableMargin, yPos)
     yPos += 6
-    doc.text(`Completadas: ${completed}`, margin, yPos)
+    doc.text(`Completadas: ${completed}`, tableMargin, yPos)
     yPos += 6
-    doc.text(`En hold: ${onHold}`, margin, yPos)
+    doc.text(`En hold: ${onHold}`, tableMargin, yPos)
     yPos += 6
-    doc.text(`Progreso general: ${progress}% (${completedQuantity.toLocaleString()} / ${totalQuantity.toLocaleString()})`, margin, yPos)
-    yPos += 15
+    doc.text(
+      `Progreso general: ${progress}% (${completedQuantity.toLocaleString()} / ${totalQuantity.toLocaleString()})`,
+      tableMargin,
+      yPos
+    )
+    yPos += 12
   }
 
-  // Table headers
+  // Table with autoTable
   if (orders.length > 0) {
-    doc.setFontSize(11)
-    doc.setTextColor(0, 0, 0)
-    doc.setFont(undefined, 'bold')
-    
-    const headers = ['Compañía', 'PO', 'Pieza', 'Total', 'Completado', 'Prioridad', 'Estado']
-    const colWidths = landscape ? [35, 30, 50, 20, 20, 25, 30] : [40, 30, 40, 18, 18, 22, 25]
-    let xPos = margin
-
-    headers.forEach((header, index) => {
-      doc.text(header, xPos, yPos)
-      xPos += colWidths[index]
-    })
-
-    yPos += 8
-    doc.setFont(undefined, 'normal')
-    doc.setFontSize(9)
-
-    // Table rows
-    orders.forEach((order, index) => {
-      if (yPos > pageHeight - 30) {
-        doc.addPage()
-        yPos = startY
-      }
-
-      xPos = margin
-      const rowData = [
+    const headers = [
+      ['Compañía', 'PO', 'Pieza', 'Total', 'Hecho', 'Progr.%', 'Prioridad', 'Estado'],
+    ]
+    const body = orders.map((order) => {
+      const progress =
+        order.quantity_total > 0
+          ? Math.round((order.quantity_completed / order.quantity_total) * 100)
+          : 0
+      return [
         order.company_name || '',
         order.po_number || '',
         order.part_name || '',
-        String(order.quantity_total || 0),
-        String(order.quantity_completed || 0),
+        String(order.quantity_total ?? 0),
+        String(order.quantity_completed ?? 0),
+        String(progress),
         PRIORITY_LABELS[order.priority] || order.priority,
         STATUS_LABELS[order.status] || order.status,
       ]
+    })
 
-      rowData.forEach((cell, cellIndex) => {
-        const cellText = String(cell).substring(0, 30)
-        doc.text(cellText, xPos, yPos)
-        xPos += colWidths[cellIndex]
-      })
+    // Column widths sum to tableWidth; proportions: Compañía 14%, PO 10%, Pieza 32%, Total 6%, Hecho 7%, Progr 6%, Prioridad 12%, Estado 13%
+    const w = tableWidth
+    const colWidths = [
+      w * 0.14, // Compañía
+      w * 0.10, // PO
+      w * 0.32, // Pieza (flexible for long names)
+      w * 0.06, // Total
+      w * 0.07, // Hecho
+      w * 0.06, // Progr.%
+      w * 0.12, // Prioridad
+      w * 0.17, // Estado
+    ]
 
-      yPos += 6
-
-      // Add separator line
-      if (index < orders.length - 1) {
-        doc.setDrawColor(200, 200, 200)
-        doc.line(margin, yPos - 2, pageWidth - margin, yPos - 2)
-      }
+    autoTable(doc, {
+      head: headers,
+      body,
+      startY: yPos,
+      margin: { left: tableMargin, right: tableMargin },
+      tableWidth,
+      theme: 'striped',
+      headStyles: {
+        fillColor: [59, 130, 246],
+        textColor: 255,
+        fontStyle: 'bold',
+        halign: 'center',
+      },
+      columnStyles: Object.fromEntries(
+        colWidths.map((cw, i) => [i, { cellWidth: cw, minCellHeight: 6 }])
+      ),
+      styles: {
+        fontSize: 8,
+        cellPadding: 2,
+        overflow: 'linebreak',
+      },
+      didDrawPage: (data) => {
+        doc.setFontSize(8)
+        doc.setTextColor(100, 100, 100)
+        doc.text(
+          `Página ${data.pageNumber} de ${doc.getNumberOfPages()}`,
+          pageWidth / 2,
+          pageHeight - 10,
+          { align: 'center' }
+        )
+      },
     })
   } else {
     doc.setFontSize(10)
     doc.setTextColor(100, 100, 100)
-    doc.text('No hay órdenes para mostrar', margin, yPos)
-  }
-
-  // Footer
-  const totalPages = doc.getNumberOfPages()
-  for (let i = 1; i <= totalPages; i++) {
-    doc.setPage(i)
-    doc.setFontSize(8)
-    doc.setTextColor(100, 100, 100)
-    doc.text(
-      `Página ${i} de ${totalPages}`,
-      pageWidth / 2,
-      pageHeight - 10,
-      { align: 'center' }
-    )
+    doc.text('No hay órdenes para mostrar', tableMargin, yPos)
   }
 
   doc.save(`${filename}_${new Date().toISOString().split('T')[0]}.pdf`)
@@ -298,6 +329,13 @@ export function exportWorkOrdersToExcel(orders: WorkOrder[], filename = 'work_or
   ]
 
   const summarySheet = XLSX.utils.aoa_to_sheet(summaryData)
+  if (summarySheet['A1']) summarySheet['A1'].s = { font: { bold: true, sz: 14 } }
+  const metricHeaderStyle = {
+    font: { bold: true, color: { rgb: 'FFFFFF' } },
+    fill: { fgColor: { rgb: '3B82F6' } },
+  }
+  if (summarySheet['A5']) summarySheet['A5'].s = metricHeaderStyle
+  if (summarySheet['B5']) summarySheet['B5'].s = metricHeaderStyle
   XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumen')
 
   // Detailed data sheet
@@ -351,6 +389,19 @@ export function exportWorkOrdersToExcel(orders: WorkOrder[], filename = 'work_or
     dataSheet[cellAddress].s = headerStyle
   }
 
+  const progressCol = 6
+  for (let row = range.s.r + 1; row <= range.e.r; row++) {
+    const cellAddress = XLSX.utils.encode_cell({ r: row, c: progressCol })
+    const cell = dataSheet[cellAddress]
+    if (cell && typeof cell.v === 'number') {
+      cell.z = '0"%"'
+    }
+  }
+
+  if (dataSheet['!ref']) {
+    dataSheet['!autofilter'] = { ref: dataSheet['!ref'] }
+  }
+
   XLSX.utils.book_append_sheet(workbook, dataSheet, 'Órdenes Detalladas')
 
   // Priority distribution sheet
@@ -374,6 +425,13 @@ export function exportWorkOrdersToExcel(orders: WorkOrder[], filename = 'work_or
   ]
 
   const prioritySheet = XLSX.utils.aoa_to_sheet(priorityData)
+  const priHeaderStyle = {
+    font: { bold: true, color: { rgb: 'FFFFFF' } },
+    fill: { fgColor: { rgb: '3B82F6' } },
+  }
+  if (prioritySheet['A3']) prioritySheet['A3'].s = priHeaderStyle
+  if (prioritySheet['B3']) prioritySheet['B3'].s = priHeaderStyle
+  if (prioritySheet['C3']) prioritySheet['C3'].s = priHeaderStyle
   XLSX.utils.book_append_sheet(workbook, prioritySheet, 'Por Prioridad')
 
   // Company stats sheet
@@ -402,6 +460,13 @@ export function exportWorkOrdersToExcel(orders: WorkOrder[], filename = 'work_or
   ]
 
   const companySheet = XLSX.utils.aoa_to_sheet(companyData)
+  const companyHeaderStyle = {
+    font: { bold: true, color: { rgb: 'FFFFFF' } },
+    fill: { fgColor: { rgb: '3B82F6' } },
+  }
+  ;['A3', 'B3', 'C3', 'D3', 'E3'].forEach((addr) => {
+    if (companySheet[addr]) companySheet[addr].s = companyHeaderStyle
+  })
   XLSX.utils.book_append_sheet(workbook, companySheet, 'Por Compañía')
 
   XLSX.writeFile(workbook, `${filename}_${new Date().toISOString().split('T')[0]}.xlsx`)

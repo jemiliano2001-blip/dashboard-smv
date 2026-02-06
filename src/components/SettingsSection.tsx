@@ -41,17 +41,17 @@ export function SettingsSection({
   }, [isExpanded, storageKey])
 
   return (
-    <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+    <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-slate-700/50 transition-colors text-left"
+        className="w-full flex items-center justify-between p-4 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-left"
         aria-expanded={isExpanded}
       >
         <div className="flex items-center gap-3 flex-1">
-          {icon && <div className="text-blue-400">{icon}</div>}
+          {icon && <div className="text-blue-600 dark:text-blue-400">{icon}</div>}
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="text-lg font-bold text-white">{title}</h3>
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{title}</h3>
               {hasChanges && (
                 <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
                   Cambios sin guardar
@@ -62,14 +62,14 @@ export function SettingsSection({
               )}
             </div>
             {description && (
-              <p className="text-sm text-gray-400 mt-1">{description}</p>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">{description}</p>
             )}
           </div>
         </div>
         {isExpanded ? (
-          <ChevronDown className="w-5 h-5 text-gray-400" />
+          <ChevronDown className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
         ) : (
-          <ChevronRight className="w-5 h-5 text-gray-400" />
+          <ChevronRight className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
         )}
       </button>
       

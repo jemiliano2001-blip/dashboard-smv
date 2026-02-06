@@ -54,6 +54,7 @@ export default defineConfig(({ mode }) => {
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      xlsx: path.resolve(__dirname, './node_modules/xlsx-js-style'),
     },
   },
   server: {

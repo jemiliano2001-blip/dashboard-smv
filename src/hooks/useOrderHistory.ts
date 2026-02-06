@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../utils/supabase'
+import { supabase } from '@/lib/supabase'
 import { logger } from '../utils/logger'
 import type { WorkOrderHistory, OrderHistoryFilter } from '../types/history'
 

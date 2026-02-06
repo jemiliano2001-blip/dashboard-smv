@@ -87,20 +87,20 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
-          <div className="max-w-2xl w-full bg-slate-800 border-2 border-red-500 rounded-lg p-8 text-center">
+        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6">
+          <div className="max-w-2xl w-full bg-zinc-900 border-2 border-red-500 rounded-lg p-8 text-center">
             <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h1 className="text-3xl font-black text-white mb-4">Algo salió mal</h1>
-            <p className="text-gray-400 mb-6">
+            <h1 className="text-3xl font-black text-zinc-100 mb-4">Algo salió mal</h1>
+            <p className="text-zinc-300 dark:text-zinc-400 mb-6">
               Ha ocurrido un error inesperado en la aplicación. Por favor, recarga la página.
             </p>
 
             {this.props.showDetails && this.state.error && (
-              <details className="mt-6 text-left bg-slate-900 rounded p-4 mb-6">
+              <details className="mt-6 text-left bg-zinc-900 rounded p-4 mb-6">
                 <summary className="cursor-pointer text-red-400 font-bold mb-2">
                   Detalles del error
                 </summary>
-                <pre className="text-xs text-gray-400 overflow-auto max-h-64">
+                <pre className="text-xs text-zinc-300 dark:text-zinc-400 overflow-auto max-h-64">
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>
