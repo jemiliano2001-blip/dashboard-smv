@@ -24,12 +24,16 @@
     "lint": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --fix",
     "validate": "npm run typecheck && npm run lint && npm run test:ci",
-    "prepare": "husky"
+    "prepare": "husky",
+    "update-types": "node scripts/update-supabase-types.js"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --max-warnings 0",
-      "bash -c 'tsc --noEmit'"
+      "tsc --noEmit"
+    ],
+    "*.{json,md,html,css}": [
+      "prettier --write"
     ]
   },
   "dependencies": {
@@ -74,6 +78,7 @@
     "typescript": "^5.9.3",
     "vite": "^5.0.8",
     "vite-plugin-node-polyfills": "^0.25.0",
-    "vitest": "^4.0.17"
+    "vitest": "^4.0.17",
+    "prettier": "^3.4.2"
   }
 }

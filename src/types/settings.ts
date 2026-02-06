@@ -101,6 +101,3 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
 
 // Backward compatibility
 export const DEFAULT_SETTINGS: DashboardSettings = DEFAULT_DASHBOARD_SETTINGS
-
-// Export all settings types
-export type { DashboardSettings, AdminPanelSettings, AppearanceSettings, AppSettings, SettingsPreset, SortColumn, SortOrder, Density, FontSize, Contrast, ColumnDensity, TextSize }
