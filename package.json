@@ -23,7 +23,14 @@
     "typecheck": "tsc --noEmit",
     "lint": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --fix",
-    "validate": "npm run typecheck && npm run lint && npm run test:ci"
+    "validate": "npm run typecheck && npm run lint && npm run test:ci",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --max-warnings 0",
+      "bash -c 'tsc --noEmit'"
+    ]
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
@@ -57,10 +64,13 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.4.0",
+    "lint-staged": "^16.2.7",
     "postcss": "^8.4.32",
     "serve": "^14.2.1",
     "tailwindcss": "^3.4.0",
+    "terser": "^5.46.0",
     "typescript": "^5.9.3",
     "vite": "^5.0.8",
     "vite-plugin-node-polyfills": "^0.25.0",
