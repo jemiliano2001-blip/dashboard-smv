@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { logger } from '@/utils/logger'
@@ -22,10 +22,8 @@ interface UseWorkOrdersReturn {
  */
 export function useWorkOrders(): UseWorkOrdersReturn {
   const queryClient = useQueryClient()
-  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null)
   const realtimeRetryCountRef = useRef(0)
   const realtimeDisabledRef = useRef(false)
-  const isCleaningUpRef = useRef(false)
 
   const {
     data: workOrders = [],
@@ -42,95 +40,53 @@ export function useWorkOrders(): UseWorkOrdersReturn {
   useEffect(() => {
     if (realtimeDisabledRef.current) return
 
-    if (channelRef.current) {
-      isCleaningUpRef.current = true
-      try {
-        const channel = channelRef.current as unknown as { unsubscribe?: () => void }
-        if (channel && typeof channel.unsubscribe === 'function') {
-          channel.unsubscribe()
-        }
-        supabase.removeChannel(channelRef.current)
-      } catch {
-        // Ignore
-      } finally {
-        channelRef.current = null
-        setTimeout(() => {
-          isCleaningUpRef.current = false
-        }, 100)
-      }
-    }
-
-    try {
-      const channel = supabase
-        .channel('work_orders_changes', {
-          config: { broadcast: { self: false }, presence: { key: '' } },
-        })
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'work_orders' },
-          async () => {
-            await queryClient.invalidateQueries({ queryKey: workOrderKeys.all })
-          }
-        )
-        .subscribe((status, err) => {
-          logger.debug('Realtime channel status', {
-            feature: 'work_orders',
-            action: 'realtime_status',
-            status,
-            error: err?.message,
-          })
-
-          if (status === 'SUBSCRIBED') {
-            realtimeRetryCountRef.current = 0
-            realtimeDisabledRef.current = false
-          } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
-            if (status === 'CLOSED' && isCleaningUpRef.current) return
-            realtimeRetryCountRef.current += 1
-            if (realtimeRetryCountRef.current >= MAX_REALTIME_RETRIES) {
-              realtimeDisabledRef.current = true
-            }
-          }
-        })
-
-      channelRef.current = channel
-    } catch (error) {
-      logger.error('Error setting up realtime channel', error as Error, {
-        feature: 'work_orders',
-        action: 'setup_realtime',
+    const channel = supabase
+      .channel('work_orders_changes', {
+        config: { broadcast: { self: false }, presence: { key: '' } },
       })
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'work_orders' },
+        async () => {
+          await queryClient.invalidateQueries({ queryKey: workOrderKeys.all })
+        }
+      )
+      .subscribe((status, err) => {
+        logger.debug('Realtime channel status', {
+          feature: 'work_orders',
+          action: 'realtime_status',
+          status,
+          error: err?.message,
+        })
+
+        if (status === 'SUBSCRIBED') {
+          realtimeRetryCountRef.current = 0
+          realtimeDisabledRef.current = false
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          realtimeRetryCountRef.current += 1
+          if (realtimeRetryCountRef.current >= MAX_REALTIME_RETRIES) {
+            realtimeDisabledRef.current = true
+          }
+        }
+      })
+
+    return () => {
+      channel.unsubscribe()
     }
   }, [queryClient])
 
-  useEffect(() => {
-    return () => {
-      if (channelRef.current) {
-        isCleaningUpRef.current = true
-        try {
-          const channel = channelRef.current as unknown as { unsubscribe?: () => void }
-          if (channel && typeof channel.unsubscribe === 'function') {
-            channel.unsubscribe()
-          }
-          supabase.removeChannel(channelRef.current)
-        } catch {
-          // Ignore
-        } finally {
-          channelRef.current = null
-          isCleaningUpRef.current = false
-        }
-      }
-    }
-  }, [])
-
-  const ordersByCompany = workOrders.reduce<Record<string, WorkOrder[]>>((acc, order) => {
-    const company = order.company_name || 'Sin Compañía'
-    if (!acc[company]) acc[company] = []
-    acc[company].push(order)
-    return acc
-  }, {})
-
-  const companies = Object.keys(ordersByCompany)
-    .filter((company) => ordersByCompany[company]?.length > 0)
-    .sort()
+  const { ordersByCompany, companies } = useMemo(() => {
+    const byCompany = workOrders.reduce<Record<string, WorkOrder[]>>((acc, order) => {
+      const company = order.company_name || 'Sin Compañía'
+      if (!acc[company]) acc[company] = []
+      acc[company].push(order)
+      return acc
+    }, {})
+    const companyList = Object.keys(byCompany)
+      .filter((company) => byCompany[company]?.length > 0)
+      .sort()
+    return { ordersByCompany: byCompany, companies: companyList }
+  }, [workOrders])
 
   const error = queryError instanceof Error ? queryError.message : queryError ? String(queryError) : null
 

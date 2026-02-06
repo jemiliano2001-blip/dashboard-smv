@@ -42,6 +42,28 @@ export function formatDate(dateString: string | null | undefined): string {
   return `${parts.day} ${monthName} ${parts.year}`
 }
 
+/**
+ * Convert ISO 8601 string to YYYY-MM-DD using local timezone.
+ * Avoids UTC-to-local shift (e.g. "2024-01-15T00:00:00Z" stays Jan 15 in GMT-5).
+ */
+export function isoToLocalDateString(iso: string): string {
+  const d = new Date(iso)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+/**
+ * Convert YYYY-MM-DD to ISO 8601 using noon local time.
+ * Avoids DST edge cases when storing in Supabase.
+ */
+export function localDateStringToISO(dateStr: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const date = new Date(y!, m! - 1, d!, 12, 0, 0, 0)
+  return date.toISOString()
+}
+
 export function formatDateCompact(dateString: string | null | undefined): string {
   if (!dateString) return 'N/A'
   const parts = parseCalendarParts(dateString)

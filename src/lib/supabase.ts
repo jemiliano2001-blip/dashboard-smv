@@ -90,10 +90,6 @@ function initializeSupabase(): SupabaseClient {
           eventsPerSecond: 10,
         },
       },
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
     })
   }
 

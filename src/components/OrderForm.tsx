@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, FormEvent, ChangeEvent, useMemo } from 'react'
-import { Save, X, Trash2, AlertCircle, CheckCircle } from 'lucide-react'
+import { Save, X, Trash2, AlertCircle, AlertTriangle, CheckCircle } from 'lucide-react'
 import { useKeyboardShortcut } from '../hooks/useKeyboardShortcuts'
 import { ConfirmDialog } from './ConfirmDialog'
 import { VALIDATION_MESSAGES, INPUT_LIMITS } from '../utils/constants'
+import { isoToLocalDateString, localDateStringToISO } from '../utils/dateFormatter'
 import { debounce } from '../utils/debounce'
 import type { WorkOrder, WorkOrderFormData, Priority, Status } from '../types'
 
@@ -38,6 +39,10 @@ interface ValidationErrors {
   quantity_total?: string
   quantity_completed?: string
   created_at?: string
+}
+
+interface ValidationWarnings {
+  quantity_completed?: string
 }
 
 export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }: OrderFormProps) {
@@ -94,9 +99,6 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
         if (typeof value === 'number' && value < 0) {
           return VALIDATION_MESSAGES.QUANTITY_COMPLETED_INVALID
         }
-        if (typeof value === 'number' && value > formData.quantity_total) {
-          return VALIDATION_MESSAGES.QUANTITY_EXCEEDS_TOTAL
-        }
         return undefined
       default:
         return undefined
@@ -129,6 +131,14 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
   }
 
   const errors = useMemo(() => validateForm(formData), [formData])
+
+  const validationWarnings = useMemo((): ValidationWarnings => {
+    const w: ValidationWarnings = {}
+    if (formData.quantity_completed > formData.quantity_total) {
+      w.quantity_completed = VALIDATION_MESSAGES.QUANTITY_EXCEEDS_TOTAL
+    }
+    return w
+  }, [formData.quantity_completed, formData.quantity_total])
 
   const autoSaveDraft = useMemo(
     () =>
@@ -180,14 +190,8 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
   })
 
   useEffect(() => {
-    const getDateString = (date?: string): string => {
-      if (date) {
-        const iso = new Date(date).toISOString()
-        return iso.split('T')[0] || ''
-      }
-      const iso = new Date().toISOString()
-      return iso.split('T')[0] || ''
-    }
+    const getDefaultDateString = (): string =>
+      isoToLocalDateString(new Date().toISOString())
 
     if (order) {
       setFormData({
@@ -198,7 +202,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
         quantity_completed: order.quantity_completed ?? 0,
         priority: (order.priority ?? 'normal') as 'low' | 'normal' | 'high' | 'critical',
         status: (order.status ?? 'scheduled') as 'scheduled' | 'production' | 'quality' | 'hold',
-        created_at: getDateString(order.created_at),
+        created_at: order.created_at ? isoToLocalDateString(order.created_at) : getDefaultDateString(),
       })
       setIsDirty(false)
       setTouchedFields(new Set())
@@ -218,7 +222,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
             quantity_completed: 0,
             priority: 'normal',
             status: 'scheduled',
-            created_at: getDateString(),
+            created_at: getDefaultDateString(),
           })
         }
       } else {
@@ -230,7 +234,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
           quantity_completed: 0,
           priority: 'normal',
           status: 'scheduled',
-          created_at: getDateString(),
+          created_at: getDefaultDateString(),
         })
       }
       setIsDirty(false)
@@ -271,7 +275,11 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
         localStorage.removeItem(DRAFT_STORAGE_KEY)
       }
       setIsDirty(false)
-      onSave(formData)
+      const payload: WorkOrderFormData = {
+        ...formData,
+        created_at: localDateStringToISO(formData.created_at),
+      }
+      onSave(payload)
     } else {
       setTouchedFields(new Set(Object.keys(formData)))
       setValidationErrors(allErrors)
@@ -284,10 +292,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
 
   const handleConfirmClearDraft = () => {
     localStorage.removeItem(DRAFT_STORAGE_KEY)
-    const getDateString = (): string => {
-      const iso = new Date().toISOString()
-      return iso.split('T')[0] || ''
-    }
+    const defaultDate = isoToLocalDateString(new Date().toISOString())
     setFormData({
       company_name: '',
       po_number: '',
@@ -296,7 +301,7 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
       quantity_completed: 0,
       priority: 'normal',
       status: 'scheduled',
-      created_at: getDateString(),
+      created_at: defaultDate,
     })
     setValidationErrors({})
     setTouchedFields(new Set())
@@ -514,11 +519,12 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
                 onChange={handleChange}
                 onBlur={handleBlur}
                 min="0"
-                max={formData.quantity_total}
                 required
                 className={`w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-800 border rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 transition-all duration-200 ${
                   touchedFields.has('quantity_completed') && validationErrors.quantity_completed
                     ? 'border-red-500/50 focus:ring-red-500/50'
+                    : validationWarnings.quantity_completed
+                    ? 'border-amber-500/50 focus:ring-amber-500/50'
                     : touchedFields.has('quantity_completed') && !validationErrors.quantity_completed
                     ? 'border-green-500/50 focus:ring-green-500/50'
                     : 'border-zinc-200 dark:border-zinc-600 focus:ring-blue-500/50 focus:border-blue-500'
@@ -529,6 +535,8 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                   {validationErrors.quantity_completed ? (
                     <AlertCircle className="w-5 h-5 text-red-500" />
+                  ) : validationWarnings.quantity_completed ? (
+                    <AlertTriangle className="w-5 h-5 text-amber-500" />
                   ) : (
                     <CheckCircle className="w-5 h-5 text-green-500" />
                   )}
@@ -539,6 +547,12 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
               <p className="mt-2 text-xs text-red-400 flex items-center gap-1.5 font-medium">
                 <AlertCircle className="w-3.5 h-3.5" />
                 {validationErrors.quantity_completed}
+              </p>
+            )}
+            {validationWarnings.quantity_completed && (
+              <p className="mt-2 text-xs text-amber-500 flex items-center gap-1.5 font-medium">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                {validationWarnings.quantity_completed}
               </p>
             )}
           </div>
