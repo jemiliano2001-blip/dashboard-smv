@@ -71,22 +71,24 @@ export function useWorkOrders(): UseWorkOrdersReturn {
       })
 
     return () => {
-      channel.unsubscribe()
+      supabase.removeChannel(channel)
     }
   }, [queryClient])
 
-  const { ordersByCompany, companies } = useMemo(() => {
-    const byCompany = workOrders.reduce<Record<string, WorkOrder[]>>((acc, order) => {
+  const ordersByCompany = useMemo(() => {
+    return workOrders.reduce<Record<string, WorkOrder[]>>((acc, order) => {
       const company = order.company_name || 'Sin Compañía'
       if (!acc[company]) acc[company] = []
       acc[company].push(order)
       return acc
     }, {})
-    const companyList = Object.keys(byCompany)
-      .filter((company) => byCompany[company]?.length > 0)
-      .sort()
-    return { ordersByCompany: byCompany, companies: companyList }
   }, [workOrders])
+
+  const companies = useMemo(() => {
+    return Object.keys(ordersByCompany)
+      .filter((company) => ordersByCompany[company]?.length > 0)
+      .sort()
+  }, [ordersByCompany])
 
   const error = queryError instanceof Error ? queryError.message : queryError ? String(queryError) : null
 
