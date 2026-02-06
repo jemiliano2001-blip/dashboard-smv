@@ -79,24 +79,28 @@ export default defineConfig(({ mode }) => {
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor'
-            }
-            if (id.includes('@supabase/supabase-js')) {
-              return 'supabase-vendor'
-            }
-            if (id.includes('lucide-react')) {
-              return 'icons-vendor'
-            }
-            if (id.includes('recharts') || id.includes('d3-')) {
-              return 'charts-vendor'
-            }
-            if (id.includes('jspdf') || id.includes('html2canvas') || id.includes('xlsx')) {
-              return 'export-vendor'
-            }
-            return 'vendor'
+          if (!id.includes('node_modules/')) return
+          if (id.includes('react-dom') || id.includes('react-router-dom') || id.includes('/react/')) {
+            return 'react-vendor'
           }
+          if (
+            id.includes('lucide-react') ||
+            id.includes('framer-motion') ||
+            id.includes('clsx') ||
+            id.includes('tailwind-merge')
+          ) {
+            return 'ui-vendor'
+          }
+          if (id.includes('@tanstack/react-query') || id.includes('@supabase/supabase-js')) {
+            return 'data-vendor'
+          }
+          if (id.includes('recharts') || id.includes('d3-')) {
+            return 'charts-vendor'
+          }
+          if (id.includes('jspdf') || id.includes('html2canvas') || id.includes('xlsx')) {
+            return 'export-vendor'
+          }
+          return 'vendor'
         },
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',

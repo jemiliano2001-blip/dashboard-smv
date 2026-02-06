@@ -26,13 +26,13 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcuts, enabled = tru
       if (event.altKey) parts.push('alt')
       if (event.shiftKey) parts.push('shift')
       
-      const key = event.key.toLowerCase()
-      if (key !== 'control' && key !== 'meta' && key !== 'alt' && key !== 'shift') {
+      const key = event.key?.toLowerCase() ?? ''
+      if (key && key !== 'control' && key !== 'meta' && key !== 'alt' && key !== 'shift') {
         parts.push(key)
       }
 
       const combination = parts.join('+')
-      const callback = shortcuts[combination] || shortcuts[event.key.toLowerCase()]
+      const callback = shortcuts[combination] || (key ? shortcuts[key] : undefined)
 
       if (callback) {
         event.preventDefault()
