@@ -1,10 +1,11 @@
-import { useState, ChangeEvent } from 'react'
+import { useState } from 'react'
 import { SettingsSection } from './SettingsSection'
 import { SettingsPresetManager } from './SettingsPresetManager'
 import { SettingsImportExport } from './SettingsImportExport'
 import { ConfirmDialog } from './ConfirmDialog'
 import { AlertTriangle, RotateCcw, Database } from 'lucide-react'
 import type { AppSettings, SettingsPreset } from '../types'
+import { DEFAULT_APP_SETTINGS } from '../types/settings'
 
 interface AdvancedSettingsTabProps {
   settings: AppSettings
@@ -53,7 +54,6 @@ export function AdvancedSettingsTab({
     localStorage.setItem('settings-backup', JSON.stringify(backup))
 
     // Reset to defaults
-    const { DEFAULT_APP_SETTINGS } = require('../types/settings')
     onChange(DEFAULT_APP_SETTINGS)
 
     // Clear localStorage

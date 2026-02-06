@@ -53,7 +53,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary showDetails={import.meta.env.DEV}>
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <Suspense fallback={<LoadingState />}>
             <Routes>
               <Route path="/" element={<Outlet />}>

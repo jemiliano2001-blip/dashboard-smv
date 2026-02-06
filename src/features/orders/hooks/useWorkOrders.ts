@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useCallback } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { logger } from '@/utils/logger'
@@ -92,14 +92,16 @@ export function useWorkOrders(): UseWorkOrdersReturn {
 
   const error = queryError instanceof Error ? queryError.message : queryError ? String(queryError) : null
 
+  const stableRefetch = useCallback(async () => {
+    await refetch()
+  }, [refetch])
+
   return {
     workOrders,
     ordersByCompany,
     companies,
     loading,
     error,
-    refetch: async () => {
-      await refetch()
-    },
+    refetch: stableRefetch,
   }
 }

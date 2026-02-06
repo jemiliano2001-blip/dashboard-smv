@@ -118,10 +118,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Trigger para capturar cambios automáticamente
+-- Trigger para INSERT y UPDATE (AFTER: la fila ya existe)
 DROP TRIGGER IF EXISTS work_orders_history_trigger ON work_orders;
 CREATE TRIGGER work_orders_history_trigger
-  AFTER INSERT OR UPDATE OR DELETE ON work_orders
+  AFTER INSERT OR UPDATE ON work_orders
+  FOR EACH ROW
+  EXECUTE FUNCTION log_work_order_changes();
+
+-- Trigger para DELETE (BEFORE: la fila aún existe para satisfacer el FK)
+DROP TRIGGER IF EXISTS work_orders_history_delete_trigger ON work_orders;
+CREATE TRIGGER work_orders_history_delete_trigger
+  BEFORE DELETE ON work_orders
   FOR EACH ROW
   EXECUTE FUNCTION log_work_order_changes();
 
@@ -153,12 +160,14 @@ ALTER TABLE work_orders_history ENABLE ROW LEVEL SECURITY;
 
 -- Política permisiva: anon puede leer y escribir (comportamiento actual del dashboard).
 -- Para restringir: reemplaza por políticas que usen auth.uid() o limiten anon a SELECT.
+DROP POLICY IF EXISTS "work_orders_anon_all" ON work_orders;
 CREATE POLICY "work_orders_anon_all"
   ON work_orders FOR ALL
   TO anon
   USING (true)
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "work_orders_history_anon_all" ON work_orders_history;
 CREATE POLICY "work_orders_history_anon_all"
   ON work_orders_history FOR ALL
   TO anon

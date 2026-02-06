@@ -2,27 +2,19 @@ import { useState, useEffect, useMemo } from 'react'
 import { RefreshCw, WifiOff } from 'lucide-react'
 import { useWorkOrders } from '@/features/orders'
 import { useFullscreen } from '../hooks/useFullscreen'
+import { useTVPageRotation } from '../hooks/useTVPageRotation'
 import { useSettings } from './SettingsPanel'
 import { Header } from './Header'
 import { Footer } from './Footer'
 import { OrderCard } from './OrderCard'
 import { SkeletonCard } from './SkeletonCard'
-import { TIMINGS } from '../utils/constants'
 import { weightedSort } from '../utils/weightedSort'
 import type { WorkOrder } from '../types'
-
-interface TVView {
-  companyName: string
-  orders: WorkOrder[]
-  pageIndex: number
-  totalPages: number
-}
 
 export function TVDashboard() {
   const { workOrders, ordersByCompany, companies, loading, error, refetch } = useWorkOrders()
   const { enterFullscreen } = useFullscreen()
   const settings = useSettings()
-  const [currentViewIndex, setCurrentViewIndex] = useState(0)
   const [isOnline, setIsOnline] = useState(
     typeof navigator !== 'undefined' ? navigator.onLine : true
   )
@@ -38,57 +30,31 @@ export function TVDashboard() {
     }
   }, [])
 
-  const ordersPerPage = settings.ordersPerPage ?? 20
-  const pageRotationMs = (settings.pageRotation ?? TIMINGS.PAGE_ROTATION / 1000) * 1000
-
-  const views = useMemo((): TVView[] => {
-    const result: TVView[] = []
-    for (const company of companies) {
-      const raw = ordersByCompany[company] || []
-      const sorted = weightedSort(raw)
-      const totalPages = Math.max(1, Math.ceil(sorted.length / ordersPerPage))
-      for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
-        const start = pageIndex * ordersPerPage
-        const orders = sorted.slice(start, start + ordersPerPage)
-        result.push({ companyName: company, orders, pageIndex: pageIndex + 1, totalPages })
-      }
-    }
-    return result
-  }, [companies, ordersByCompany, ordersPerPage])
-
-  const currentView = useMemo(() => views[currentViewIndex] ?? null, [views, currentViewIndex])
-  const currentCompanyOrders = currentView?.orders ?? []
-
   const tvGridColumns =
     settings.columnDensity === 'auto'
       ? 5
       : Number(settings.columnDensity) || 5
+  const ordersPerPage = settings.ordersPerPage ?? 20
+  const rowsPerScreen = Math.max(1, Math.ceil(ordersPerPage / tvGridColumns))
+  const itemsPerPage = tvGridColumns * rowsPerScreen
+
+  const sortedOrdersByCompany = useMemo(() => {
+    const out: Record<string, WorkOrder[]> = {}
+    for (const company of companies) {
+      out[company] = weightedSort(ordersByCompany[company] ?? [])
+    }
+    return out
+  }, [companies, ordersByCompany])
+
+  const { currentCompany, currentItems, currentPage, totalPages } = useTVPageRotation({
+    items: sortedOrdersByCompany,
+    companies,
+    rotationInterval: (settings.companyRotation ?? 30) * 1000,
+    itemsPerPage,
+  })
 
   const fitToScreen = settings.fitToScreen ?? true
   const gridAutoRows = fitToScreen ? 'minmax(0, 1fr)' : 'minmax(96px, 1fr)'
-
-  useEffect(() => {
-    if (views.length === 0) return
-
-    const timer = setInterval(() => {
-      setCurrentViewIndex((prev) => (prev + 1) % views.length)
-    }, pageRotationMs)
-
-    return () => clearInterval(timer)
-  }, [views.length, pageRotationMs])
-
-  useEffect(() => {
-    if (views.length > 0 && currentViewIndex >= views.length) {
-      setCurrentViewIndex(0)
-    }
-  }, [views.length, currentViewIndex])
-
-  useEffect(() => {
-    if (currentView && currentView.orders.length === 0 && views.length > 1) {
-      const nextIndex = (currentViewIndex + 1) % views.length
-      setCurrentViewIndex(nextIndex)
-    }
-  }, [currentView, currentViewIndex, views.length])
 
   // Auto-refresco según configuración
   useEffect(() => {
@@ -188,17 +154,15 @@ export function TVDashboard() {
         </div>
       )}
       <Header
-        companyName={currentView?.companyName ?? null}
+        companyName={currentCompany}
         pageLabel={
-          currentView && currentView.totalPages > 1
-            ? `Página ${currentView.pageIndex} de ${currentView.totalPages}`
-            : null
+          totalPages > 1 ? `Página ${currentPage} de ${totalPages}` : null
         }
       />
 
       <main className="flex-1 min-h-0 flex flex-col overflow-hidden p-[clamp(1rem,2vh,2rem)] relative z-10">
         <div
-          key={`${currentView?.companyName ?? ''}-${currentView?.pageIndex ?? 0}`}
+          key={`${currentCompany ?? ''}-${currentPage}`}
           className={fitToScreen ? 'grid gap-[clamp(4px,0.5vh,12px)] flex-1 min-h-0 transition-all duration-500 ease-in-out animate-fade-in-smooth' : 'flex-1 min-h-0 overflow-y-scroll'}
         >
           <div
@@ -208,7 +172,7 @@ export function TVDashboard() {
               gridAutoRows: gridAutoRows,
             }}
           >
-            {currentCompanyOrders.map((order, index) => (
+            {currentItems.map((order, index) => (
               <div
                 key={order.id}
                 className="min-w-0 min-h-0 animate-slide-up-smooth"

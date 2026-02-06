@@ -21,7 +21,7 @@ export function PageHeader({ title, description, breadcrumbs, actions }: PageHea
         {breadcrumbs && breadcrumbs.length > 0 && (
           <nav className="flex items-center gap-2 mb-3 text-sm overflow-x-auto" aria-label="Breadcrumb">
             {breadcrumbs.map((crumb, index) => (
-              <div key={crumb.path} className="flex items-center gap-2 flex-shrink-0">
+              <div key={`${crumb.path}-${crumb.label}`} className="flex items-center gap-2 flex-shrink-0">
                 {index > 0 && <ChevronRight className="w-4 h-4 text-zinc-400 dark:text-zinc-500" aria-hidden />}
                 <Link
                   to={crumb.path}

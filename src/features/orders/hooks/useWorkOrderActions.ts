@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   createWorkOrder,
@@ -285,7 +286,7 @@ export function useWorkOrderActions(): UseWorkOrderActionsReturn {
 
   const success = null
 
-  const clearMessages = () => {}
+  const clearMessages = useCallback(() => {}, [])
 
   return {
     createOrder,

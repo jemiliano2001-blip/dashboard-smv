@@ -17,8 +17,13 @@
     "deploy:storage": "node scripts/deploy-storage.js",
     "upload:storage": "npm run build && node scripts/deploy-storage.js",
     "test": "vitest",
+    "test:ci": "vitest run",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "validate": "npm run typecheck && npm run lint && npm run test:ci"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
@@ -43,15 +48,21 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
     "cross-env": "^7.0.3",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
     "jsdom": "^27.4.0",
     "postcss": "^8.4.32",
     "serve": "^14.2.1",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.9.3",
     "vite": "^5.0.8",
+    "vite-plugin-node-polyfills": "^0.25.0",
     "vitest": "^4.0.17"
   }
 }
