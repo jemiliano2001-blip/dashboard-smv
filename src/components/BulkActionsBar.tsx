@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCircle, X, AlertCircle, MoreHorizontal } from 'lucide-react'
+import { CheckCircle, X } from 'lucide-react'
 import { useBulkActions } from '../hooks/useBulkActions'
 import { Modal } from './Modal'
 import { ConfirmDialog } from './ConfirmDialog'

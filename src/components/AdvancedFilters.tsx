@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react'
+import { useState, type ChangeEvent } from 'react'
 import { Filter, X, Save, Calendar } from 'lucide-react'
 import { Modal } from './Modal'
 import type { Priority, Status } from '../types'

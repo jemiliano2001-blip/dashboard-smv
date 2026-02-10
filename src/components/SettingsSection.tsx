@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { ChevronDown, ChevronRight, AlertCircle } from 'lucide-react'
 
 interface SettingsSectionProps {
@@ -58,7 +58,7 @@ export function SettingsSection({
                 </span>
               )}
               {warning && (
-                <AlertCircle className="w-4 h-4 text-yellow-500" title={warning} />
+                <span title={warning}><AlertCircle className="w-4 h-4 text-yellow-500" aria-hidden /></span>
               )}
             </div>
             {description && (

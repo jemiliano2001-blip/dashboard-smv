@@ -1,4 +1,4 @@
-import { Keyboard, X } from 'lucide-react'
+import { Keyboard } from 'lucide-react'
 import { Modal } from './Modal'
 
 interface KeyboardShortcutsModalProps {

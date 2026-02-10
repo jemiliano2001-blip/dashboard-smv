@@ -77,10 +77,13 @@ const getSizeClass = (baseSize: string, textSize: TextSize = 'normal'): string =
     'text-xs': ['text-xs', 'text-sm', 'text-base'],
     'text-sm': ['text-sm', 'text-base', 'text-lg'],
   }
-  const sizes = sizeMap[baseSize] || [baseSize, baseSize, baseSize]
-  if (multiplier >= 1.3) return sizes[2]
-  if (multiplier >= 1.1) return sizes[1]
-  return sizes[0]
+  const sizes = sizeMap[baseSize] ?? [baseSize, baseSize, baseSize]
+  const a = sizes[0]
+  const b = sizes[1]
+  const c = sizes[2]
+  if (multiplier >= 1.3 && c) return c
+  if (multiplier >= 1.1 && b) return b
+  return a ?? baseSize
 }
 
 function renderPartName(partName: string | null | undefined): React.ReactNode {
@@ -105,7 +108,7 @@ function OrderCardComponent({ order, scaleFactor, tvMode = false, textSize = 'no
   const {
     po_number,
     part_name,
-    company_name,
+    company_name: _company_name,
     quantity_total,
     quantity_completed,
     status,

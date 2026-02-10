@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { logger } from '../utils/logger'
 
 // Support VITE_, REACT_APP_, and NEXT_PUBLIC_ prefixes for compatibility

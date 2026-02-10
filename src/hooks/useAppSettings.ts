@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { logger } from '../utils/logger'
 import type { AppSettings } from '../types'
-import { 
+import {
   DEFAULT_APP_SETTINGS,
   DEFAULT_DASHBOARD_SETTINGS,
+  DEFAULT_APPEARANCE_SETTINGS,
+  type AppearanceSettings,
 } from '../types/settings'
 
 const DASHBOARD_SETTINGS_KEY = 'tv-dashboard-settings'
@@ -19,12 +21,14 @@ export function useAppSettings() {
       const saved = localStorage.getItem(APP_SETTINGS_KEY)
       if (saved) {
         const parsed = JSON.parse(saved) as Partial<AppSettings>
-        const rawAppearance = parsed.appearance as Record<string, unknown> | undefined
-        const { theme: _theme, ...appearanceRest } = rawAppearance ?? {}
+        const rawAppearance = parsed.appearance as Partial<AppearanceSettings> | undefined
+        const appearance: AppearanceSettings = rawAppearance
+          ? { ...DEFAULT_APPEARANCE_SETTINGS, ...rawAppearance }
+          : DEFAULT_APPEARANCE_SETTINGS
         setSettings({
           dashboard: { ...DEFAULT_APP_SETTINGS.dashboard, ...parsed.dashboard },
           adminPanel: { ...DEFAULT_APP_SETTINGS.adminPanel, ...parsed.adminPanel },
-          appearance: { ...DEFAULT_APP_SETTINGS.appearance, ...appearanceRest },
+          appearance,
         })
       } else {
         // Try to migrate old dashboard settings
@@ -57,9 +61,7 @@ export function useAppSettings() {
 
       if ('dashboard' in newSettings) {
         const s = newSettings as AppSettings
-        const raw = s.appearance as Record<string, unknown>
-        const { theme: _t, ...appearanceRest } = raw
-        setSettings({ ...s, appearance: appearanceRest })
+        setSettings(s)
       } else {
         setSettings({
           ...DEFAULT_APP_SETTINGS,
@@ -74,10 +76,7 @@ export function useAppSettings() {
 
   const saveSettings = (newSettings: AppSettings) => {
     setSettings(newSettings)
-    const raw = newSettings.appearance as Record<string, unknown>
-    const { theme: _theme, ...appearanceRest } = raw
-    const toPersist = { ...newSettings, appearance: appearanceRest }
-    localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(toPersist))
+    localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(newSettings))
     window.dispatchEvent(new CustomEvent('settings-changed', { detail: newSettings }))
   }
 

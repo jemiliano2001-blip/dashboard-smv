@@ -3,7 +3,7 @@ import { History, Calendar, Filter, X } from 'lucide-react'
 import { useOrderHistory } from '../hooks/useOrderHistory'
 import { Modal } from './Modal'
 import { formatDate } from '../utils/dateFormatter'
-import type { WorkOrderHistory, ChangeType } from '../types/history'
+import type { ChangeType } from '../types/history'
 import type { WorkOrder } from '../types'
 
 interface OrderHistoryProps {
@@ -54,7 +54,7 @@ export function OrderHistory({ order, isOpen, onClose }: OrderHistoryProps) {
         changedField: filters.changedField || undefined,
       })
     }
-  }, [isOpen, order.id, filters])
+  }, [isOpen, order.id, filters, fetchHistory])
 
   const clearFilters = () => {
     setFilters({

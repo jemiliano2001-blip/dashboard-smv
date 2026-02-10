@@ -1,11 +1,5 @@
-import { useState, ReactNode } from 'react'
-import { 
-  Tv, 
-  Settings, 
-  Palette, 
-  Sliders, 
-  CheckCircle 
-} from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+import { CheckCircle } from 'lucide-react'
 
 export type SettingsTabId = 'dashboard' | 'admin' | 'appearance' | 'advanced'
 

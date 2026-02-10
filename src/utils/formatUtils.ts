@@ -285,7 +285,7 @@ export function parsePartNameForDisplay(raw: string): PartToken[][] {
       if (m.index > lastIndex) {
         tokens.push({ type: 'text', value: item.slice(lastIndex, m.index) })
       }
-      tokens.push({ type: 'quantity', value: parseInt(m[1], 10) })
+      tokens.push({ type: 'quantity', value: parseInt(m[1] ?? '', 10) })
       lastIndex = re.lastIndex
     }
     if (lastIndex < item.length) {

@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react'
+import { type ChangeEvent } from 'react'
 import { SettingsSection } from './SettingsSection'
 import { Type, Eye, Zap, ZapOff } from 'lucide-react'
 import type { AppearanceSettings, Density, FontSize, Contrast } from '../types'

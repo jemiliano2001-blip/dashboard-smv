@@ -9,11 +9,7 @@ import {
   fetchWorkOrderById,
 } from '@/features/orders/api/workOrders'
 import { workOrderKeys } from '@/features/orders/api/queryKeys'
-import {
-  VALIDATION_MESSAGES,
-  ERROR_MESSAGES,
-  VALID_STATUSES,
-} from '@/utils/constants'
+import { ERROR_MESSAGES, VALID_STATUSES } from '@/utils/constants'
 import { validateWorkOrderFormData, validateWorkOrderId } from '@/utils/validationSchemas'
 import { sanitizeEnum } from '@/utils/sanitize'
 import type { WorkOrder, WorkOrderFormData, Priority, Status } from '@/types'

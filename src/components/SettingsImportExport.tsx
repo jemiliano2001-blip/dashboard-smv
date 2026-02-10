@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react'
+import { useState, type ChangeEvent } from 'react'
 import { Download, Upload, AlertTriangle, CheckCircle } from 'lucide-react'
 import { SettingsSection } from './SettingsSection'
 import { Modal } from './Modal'

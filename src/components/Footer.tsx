@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react'
-import { Package, Cog, CheckCircle, AlertCircle, LucideIcon } from 'lucide-react'
+import { Package, Cog, CheckCircle, AlertCircle, type LucideIcon } from 'lucide-react'
 import type { WorkOrder } from '../types'
 
 interface FooterProps {

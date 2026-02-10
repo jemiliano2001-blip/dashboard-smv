@@ -1,4 +1,4 @@
-import { memo, ChangeEvent } from 'react'
+import { memo, type ChangeEvent } from 'react'
 import { Search, Filter, Download } from 'lucide-react'
 import type { Priority, Status } from '../../types'
 import { PRIORITY_LABELS, STATUS_LABELS } from './types'

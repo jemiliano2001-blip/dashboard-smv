@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
-import { FileText, Search, Download, RefreshCw, Filter, X, AlertCircle, Info, AlertTriangle, XCircle } from 'lucide-react'
+import { FileText, Search, Download, Filter, X, AlertCircle, Info, AlertTriangle, XCircle } from 'lucide-react'
 import { ConfirmDialog } from './ConfirmDialog'
-import { logger } from '../utils/logger'
-import { exportWorkOrdersToCSV } from '../utils/exportUtils'
 
 type LogLevel = 'info' | 'warn' | 'error' | 'debug'
 
@@ -81,8 +79,8 @@ export function LogsPanel({ className = '' }: { className?: string }) {
   }, [])
 
   useEffect(() => {
-    if (autoRefresh) {
-      const interval = setInterval(() => {
+    if (!autoRefresh) return () => {}
+    const interval = setInterval(() => {
         setLogs((prev) => {
           const saved = localStorage.getItem(STORAGE_KEY)
           if (saved) {
@@ -95,10 +93,8 @@ export function LogsPanel({ className = '' }: { className?: string }) {
           }
           return prev
         })
-      }, 2000)
-
-      return () => clearInterval(interval)
-    }
+    }, 2000)
+    return () => clearInterval(interval)
   }, [autoRefresh])
 
   useEffect(() => {

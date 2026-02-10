@@ -18,7 +18,7 @@ type Breakpoint = 'sm' | 'md' | 'lg' | 'xl' | '2xl'
  */
 export function calculateElasticScale(
   orderCount: number,
-  maxOrders: number = 20,
+  _maxOrders: number = 20,
   breakpoint?: Breakpoint
 ): ElasticScale {
   let scaleFactor: number

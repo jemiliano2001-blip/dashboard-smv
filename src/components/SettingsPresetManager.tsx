@@ -1,5 +1,5 @@
-import { useState, useEffect, ChangeEvent } from 'react'
-import { Save, Trash2, Copy, Download, Upload, X } from 'lucide-react'
+import { useState, useEffect, type ChangeEvent } from 'react'
+import { Save, Trash2, Copy, Download } from 'lucide-react'
 import { Modal } from './Modal'
 import { ConfirmDialog } from './ConfirmDialog'
 import type { SettingsPreset, AppSettings } from '../types'

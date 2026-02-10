@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo, useEffect, ChangeEvent } from 'react'
+import { useState, useRef, useCallback, useMemo, type ChangeEvent } from 'react'
 import { List } from 'react-window'
 import { useKeyboardShortcut } from '../../hooks/useKeyboardShortcuts'
 import { useAppSettings } from '../../hooks/useAppSettings'
@@ -182,13 +182,9 @@ export function OrderTable({
     setSelectedOrders(new Set())
   }, [])
 
-  const handleRowContextMenu = useCallback((e: React.MouseEvent<HTMLTableRowElement>, order: WorkOrder) => {
+  const handleRowContextMenu = useCallback((order: WorkOrder, position: { x: number; y: number }) => {
     if (!settings.adminPanel.quickActionsEnabled) return
-    e.preventDefault()
-    setQuickMenuOpen({
-      order,
-      position: { x: e.clientX, y: e.clientY },
-    })
+    setQuickMenuOpen({ order, position })
   }, [settings.adminPanel.quickActionsEnabled])
 
   const allSelected = filteredOrders.length > 0 && selectedOrders.size === filteredOrders.length

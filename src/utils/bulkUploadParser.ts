@@ -47,7 +47,6 @@ const NORMALIZED_HEADERS: Record<string, string> = {
   'num orden': 'Orden',
   'orden ': 'Orden',
   'no. de orden': 'Orden',
-  'número de orden': 'Orden',
   'numero parte': 'NumeroParte',
   ref: 'Orden',
   referencia: 'Orden',
@@ -301,6 +300,7 @@ async function readExcelFile(file: File): Promise<Record<string, unknown>[]> {
   const firstSheetName = workbook.SheetNames[0]
   if (!firstSheetName) return []
   const sheet = workbook.Sheets[firstSheetName]
+  if (!sheet) return []
   const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' })
   return rows.map((r) => normalizeRowKeys(r))
 }
@@ -311,9 +311,9 @@ function readCsvString(csvText: string): Record<string, unknown>[] {
     skipEmptyLines: true,
   })
   if (parsed.errors.length) {
-    throw new Error(parsed.errors.map((e) => e.message).join('; '))
+    throw new Error(parsed.errors.map((e: { message: string }) => e.message).join('; '))
   }
-  return (parsed.data || []).map((r) => normalizeRowKeys(r))
+  return (parsed.data || []).map((r: Record<string, unknown>) => normalizeRowKeys(r))
 }
 
 export async function parseBulkUploadFile(
@@ -348,13 +348,14 @@ export async function parseBulkUploadFile(
   let lastCompania = ''
   for (let i = 0; i < rawRows.length; i++) {
     const raw = rawRows[i]
+    if (!raw) continue
     const hasAny = Object.values(raw).some((v) => v !== undefined && v !== null && v !== '')
     if (!hasAny) continue
 
     const ordenCell = getCell(raw, 'Orden', 'Orden ')
     const firstCell = getFirstNonEmptyCell(raw)
-    const ordenFallback = ordenCell || firstCell || lastOrden
-    if (ordenCell || firstCell) lastOrden = normalizePoNumber(ordenCell || firstCell)
+    const ordenFallback = ordenCell ?? firstCell ?? lastOrden
+    if (ordenCell || firstCell) lastOrden = normalizePoNumber(ordenCell ?? firstCell ?? '')
     const effectiveOrden = ordenFallback
     const rawWithOrden: Record<string, unknown> = effectiveOrden ? { ...raw, Orden: effectiveOrden } : raw
 
@@ -379,6 +380,7 @@ export async function parseBulkUploadFile(
   const grouped: WorkOrderCreateInput[] = []
   for (const list of groupByKey.values()) {
     const first = list[0]
+    if (!first) continue
     const partNamesSeen = new Set<string>()
     const partNames: string[] = []
     for (const row of list) {

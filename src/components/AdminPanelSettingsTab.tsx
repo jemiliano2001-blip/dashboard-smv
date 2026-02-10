@@ -1,14 +1,7 @@
-import { ChangeEvent } from 'react'
+import { type ChangeEvent } from 'react'
 import { SettingsSection } from './SettingsSection'
 import { SettingsField, ValidatedInput } from './SettingsField'
-import { 
-  List, 
-  RefreshCw, 
-  Layers, 
-  MousePointerClick,
-  BarChart3,
-  ArrowUpDown
-} from 'lucide-react'
+import { List, RefreshCw, Layers, MousePointerClick, BarChart3 } from 'lucide-react'
 import { formatSeconds, secondsToMs, msToSeconds } from '../utils/formatUtils'
 import type { AdminPanelSettings, SortColumn, SortOrder } from '../types'
 

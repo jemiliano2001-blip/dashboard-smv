@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { logger } from '../utils/logger'
-import type { Priority, Status, WorkOrder } from '../types'
+import type { Priority, Status } from '../types'
 
 interface BulkUpdateResult {
   success: boolean

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { Save, RotateCcw } from 'lucide-react'
+import { Save, RotateCcw, Tv, Settings, Palette, Sliders } from 'lucide-react'
 import { SettingsTabs } from './SettingsTabs'
 import { SettingsSearch } from './SettingsSearch'
 import { DashboardSettingsTab } from './DashboardSettingsTab'
@@ -10,7 +10,6 @@ import { ConfirmDialog } from './ConfirmDialog'
 import { useAppSettings } from '../hooks/useAppSettings'
 import { DEFAULT_APP_SETTINGS } from '../types/settings'
 import { searchSettings } from '../utils/settingsSearch'
-import { Tv, Settings, Palette, Sliders } from 'lucide-react'
 import type { AppSettings } from '../types'
 
 export function SettingsPage() {
@@ -180,6 +179,7 @@ export function SettingsPage() {
     ]
 
     return allTabs.filter((tab) => searchResults.matchingTabs.has(tab.id))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handlers are stable in effect
   }, [localSettings, searchQuery, searchResults.matchingTabs, hasChanges])
 
   if (loading) {

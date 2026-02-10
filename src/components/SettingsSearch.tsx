@@ -1,4 +1,4 @@
-import { useState, useMemo, ChangeEvent } from 'react'
+import { useState, type ChangeEvent } from 'react'
 import { Search, X } from 'lucide-react'
 
 interface SettingsSearchProps {

@@ -50,7 +50,7 @@ export function useTVPageRotation<T>({
   }, [pageIndex, totalPages])
 
   useEffect(() => {
-    if (companies.length === 0) return
+    if (companies.length === 0) return () => {}
 
     const interval = setInterval(() => {
       lastTickRef.current = Date.now()
@@ -78,7 +78,7 @@ export function useTVPageRotation<T>({
     if (rotationInterval <= 0) return 0
     const elapsed = Date.now() - lastTickRef.current
     return Math.max(0, Math.min(rotationInterval, rotationInterval - (elapsed % rotationInterval)))
-  }, [rotationInterval, pageIndex, currentCompany])
+  }, [rotationInterval])
 
   return {
     currentCompany,

@@ -1,7 +1,7 @@
 import { useMemo, useState, lazy, Suspense } from 'react'
 import { useWorkOrders } from '@/features/orders'
 import { PageHeader } from '../layouts/PageHeader'
-import { TrendingUp, Package, Clock, CheckCircle, AlertTriangle, BarChart3, Calendar } from 'lucide-react'
+import { TrendingUp, Package, Clock, CheckCircle, AlertTriangle, Calendar } from 'lucide-react'
 import { PRIORITY_COLORS } from '../utils/constants'
 import type { Priority } from '../types'
 

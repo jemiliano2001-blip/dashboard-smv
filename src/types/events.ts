@@ -2,7 +2,6 @@
  * Type definitions for event handlers and callbacks
  */
 
-import type { WorkOrder, Priority, Status } from './workOrder'
 
 /**
  * Generic event handler type

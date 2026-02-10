@@ -55,10 +55,10 @@ export const workOrderSchema = z
       .int('La cantidad completada debe ser un número entero')
       .min(0, 'La cantidad completada debe ser mayor o igual a 0'),
     priority: z.enum(['low', 'normal', 'high', 'critical'], {
-      errorMap: () => ({ message: 'Prioridad inválida' }),
+      error: 'Prioridad inválida',
     }),
     status: z.enum(['scheduled', 'production', 'quality', 'hold'], {
-      errorMap: () => ({ message: 'Estado inválido' }),
+      error: 'Estado inválido',
     }),
     created_at: z.string().refine(isValidDateString, 'La fecha de creación no es válida'),
   })
@@ -78,8 +78,9 @@ function zodErrorsToRecord(
   const result: Record<string, string> = {}
   const flat = error.flatten().fieldErrors
   for (const [key, messages] of Object.entries(flat)) {
-    if (messages && messages.length > 0 && typeof messages[0] === 'string') {
-      result[key] = messages[0]
+    const arr = Array.isArray(messages) ? messages : []
+    if (arr.length > 0 && typeof arr[0] === 'string') {
+      result[key] = arr[0]
     }
   }
   return result

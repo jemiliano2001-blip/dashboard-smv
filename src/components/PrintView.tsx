@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useWorkOrders } from '@/features/orders'
 import { formatDate } from '../utils/dateFormatter'
 import { formatPoForDisplay } from '../utils/formatUtils'
 import type { WorkOrder } from '../types'

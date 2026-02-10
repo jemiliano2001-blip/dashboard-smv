@@ -1,9 +1,9 @@
-import { memo, ChangeEvent } from 'react'
+import { memo, type ChangeEvent } from 'react'
 import { Edit, Trash2, MoreVertical } from 'lucide-react'
 import { formatDate } from '../../utils/dateFormatter'
 import { formatPoForDisplay } from '../../utils/formatUtils'
 import { PRIORITY_COLORS } from '../../utils/constants'
-import type { WorkOrder, Status, Priority } from '../../types'
+import type { WorkOrder } from '../../types'
 import { PRIORITY_LABELS, STATUS_LABELS } from './types'
 
 interface OrderTableRowProps {

@@ -1,4 +1,4 @@
-import { ReactNode, ChangeEvent } from 'react'
+import type { ReactNode } from 'react'
 import { AlertCircle, CheckCircle, Info, AlertTriangle } from 'lucide-react'
 
 export type ValidationState = 'valid' | 'warning' | 'error' | 'info' | null
@@ -40,21 +40,6 @@ export function SettingsField({
         return <Info className="w-4 h-4 text-blue-500" />
       default:
         return null
-    }
-  }
-
-  const getValidationColor = () => {
-    switch (validationState) {
-      case 'valid':
-        return 'border-green-500 focus:ring-green-500'
-      case 'warning':
-        return 'border-yellow-500 focus:ring-yellow-500'
-      case 'error':
-        return 'border-red-500 focus:ring-red-500'
-      case 'info':
-        return 'border-blue-500 focus:ring-blue-500'
-      default:
-        return 'border-zinc-200 dark:border-zinc-600 focus:ring-blue-500'
     }
   }
 

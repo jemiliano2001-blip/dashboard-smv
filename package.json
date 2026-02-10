@@ -20,7 +20,7 @@
     "test:ci": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
     "lint": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --fix",
     "validate": "npm run typecheck && npm run lint && npm run test:ci",
@@ -29,8 +29,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --max-warnings 0",
-      "tsc --noEmit"
+      "eslint --max-warnings 0"
     ],
     "*.{json,md,html,css}": [
       "prettier --write"
@@ -60,25 +59,26 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
-    "@typescript-eslint/eslint-plugin": "^8.18.0",
-    "@typescript-eslint/parser": "^8.18.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "globals": "^15.12.0",
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
     "lint-staged": "^16.2.7",
     "postcss": "^8.4.32",
+    "prettier": "^3.4.2",
     "serve": "^14.2.1",
     "tailwindcss": "^3.4.0",
     "terser": "^5.46.0",
     "typescript": "^5.9.3",
-    "vite": "^5.0.8",
-    "vite-plugin-node-polyfills": "^0.25.0",
-    "vitest": "^4.0.17",
-    "prettier": "^3.4.2"
+    "typescript-eslint": "^8.18.0",
+    "vite": "^7.3.1",
+    "vite-plugin-node-polyfills": "^0.2.0",
+    "vitest": "^4.0.17"
   }
 }

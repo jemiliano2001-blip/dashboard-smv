@@ -1,8 +1,6 @@
 import { useMemo, memo } from 'react'
 import { BarChart3, TrendingUp, Clock, AlertTriangle } from 'lucide-react'
 import type { WorkOrder } from '../types'
-import { PRIORITY_COLORS } from '../utils/constants'
-
 interface AdminMetricsProps {
   orders: WorkOrder[]
 }

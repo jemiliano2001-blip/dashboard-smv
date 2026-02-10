@@ -1,4 +1,17 @@
 /**
+ * @file workOrder.ts
+ * @description Definición manual de tipos para las Órdenes de Trabajo.
+ *
+ * TODO: FUTURE MIGRATION
+ * Estos tipos son manuales. Para sincronizar con Supabase:
+ * 1. Ejecutar: npm run update-types (requiere SUPABASE_PROJECT_ID en .env)
+ * 2. Importar Database desde './supabase'
+ * 3. Reemplazar WorkOrder con:
+ *    type WorkOrder = Database['public']['Tables']['work_orders']['Row']
+ * 4. Ajustar Priority, Status y tipos derivados según el esquema generado
+ */
+
+/**
  * Priority levels for work orders
  */
 export type Priority = 'low' | 'normal' | 'high' | 'critical'

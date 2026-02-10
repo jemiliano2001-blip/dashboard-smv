@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { logger } from '../utils/logger'
 import type { WorkOrderHistory, OrderHistoryFilter } from '../types/history'
@@ -15,7 +15,7 @@ export function useOrderHistory(): UseOrderHistoryReturn {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchHistory = async (orderId: string, filters?: OrderHistoryFilter) => {
+  const fetchHistory = useCallback(async (orderId: string, filters?: OrderHistoryFilter) => {
     try {
       setLoading(true)
       setError(null)
@@ -58,7 +58,7 @@ export function useOrderHistory(): UseOrderHistoryReturn {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   return {
     history,

@@ -38,7 +38,7 @@ export function useWorkOrders(): UseWorkOrdersReturn {
   })
 
   useEffect(() => {
-    if (realtimeDisabledRef.current) return
+    if (realtimeDisabledRef.current) return () => {}
 
     const channel = supabase
       .channel('work_orders_changes', {
@@ -86,7 +86,7 @@ export function useWorkOrders(): UseWorkOrdersReturn {
 
   const companies = useMemo(() => {
     return Object.keys(ordersByCompany)
-      .filter((company) => ordersByCompany[company]?.length > 0)
+      .filter((company) => (ordersByCompany[company] ?? []).length > 0)
       .sort()
   }, [ordersByCompany])
 

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { MoreVertical, Copy, Edit, Trash2, ArrowUp, ArrowDown, RotateCw } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import { Copy, Edit, Trash2, ArrowUp, ArrowDown, RotateCw } from 'lucide-react'
 import type { WorkOrder, Priority, Status } from '../types'
 
 interface QuickActionsMenuProps {

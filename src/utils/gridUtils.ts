@@ -166,8 +166,9 @@ export function generateGridClasses(
   dynamicMode: boolean = false
 ): string {
   // Use card size preset if available, otherwise use manual grid columns (legacy)
-  const gridColumns = settings.cardSize
-    ? getCardSizeGridColumns(settings.cardSize)
+  const legacy = settings as Partial<DashboardSettings> & { cardSize?: CardSize; gridColumns?: GridBreakpoints }
+  const gridColumns = legacy.cardSize
+    ? getCardSizeGridColumns(legacy.cardSize)
     : (settings as Partial<DashboardSettings & { gridColumns?: GridBreakpoints }>).gridColumns || LEGACY_GRID_DEFAULTS.gridColumns
 
   if (dynamicMode) {

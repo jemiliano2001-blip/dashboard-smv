@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react'
+import { type ChangeEvent } from 'react'
 import { SettingsSection } from './SettingsSection'
 import { SettingsField, ValidatedInput, SettingsSlider, SettingsSwitch, SettingsSelector } from './SettingsField'
 import { Clock, Tv, Layout, RefreshCw } from 'lucide-react'

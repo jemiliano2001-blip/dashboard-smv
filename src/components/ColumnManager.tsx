@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Settings, Eye, EyeOff, GripVertical, RotateCcw } from 'lucide-react'
+import { Eye, EyeOff, GripVertical, RotateCcw } from 'lucide-react'
 import { Modal } from './Modal'
 
 export type ColumnId = 
@@ -82,8 +82,7 @@ export function ColumnManager({ isOpen, onClose, onColumnsChange }: ColumnManage
 
     const newColumns = [...columns]
     const draggedColumn = newColumns[draggedIndex]
-
-    if (draggedColumn.id === 'checkbox' || draggedColumn.id === 'actions') return
+    if (!draggedColumn || draggedColumn.id === 'checkbox' || draggedColumn.id === 'actions') return
 
     newColumns.splice(draggedIndex, 1)
     newColumns.splice(index, 0, draggedColumn)
@@ -133,7 +132,7 @@ export function ColumnManager({ isOpen, onClose, onColumnsChange }: ColumnManage
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {columns
             .filter((col) => col.id !== 'checkbox' && col.id !== 'actions')
-            .map((column, index) => {
+            .map((column) => {
               const isDraggable = column.id !== 'checkbox' && column.id !== 'actions'
               return (
                 <div

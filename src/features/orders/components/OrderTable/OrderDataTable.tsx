@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo, useEffect, type ChangeEvent } from 'react'
+import { useState, useRef, useCallback, useMemo, type ChangeEvent } from 'react'
 import { List } from 'react-window'
 import {
   useReactTable,
@@ -104,7 +104,7 @@ export function OrderDataTable({
       onQuickStatusChange,
       onQuickPriorityChange,
     }),
-    [onEdit, onDelete, onDuplicate, onQuickStatusChange, onQuickPriorityChange]
+    [onEdit, onDuplicate, onQuickStatusChange, onQuickPriorityChange]
   )
 
   const columns = useMemo(

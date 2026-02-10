@@ -186,6 +186,7 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     ]
 
     return allTabs.filter((tab) => searchResults.matchingTabs.has(tab.id))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handlers are stable in effect
   }, [localSettings, searchQuery, searchResults.matchingTabs, hasChanges])
 
   if (loading) {
@@ -279,12 +280,4 @@ export function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       />
     </Modal>
   )
-}
-
-/**
- * Hook to get current settings (backward compatibility)
- */
-export function useSettings() {
-  const { settings } = useAppSettings()
-  return settings.dashboard
 }

@@ -43,7 +43,7 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcuts, enabled = tru
   )
 
   useEffect(() => {
-    if (!enabled) return
+    if (!enabled) return () => {}
 
     document.addEventListener('keydown', handleKeyDown)
     return () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, FormEvent, ChangeEvent, useMemo } from 'react'
+import { useState, useEffect, useRef, type FormEvent, type ChangeEvent, useMemo } from 'react'
 import { Save, X, Trash2, AlertCircle, AlertTriangle, CheckCircle } from 'lucide-react'
 import { useKeyboardShortcut } from '../hooks/useKeyboardShortcuts'
 import { ConfirmDialog } from './ConfirmDialog'
@@ -80,8 +80,8 @@ export function OrderForm({ order, onSave, onCancel, onDelete, loading = false }
 
   const autoSaveDraft = useMemo(
     () =>
-      debounce((data: WorkOrderFormData) => {
-        if (!isEditMode && isDirty) {
+      debounce((data: unknown) => {
+        if (!isEditMode && isDirty && data && typeof data === 'object') {
           localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(data))
         }
       }, AUTO_SAVE_DELAY),

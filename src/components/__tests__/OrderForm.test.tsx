@@ -66,13 +66,14 @@ describe('OrderForm', () => {
       expect(onSave).toHaveBeenCalledTimes(1)
     })
 
-    const savedData: WorkOrderFormData = onSave.mock.calls[0][0]
-    expect(savedData.company_name).toBe('Acme')
-    expect(savedData.po_number).toBe('PO-001')
-    expect(savedData.part_name).toBe('Widget')
-    expect(savedData.quantity_total).toBe(100)
-    expect(savedData.quantity_completed).toBe(0)
-    expect(savedData.created_at).toBe('2024-01-15')
+    const savedData = onSave.mock.calls[0]?.[0] as WorkOrderFormData | undefined
+    expect(savedData).toBeDefined()
+    expect(savedData!.company_name).toBe('Acme')
+    expect(savedData!.po_number).toBe('PO-001')
+    expect(savedData!.part_name).toBe('Widget')
+    expect(savedData!.quantity_total).toBe(100)
+    expect(savedData!.quantity_completed).toBe(0)
+    expect(savedData!.created_at).toBe('2024-01-15')
   })
 
   it('renders edit form when order is provided', () => {
