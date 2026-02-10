@@ -15,6 +15,9 @@ interface ValidationResult {
   errors: string[]
 }
 
+// Public type used by the rest of the app
+export type EnvValidationResult = ValidationResult
+
 export function validateEnvVariables(): ValidationResult {
   const missing: string[] = []
   const errors: string[] = []
@@ -42,6 +45,11 @@ export function validateEnvVariables(): ValidationResult {
     missing,
     errors,
   }
+}
+
+// Convenience helper so callers don't need to know about ValidationResult
+export function getEnvValidationResult(): EnvValidationResult {
+  return validateEnvVariables()
 }
 
 export function getEnvConfig(): EnvConfig {
