@@ -36,65 +36,66 @@ const base = process.env.VITE_BASE_URL || ''
 const hostMode = process.env.HOST === 'local' ? 'localhost' : true
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), ['VITE_', 'NEXT_PUBLIC_'])
+  // Cargar todas las variables de entorno; la exposición al cliente se controla con envPrefix
+  loadEnv(mode, process.cwd())
+
   return {
-  base,
-  define: {
-    'import.meta.env.NEXT_PUBLIC_SUPABASE_URL': JSON.stringify(env.NEXT_PUBLIC_SUPABASE_URL || ''),
-    'import.meta.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY': JSON.stringify(env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || ''),
-    'process.env.NODE_ENV': JSON.stringify(mode),
-    global: 'globalThis',
-  },
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      xlsx: path.resolve(__dirname, './node_modules/xlsx-js-style'),
+    base,
+    define: {
+      'process.env.NODE_ENV': JSON.stringify(mode),
+      global: 'globalThis',
     },
-  },
-  server: {
-    host: hostMode,
-    port: parseInt(process.env.PORT || '3000'),
-    ...(httpsConfig && { https: httpsConfig }),
-    open: false,
-    cors: true,
-  },
-  preview: {
-    host: hostMode,
-    port: parseInt(process.env.PORT || '3000'),
-    ...(httpsConfig && { https: httpsConfig }),
-    cors: true,
-  },
-  build: {
-    // CRÍTICO PARA TV: compatibilidad con navegadores Smart TV antiguos (aprox. 2017+)
-    target: 'es2015',
-    outDir: 'dist',
-    sourcemap: false,
-    minify: 'esbuild',
-    cssMinify: true,
-    chunkSizeWarningLimit: 1000,
-    reportCompressedSize: false,
-    emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'charts-vendor': ['recharts'],
-          'data-vendor': ['@supabase/supabase-js', '@tanstack/react-query'],
-          'ui-vendor': ['lucide-react', 'clsx', 'tailwind-merge'],
-        },
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
+    envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
+    plugins: [react()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+        xlsx: path.resolve(__dirname, './node_modules/xlsx-js-style'),
       },
     },
-  },
-  esbuild: {
-    drop: ['console', 'debugger'],
-  },
-  optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
-    exclude: [],
-  },
+    server: {
+      host: hostMode,
+      port: parseInt(process.env.PORT || '3000'),
+      ...(httpsConfig && { https: httpsConfig }),
+      open: false,
+      cors: true,
+    },
+    preview: {
+      host: hostMode,
+      port: parseInt(process.env.PORT || '3000'),
+      ...(httpsConfig && { https: httpsConfig }),
+      cors: true,
+    },
+    build: {
+      // CRÍTICO PARA TV: compatibilidad con navegadores Smart TV antiguos (aprox. 2017+)
+      target: 'es2015',
+      outDir: 'dist',
+      sourcemap: false,
+      minify: 'esbuild',
+      cssMinify: true,
+      chunkSizeWarningLimit: 1000,
+      reportCompressedSize: false,
+      emptyOutDir: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'charts-vendor': ['recharts'],
+            'data-vendor': ['@supabase/supabase-js', '@tanstack/react-query'],
+            'ui-vendor': ['lucide-react', 'clsx', 'tailwind-merge'],
+          },
+          chunkFileNames: 'assets/[name]-[hash].js',
+          entryFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
+        },
+      },
+    },
+    esbuild: {
+      drop: ['console', 'debugger'],
+    },
+    optimizeDeps: {
+      include: ['react', 'react-dom', 'react-router-dom'],
+      exclude: [],
+    },
   }
 })
