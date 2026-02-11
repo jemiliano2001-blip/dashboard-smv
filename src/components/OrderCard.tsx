@@ -17,8 +17,8 @@ const STATUS_FOOTER_BG: Record<Status, string> = {
 }
 
 const PRIORITY_COLORS: Record<Priority, string> = {
-  low: 'border-slate-500',
-  normal: 'border-blue-400',
+  low: 'border-slate-600/40',
+  normal: 'border-slate-500/50',
   high: 'border-orange-400',
   critical: 'border-red-400',
 }
@@ -42,6 +42,36 @@ const PRIORITY_BADGE_TEXT: Record<Priority, string> = {
   normal: 'text-cyan-400',
   high: 'text-orange-400',
   critical: 'text-red-500',
+}
+
+/* ========= TV Mode specific maps ========= */
+
+const TV_PRIORITY_BG: Record<Priority, string> = {
+  low: 'card-bg-low',
+  normal: 'card-bg-normal',
+  high: 'card-bg-high',
+  critical: 'card-bg-critical',
+}
+
+const TV_PRIORITY_GLOW_CLASS: Record<Priority, string> = {
+  low: '',
+  normal: '',
+  high: 'priority-glow-high',
+  critical: 'priority-glow-critical',
+}
+
+const TV_PRIORITY_BADGE: Record<Priority, { label: string; dotClass: string; textClass: string; bgClass: string }> = {
+  low: { label: 'BAJA', dotClass: 'bg-slate-400', textClass: 'text-slate-300', bgClass: 'bg-slate-500/15' },
+  normal: { label: 'NORMAL', dotClass: 'bg-blue-400', textClass: 'text-blue-300', bgClass: 'bg-blue-500/15' },
+  high: { label: 'ALTA', dotClass: 'bg-orange-400', textClass: 'text-orange-300', bgClass: 'bg-orange-500/15' },
+  critical: { label: 'CRÍTICA', dotClass: 'bg-red-400', textClass: 'text-red-300', bgClass: 'bg-red-500/20' },
+}
+
+const TV_STATUS_BADGE: Record<Status, { label: string; dotClass: string; textClass: string; pulse: boolean }> = {
+  scheduled: { label: 'PROGRAMADA', dotClass: 'bg-blue-400', textClass: 'text-blue-300', pulse: false },
+  production: { label: 'EN PRODUCCIÓN', dotClass: 'bg-amber-400', textClass: 'text-amber-300', pulse: true },
+  quality: { label: 'CALIDAD', dotClass: 'bg-emerald-400', textClass: 'text-emerald-300', pulse: false },
+  hold: { label: 'ON HOLD', dotClass: 'bg-red-400', textClass: 'text-red-300', pulse: true },
 }
 
 const getProgressColor = (progress: number): string => {
@@ -148,52 +178,47 @@ function OrderCardComponent({ order, scaleFactor, tvMode = false, textSize = 'no
   const progressBarHeight = tvMode ? 'h-0.5' : 'h-1'
 
   if (tvMode) {
-    const headerPoSize = getSizeClass('text-lg', textSize)
-    const bodyPartSize = getSizeClass('text-2xl', textSize)
-    const footerPzsSize = getSizeClass('text-2xl', textSize)
+    const bodyPartSize = getSizeClass('text-xl', textSize)
+    const priorityBadge = TV_PRIORITY_BADGE[priority] ?? TV_PRIORITY_BADGE.normal
+    const statusBadge = TV_STATUS_BADGE[status] ?? TV_STATUS_BADGE.scheduled
+    const bgClass = TV_PRIORITY_BG[priority] ?? 'card-bg-normal'
+    const glowClass = TV_PRIORITY_GLOW_CLASS[priority] ?? ''
+    const borderWidth = (priority === 'critical') ? 'border-[3px]' : (priority === 'high') ? 'border-2' : 'border'
+
     return (
       <div
         className={`
           relative min-h-0 h-full overflow-hidden
-          bg-[#111827]
-          rounded-lg ${priorityBorderWidth} ${priorityBorderClass}
-          ${paddingX} ${paddingY}
-          flex flex-col gap-y-2
+          ${bgClass}
+          rounded-xl ${borderWidth} ${priorityBorderClass}
+          px-3 py-2.5
+          flex flex-col justify-between
           transition-all duration-300 ease-out
-          hover:border-opacity-100 hover:shadow-lg ${priorityGlowClass}
-          hover:scale-[1.02]
-          animate-fade-in
-          shadow-multi
+          ${glowClass}
         `}
-        style={{ '--card-scale': scaleValue } as React.CSSProperties}
         role="article"
-        aria-label={po_number ? `Orden ${po_number} - ${part_name}` : `Orden - ${part_name}`}
+        aria-label={po_number ? `Orden ${po_number} - ${part_name} - ${statusBadge.label}` : `Orden - ${part_name}`}
       >
-        {(priority === 'high' || priority === 'critical') && (
-          <div className={`absolute top-0 left-0 right-0 h-0.5 ${priorityBorderClass.replace('border-', 'bg-')} opacity-90`} />
-        )}
-
-        {/* A. HEADER: SO/número (fuchsia) left, Fecha right */}
-        <div className="flex justify-between items-start gap-2 flex-shrink-0">
-          <div
-            className={`${headerPoSize} font-bold text-fuchsia-400 text-shadow leading-none flex-shrink-0`}
-            title={po_number || ''}
-          >
-            {`SO/${formatPoForDisplay(po_number).replace(/^\(|\)$/g, '')}`}
+        {/* Top section: SO + Priority + Date */}
+        <div className="flex items-center justify-between gap-2 flex-shrink-0 mb-auto">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-base font-extrabold text-fuchsia-400 flex-shrink-0 leading-none" title={po_number || ''}>
+              SO/{formatPoForDisplay(po_number).replace(/^\(|\)$/g, '')}
+            </span>
+            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider ${priorityBadge.textClass} ${priorityBadge.bgClass}`}>
+              <span className={`${(priority === 'critical' || priority === 'high') ? 'status-dot-pulse' : 'status-dot-static'} ${priorityBadge.dotClass}`} style={{ width: 5, height: 5 }} />
+              {priorityBadge.label}
+            </span>
           </div>
-          <div
-            className="text-sm text-gray-400 flex-shrink-0"
-            title={formatDateCompact(created_at)}
-          >
+          <span className="text-xs text-slate-500 flex-shrink-0 font-medium">
             {formatDateCompact(created_at)}
-          </div>
+          </span>
         </div>
 
-        {/* B. BODY: Número de parte + descripción (un solo bloque de texto para evitar solapamiento) */}
-        <div className="flex-1 min-h-0 overflow-hidden flex flex-col min-w-0">
+        {/* Middle: Part name (hero text - grows to fill available space) */}
+        <div className="flex-1 min-h-0 overflow-hidden flex items-center py-1" title={part_name || ''}>
           <div
-            className={`${bodyPartSize} font-black text-white uppercase break-words leading-tight line-clamp-4 text-left flex-1 min-h-0 overflow-hidden`}
-            title={part_name || ''}
+            className={`${bodyPartSize} font-black text-white uppercase break-words leading-snug line-clamp-4 w-full`}
           >
             {part_name
               ? part_name.replace(/\{(\d+)\}/g, ' $1 PZS').trim() || 'N/A'
@@ -201,10 +226,36 @@ function OrderCardComponent({ order, scaleFactor, tvMode = false, textSize = 'no
           </div>
         </div>
 
-        {/* C. FOOTER: solo PZS */}
-        <div className={`${statusFooterBg} rounded-b-lg px-2 py-1.5 -mx-2 -mb-2 flex-shrink-0`}>
-          <div className={`${footerPzsSize} font-bold text-yellow-400`}>
-            {quantity_total ?? 0} PZS
+        {/* Bottom section: Progress + PZS + Status */}
+        <div className="flex-shrink-0 mt-auto space-y-1.5">
+          {/* Progress bar (prominent) */}
+          <div className="flex items-center gap-2">
+            <div className="flex-1 min-w-0">
+              <div className="h-3 bg-slate-700/60 rounded-full overflow-hidden shimmer-bar">
+                <div
+                  className={`h-full ${progressColorClass} rounded-full transition-all duration-500 ease-out`}
+                  style={{ width: `${Math.min(progress, 100)}%` }}
+                  role="progressbar"
+                  aria-valuenow={progress}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                />
+              </div>
+            </div>
+            <span className="text-lg font-black text-white flex-shrink-0 tabular-nums min-w-[3ch] text-right">
+              {progress}%
+            </span>
+          </div>
+
+          {/* PZS + Status row */}
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-lg font-black text-yellow-400 flex-shrink-0">
+              {quantity_total ?? 0} <span className="text-yellow-400/50 font-semibold text-sm">PZS</span>
+            </span>
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-bold uppercase tracking-wide ${statusBadge.textClass} ${statusFooterBg}`}>
+              <span className={`${statusBadge.pulse ? 'status-dot-pulse' : 'status-dot-static'} ${statusBadge.dotClass}`} style={{ width: 7, height: 7 }} />
+              {statusBadge.label}
+            </span>
           </div>
         </div>
       </div>

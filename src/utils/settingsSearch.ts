@@ -18,9 +18,9 @@ export function extractSearchableSettings(settings: AppSettings): SearchableSett
   searchable.push(
     { label: 'Rotación por Compañía', description: 'Tiempo que se muestra cada compañía', value: `${settings.dashboard.companyRotation} seg`, category: 'Tiempos', tab: 'dashboard' },
     { label: 'Rotación por Página', description: 'Tiempo que se muestra cada página', value: `${settings.dashboard.pageRotation} seg`, category: 'Tiempos', tab: 'dashboard' },
-    { label: 'Capacidad del Dashboard', description: 'Número máximo de órdenes mostradas por página', value: `${settings.dashboard.ordersPerPage} órdenes`, category: 'Tiempos', tab: 'dashboard' },
-    { label: 'Activar Auto-Scroll', description: 'El dashboard automáticamente cambiará de página', value: settings.dashboard.autoScrollEnabled ? 'Activado' : 'Desactivado', category: 'Auto-Scroll', tab: 'dashboard' },
-    { label: 'Intervalo de Auto-Scroll', description: 'Tiempo que se muestra cada página', value: `${settings.dashboard.autoScrollInterval} seg`, category: 'Auto-Scroll', tab: 'dashboard' }
+    { label: 'Capacidad del Dashboard', description: 'Número máximo de órdenes mostradas por página', value: `${settings.dashboard.ordersPerPage} órdenes`, category: 'Visualización', tab: 'dashboard' },
+    { label: 'Priorizar Órdenes Viejas', description: 'Coloca las fechas más antiguas al principio', value: settings.dashboard.prioritizeOldOrders ? 'Activado' : 'Desactivado', category: 'Ordenamiento', tab: 'dashboard' },
+    { label: 'Agrupar por Tamaño (Tetris)', description: 'Muestra primero tarjetas con descripciones cortas', value: settings.dashboard.groupBySize ? 'Activado' : 'Desactivado', category: 'Ordenamiento', tab: 'dashboard' }
   )
 
   // Admin Panel settings
@@ -28,7 +28,7 @@ export function extractSearchableSettings(settings: AppSettings): SearchableSett
     { label: 'Items por Página (Por Defecto)', description: 'Número de órdenes mostradas por página', value: `${settings.adminPanel.defaultItemsPerPage} órdenes`, category: 'Paginación y Ordenamiento', tab: 'admin' },
     { label: 'Columna de Ordenamiento', description: 'Columna por la cual se ordenan las órdenes', value: settings.adminPanel.defaultSortColumn, category: 'Paginación y Ordenamiento', tab: 'admin' },
     { label: 'Orden', description: 'Dirección del ordenamiento', value: settings.adminPanel.defaultSortOrder === 'asc' ? 'Ascendente' : 'Descendente', category: 'Paginación y Ordenamiento', tab: 'admin' },
-    { label: 'Intervalo de Auto-Refresh', description: 'El panel se actualiza automáticamente', value: `${settings.adminPanel.autoRefreshInterval} ms`, category: 'Actualización Automática', tab: 'admin' },
+    { label: 'Intervalo de Auto-Refresh', description: 'El panel se actualiza automáticamente', value: `${settings.adminPanel.autoRefreshInterval} seg`, category: 'Actualización Automática', tab: 'admin' },
     { label: 'Habilitar Operaciones en Lote', description: 'Permite editar múltiples órdenes a la vez', value: settings.adminPanel.bulkOperationsEnabled ? 'Activado' : 'Desactivado', category: 'Operaciones en Lote', tab: 'admin' },
     { label: 'Habilitar Acciones Rápidas', description: 'Menú contextual y acciones rápidas', value: settings.adminPanel.quickActionsEnabled ? 'Activado' : 'Desactivado', category: 'Acciones Rápidas', tab: 'admin' },
     { label: 'Mostrar Métricas por Defecto', description: 'Mostrar el dashboard de métricas', value: settings.adminPanel.showMetricsByDefault ? 'Activado' : 'Desactivado', category: 'Vista de Métricas', tab: 'admin' }

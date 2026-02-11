@@ -2,7 +2,6 @@ import { type ChangeEvent } from 'react'
 import { SettingsSection } from './SettingsSection'
 import { SettingsField, ValidatedInput } from './SettingsField'
 import { List, RefreshCw, Layers, MousePointerClick, BarChart3 } from 'lucide-react'
-import { formatSeconds, secondsToMs, msToSeconds } from '../utils/formatUtils'
 import type { AdminPanelSettings, SortColumn, SortOrder } from '../types'
 
 interface AdminPanelSettingsTabProps {
@@ -113,9 +112,9 @@ export function AdminPanelSettingsTab({
       >
         <SettingsField
           label="Intervalo de Auto-Refresh"
-          description={`El panel se actualiza automáticamente cada ${formatSeconds(settings.autoRefreshInterval)}. Útil para mantener los datos actualizados sin recargar manualmente.`}
+          description={`El panel se actualiza automáticamente cada ${settings.autoRefreshInterval} segundo(s). Útil para mantener los datos actualizados sin recargar manualmente.`}
           unit="seg"
-          value={Math.round(msToSeconds(settings.autoRefreshInterval))}
+          value={settings.autoRefreshInterval}
           info="Se recomienda un intervalo entre 5-30 segundos para balancear actualización y rendimiento"
         >
           <ValidatedInput
@@ -123,9 +122,9 @@ export function AdminPanelSettingsTab({
             min="1"
             max="60"
             step="1"
-            value={Math.round(msToSeconds(settings.autoRefreshInterval))}
+            value={settings.autoRefreshInterval}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              handleChange('autoRefreshInterval', secondsToMs(parseInt(e.target.value) || 5))
+              handleChange('autoRefreshInterval', parseInt(e.target.value) || 5)
             }
           />
         </SettingsField>

@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
 import type { WorkOrder, Priority, Status } from '../../../types'
-import type { AdvancedFilterState } from '../types'
+import type { AdvancedFilterState } from '@/features/orders/components/OrderTable/types'
 
 interface UseOrderTableFiltersProps {
   orders: WorkOrder[]

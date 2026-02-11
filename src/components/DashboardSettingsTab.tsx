@@ -62,6 +62,23 @@ export function DashboardSettingsTab({ settings, onChange, hasChanges = false }:
             onChange={(value) => handleChange('textSize', value)}
           />
         </div>
+
+        <div className="mt-4">
+          <SettingsField
+            label="Órdenes por Página"
+            description="Número máximo de órdenes que se muestran por página en el dashboard TV. Más órdenes = tarjetas más pequeñas."
+            unit="órdenes"
+            value={settings.ordersPerPage ?? 8}
+          >
+            <SettingsSlider
+              min={SETTINGS_LIMITS.ORDERS_PER_PAGE_MIN}
+              max={SETTINGS_LIMITS.ORDERS_PER_PAGE_MAX}
+              value={settings.ordersPerPage ?? 8}
+              onChange={(value) => handleChange('ordersPerPage', value)}
+              unit=""
+            />
+          </SettingsField>
+        </div>
       </SettingsSection>
 
       <SettingsSection
@@ -153,6 +170,46 @@ export function DashboardSettingsTab({ settings, onChange, hasChanges = false }:
             }
           />
         </SettingsField>
+
+        <div className="mt-4">
+          <SettingsField
+            label="Rotación por Página"
+            description={`Tiempo que se muestra cada página dentro de una compañía antes de avanzar a la siguiente. ${formatRotationTime(settings.pageRotation)}`}
+            validationState={
+              settings.pageRotation < SETTINGS_LIMITS.PAGE_ROTATION_MIN ||
+              settings.pageRotation > SETTINGS_LIMITS.PAGE_ROTATION_MAX
+                ? 'error'
+                : settings.pageRotation < 10
+                ? 'warning'
+                : 'valid'
+            }
+            warning={
+              settings.pageRotation < 10
+                ? 'Rotaciones muy rápidas pueden dificultar la lectura. Se recomienda al menos 10 segundos.'
+                : undefined
+            }
+            unit="seg"
+            value={settings.pageRotation}
+          >
+            <ValidatedInput
+              type="number"
+              min={SETTINGS_LIMITS.PAGE_ROTATION_MIN}
+              max={SETTINGS_LIMITS.PAGE_ROTATION_MAX}
+              value={settings.pageRotation}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                handleChange('pageRotation', parseInt(e.target.value) || 15)
+              }
+              validationState={
+                settings.pageRotation < SETTINGS_LIMITS.PAGE_ROTATION_MIN ||
+                settings.pageRotation > SETTINGS_LIMITS.PAGE_ROTATION_MAX
+                  ? 'error'
+                  : settings.pageRotation < 10
+                  ? 'warning'
+                  : 'valid'
+              }
+            />
+          </SettingsField>
+        </div>
       </SettingsSection>
     </div>
   )

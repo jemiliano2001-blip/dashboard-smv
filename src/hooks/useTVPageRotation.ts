@@ -1,12 +1,15 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 
 export interface UseTVPageRotationProps<T> {
   /** Objeto { "Company A": [items...], "Company B": [items...] } */
   items: Record<string, T[]>
   /** Lista de llaves ["Company A", "Company B"] */
   companies: string[]
-  /** Tiempo en ms por página */
+  /** Tiempo en ms para la rotación entre compañías (cuando se pasa a la siguiente compañía) */
   rotationInterval: number
+  /** Tiempo en ms para la rotación entre páginas dentro de la misma compañía.
+   *  Si no se proporciona, se usa rotationInterval. */
+  pageRotationInterval?: number
   itemsPerPage: number
 }
 
@@ -17,12 +20,21 @@ export interface UseTVPageRotationReturn<T> {
   totalPages: number
   /** Ms restantes hasta el siguiente cambio (página o compañía); 0 si no aplica */
   nextCompanyIn: number
+  /** 0-100 progress of the current rotation countdown (100 = just started, 0 = about to change) */
+  progress: number
+  /** Current company index (0-based) */
+  companyIndex: number
+  /** Total number of companies */
+  totalCompanies: number
+  /** true if currently showing the last page of the current company */
+  isLastPage: boolean
 }
 
 export function useTVPageRotation<T>({
   items,
   companies,
   rotationInterval,
+  pageRotationInterval,
   itemsPerPage,
 }: UseTVPageRotationProps<T>): UseTVPageRotationReturn<T> {
   const [companyIndex, setCompanyIndex] = useState(0)
@@ -30,6 +42,9 @@ export function useTVPageRotation<T>({
   const lastTickRef = useRef<number>(Date.now())
   const pageIndexRef = useRef(pageIndex)
   const totalPagesRef = useRef(0)
+
+  // Use pageRotationInterval for page-level rotation; fall back to rotationInterval
+  const effectivePageInterval = pageRotationInterval ?? rotationInterval
 
   const safeCompanyIndex = companies.length > 0 ? companyIndex % companies.length : 0
   const currentCompany = companies[safeCompanyIndex] ?? null
@@ -49,6 +64,12 @@ export function useTVPageRotation<T>({
     }
   }, [pageIndex, totalPages])
 
+  const advanceToNextCompany = useCallback(() => {
+    if (companies.length === 0) return
+    setCompanyIndex((prev) => (prev + 1) % companies.length)
+    setPageIndex(0)
+  }, [companies.length])
+
   useEffect(() => {
     if (companies.length === 0) return () => {}
 
@@ -59,26 +80,46 @@ export function useTVPageRotation<T>({
       const nextPage = prevPage + 1
 
       if (nextPage < total) {
+        // Still more pages for this company — advance page
         setPageIndex(nextPage)
       } else {
-        setCompanyIndex((prev) => (prev + 1) % companies.length)
-        setPageIndex(0)
+        // Last page reached — move to next company
+        advanceToNextCompany()
       }
-    }, rotationInterval)
+    }, effectivePageInterval)
 
     return () => clearInterval(interval)
-  }, [companies.length, rotationInterval])
+  }, [companies.length, effectivePageInterval, advanceToNextCompany])
 
-  const currentItems = useMemo(() => {
+  const currentItems = (() => {
     const start = pageIndex * itemsPerPage
     return companyItems.slice(start, start + itemsPerPage)
-  }, [companyItems, pageIndex, itemsPerPage])
+  })()
 
-  const nextCompanyIn = useMemo(() => {
-    if (rotationInterval <= 0) return 0
-    const elapsed = Date.now() - lastTickRef.current
-    return Math.max(0, Math.min(rotationInterval, rotationInterval - (elapsed % rotationInterval)))
-  }, [rotationInterval])
+  const [nextCompanyIn, setNextCompanyIn] = useState(effectivePageInterval)
+  const [progress, setProgress] = useState(100)
+
+  // Update nextCompanyIn and progress reactively every 100ms for smooth animation
+  useEffect(() => {
+    if (effectivePageInterval <= 0 || companies.length === 0) {
+      setNextCompanyIn(0)
+      setProgress(100)
+      return undefined
+    }
+
+    const updateCountdown = () => {
+      const elapsed = Date.now() - lastTickRef.current
+      const remaining = Math.max(0, effectivePageInterval - elapsed)
+      setNextCompanyIn(remaining)
+      setProgress(effectivePageInterval > 0 ? (remaining / effectivePageInterval) * 100 : 100)
+    }
+
+    updateCountdown()
+    const countdownInterval = setInterval(updateCountdown, 100)
+    return () => clearInterval(countdownInterval)
+  }, [effectivePageInterval, companies.length])
+
+  const isLastPage = pageIndex + 1 >= totalPages
 
   return {
     currentCompany,
@@ -86,5 +127,9 @@ export function useTVPageRotation<T>({
     currentPage: pageIndex + 1,
     totalPages,
     nextCompanyIn,
+    progress,
+    companyIndex: safeCompanyIndex,
+    totalCompanies: companies.length,
+    isLastPage,
   }
 }

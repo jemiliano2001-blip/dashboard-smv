@@ -1,3 +1,9 @@
+/**
+ * Settings feature - public API
+ *
+ * Currently re-exports from @/components. As the settings feature grows,
+ * settings-specific logic, hooks, and state management should be added here.
+ */
 export { SettingsPage } from '@/components/SettingsPage'
 export { SettingsPanel } from '@/components/SettingsPanel'
 export { AdminPanelSettingsTab } from '@/components/AdminPanelSettingsTab'

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useBeforeUnload } from 'react-router-dom'
 import { Save, RotateCcw, Tv, Settings, Palette, Sliders } from 'lucide-react'
 import { SettingsTabs } from './SettingsTabs'
 import { SettingsSearch } from './SettingsSearch'
@@ -7,13 +8,16 @@ import { AdminPanelSettingsTab } from './AdminPanelSettingsTab'
 import { AppearanceSettingsTab } from './AppearanceSettingsTab'
 import { AdvancedSettingsTab } from './AdvancedSettingsTab'
 import { ConfirmDialog } from './ConfirmDialog'
+import { ToastContainer } from './Toast'
 import { useAppSettings } from '../hooks/useAppSettings'
+import { useToast } from '../hooks/useToast'
 import { DEFAULT_APP_SETTINGS } from '../types/settings'
 import { searchSettings } from '../utils/settingsSearch'
 import type { AppSettings } from '../types'
 
 export function SettingsPage() {
   const { settings, saveSettings, loading } = useAppSettings()
+  const { success: showSuccess, error: showError, toasts, removeToast } = useToast()
   const [localSettings, setLocalSettings] = useState<AppSettings>(DEFAULT_APP_SETTINGS)
   const [hasChanges, setHasChanges] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -47,10 +51,23 @@ export function SettingsPage() {
     setHasChanges(true)
   }
 
+  useBeforeUnload(
+    hasChanges
+      ? (event) => {
+          event.preventDefault()
+          // Most browsers ignore custom text, but preventDefault triggers the prompt
+        }
+      : undefined,
+  )
+
   const handleSave = () => {
-    saveSettings(localSettings)
-    setHasChanges(false)
-    window.dispatchEvent(new CustomEvent('settings-changed', { detail: localSettings }))
+    try {
+      saveSettings(localSettings)
+      setHasChanges(false)
+      showSuccess('Configuración guardada exitosamente')
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Error al guardar la configuración')
+    }
   }
 
   const handleReset = () => {
@@ -58,15 +75,20 @@ export function SettingsPage() {
   }
 
   const handleConfirmReset = () => {
-    const backup = {
-      ...localSettings,
-      backupCreatedAt: new Date().toISOString(),
-    }
-    localStorage.setItem('settings-backup', JSON.stringify(backup))
+    try {
+      const backup = {
+        ...localSettings,
+        backupCreatedAt: new Date().toISOString(),
+      }
+      localStorage.setItem('settings-backup', JSON.stringify(backup))
 
-    setLocalSettings(DEFAULT_APP_SETTINGS)
-    setHasChanges(true)
-    setConfirmReset(false)
+      setLocalSettings(DEFAULT_APP_SETTINGS)
+      setHasChanges(true)
+      setConfirmReset(false)
+      showSuccess('Configuración restablecida. Guarda para aplicar los cambios.')
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Error al restablecer la configuración')
+    }
   }
 
   const searchResults = useMemo(() => {
@@ -74,59 +96,6 @@ export function SettingsPage() {
   }, [localSettings, searchQuery])
 
   const filteredTabs = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return [
-        {
-          id: 'dashboard' as const,
-          label: 'Dashboard',
-          icon: Tv,
-          content: (
-            <DashboardSettingsTab
-              settings={localSettings.dashboard}
-              onChange={handleDashboardChange}
-              hasChanges={hasChanges}
-            />
-          ),
-        },
-        {
-          id: 'admin' as const,
-          label: 'Admin Panel',
-          icon: Settings,
-          content: (
-            <AdminPanelSettingsTab
-              settings={localSettings.adminPanel}
-              onChange={handleAdminPanelChange}
-              hasChanges={hasChanges}
-            />
-          ),
-        },
-        {
-          id: 'appearance' as const,
-          label: 'Apariencia',
-          icon: Palette,
-          content: (
-            <AppearanceSettingsTab
-              settings={localSettings.appearance}
-              onChange={handleAppearanceChange}
-              hasChanges={hasChanges}
-            />
-          ),
-        },
-        {
-          id: 'advanced' as const,
-          label: 'Avanzado',
-          icon: Sliders,
-          content: (
-            <AdvancedSettingsTab
-              settings={localSettings}
-              onChange={handleAdvancedChange}
-              hasChanges={hasChanges}
-            />
-          ),
-        },
-      ]
-    }
-
     const allTabs = [
       {
         id: 'dashboard' as const,
@@ -177,6 +146,10 @@ export function SettingsPage() {
         ),
       },
     ]
+
+    if (!searchQuery.trim()) {
+      return allTabs
+    }
 
     return allTabs.filter((tab) => searchResults.matchingTabs.has(tab.id))
     // eslint-disable-next-line react-hooks/exhaustive-deps -- handlers are stable in effect
@@ -269,6 +242,7 @@ export function SettingsPage() {
         cancelText="Cancelar"
         variant="warning"
       />
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { memo, type ChangeEvent } from 'react'
 import { Search, Filter, Download } from 'lucide-react'
 import type { Priority, Status } from '../../types'
-import { PRIORITY_LABELS, STATUS_LABELS } from './types'
+import { PRIORITY_LABELS, STATUS_LABELS } from '@/features/orders/components/OrderTable/types'
 
 interface OrderTableFiltersProps {
   searchTerm: string

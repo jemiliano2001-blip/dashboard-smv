@@ -12,7 +12,7 @@ export const queryClient = new QueryClient({
       gcTime: 5 * 60 * 1000, // 5 minutes - cache for 5 minutes
       retry: (failureCount, error) => {
         // Don't retry on 4xx errors (client errors)
-        if (error instanceof Error && error.message.includes('4')) {
+        if (error instanceof Error && /\b4\d{2}\b/.test(error.message)) {
           return false
         }
         // Retry up to 3 times for other errors

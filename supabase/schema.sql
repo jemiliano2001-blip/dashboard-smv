@@ -150,27 +150,47 @@ COMMENT ON COLUMN work_orders_history.changed_by IS 'Usuario que realizó el cam
 COMMENT ON COLUMN work_orders_history.change_type IS 'Tipo de cambio: create, update, delete';
 
 -- =============================================================================
--- Row Level Security (RLS) - Opcional: activar si quieres restringir acceso.
--- Por defecto las políticas permiten todo al rol anon (comportamiento actual).
--- Para producción: considera políticas más restrictivas (ej. anon solo lectura).
+-- Row Level Security (RLS)
+-- - anon: solo lectura (SELECT) — suficiente para el TV Dashboard público
+-- - authenticated: lectura + escritura (SELECT, INSERT, UPDATE, DELETE)
 -- =============================================================================
 
 ALTER TABLE work_orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE work_orders_history ENABLE ROW LEVEL SECURITY;
 
--- Política permisiva: anon puede leer y escribir (comportamiento actual del dashboard).
--- Para restringir: reemplaza por políticas que usen auth.uid() o limiten anon a SELECT.
+-- ---- work_orders ----
+
+-- Anon: solo lectura (TV Dashboard solo necesita SELECT)
 DROP POLICY IF EXISTS "work_orders_anon_all" ON work_orders;
-CREATE POLICY "work_orders_anon_all"
-  ON work_orders FOR ALL
+DROP POLICY IF EXISTS "work_orders_anon_select" ON work_orders;
+CREATE POLICY "work_orders_anon_select"
+  ON work_orders FOR SELECT
   TO anon
+  USING (true);
+
+-- Authenticated: acceso completo para operaciones CRUD del Admin Panel
+DROP POLICY IF EXISTS "work_orders_authenticated_all" ON work_orders;
+CREATE POLICY "work_orders_authenticated_all"
+  ON work_orders FOR ALL
+  TO authenticated
   USING (true)
   WITH CHECK (true);
 
+-- ---- work_orders_history ----
+
+-- Anon: solo lectura del historial
 DROP POLICY IF EXISTS "work_orders_history_anon_all" ON work_orders_history;
-CREATE POLICY "work_orders_history_anon_all"
-  ON work_orders_history FOR ALL
+DROP POLICY IF EXISTS "work_orders_history_anon_select" ON work_orders_history;
+CREATE POLICY "work_orders_history_anon_select"
+  ON work_orders_history FOR SELECT
   TO anon
+  USING (true);
+
+-- Authenticated: acceso completo al historial
+DROP POLICY IF EXISTS "work_orders_history_authenticated_all" ON work_orders_history;
+CREATE POLICY "work_orders_history_authenticated_all"
+  ON work_orders_history FOR ALL
+  TO authenticated
   USING (true)
   WITH CHECK (true);
 

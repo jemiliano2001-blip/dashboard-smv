@@ -1,27 +1,47 @@
 import { memo } from 'react'
 
+interface SkeletonCardProps {
+  index?: number
+}
+
 /**
- * Skeleton loader for OrderCard (TV layout: Header SO+fecha, Body part name, Footer PZS+estatus)
+ * Skeleton loader matching the TV OrderCard layout:
+ * Top: SO + Priority + Date
+ * Middle: Part name (flex-1)
+ * Bottom: Progress bar + PZS + Status
  */
-function SkeletonCardComponent() {
+function SkeletonCardComponent({ index = 0 }: SkeletonCardProps) {
   return (
-    <div className="bg-slate-800 border border-slate-600 rounded-lg px-2 py-[0.5vh] animate-pulse h-full flex flex-col min-h-0 overflow-hidden">
-      {/* A. Header: SO (left), Fecha (right) */}
-      <div className="flex justify-between items-start gap-2 flex-shrink-0 mb-1">
-        <div className="h-5 bg-slate-700 rounded w-20 flex-shrink-0" />
-        <div className="h-4 bg-slate-700 rounded w-14 flex-shrink-0" />
+    <div
+      className="card-bg-normal border border-slate-700/40 rounded-xl px-3 py-2.5 h-full flex flex-col justify-between min-h-0 overflow-hidden animate-fade-in"
+      style={{ animationDelay: `${index * 60}ms` }}
+    >
+      {/* Top: SO + Priority + Date */}
+      <div className="flex items-center justify-between gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <div className="h-4 skeleton-shimmer rounded w-20 flex-shrink-0" />
+          <div className="h-4 skeleton-shimmer rounded w-16 flex-shrink-0" />
+        </div>
+        <div className="h-3 skeleton-shimmer rounded w-14 flex-shrink-0" />
       </div>
 
-      {/* B. Body: Part name (dominant) */}
-      <div className="flex-1 min-h-0 overflow-hidden flex flex-col gap-1">
-        <div className="h-6 bg-slate-700 rounded w-full" />
-        <div className="h-6 bg-slate-700 rounded w-4/5" />
+      {/* Middle: Part name */}
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col justify-center gap-2 py-2">
+        <div className="h-5 skeleton-shimmer rounded w-full" />
+        <div className="h-5 skeleton-shimmer rounded w-4/5" />
+        <div className="h-5 skeleton-shimmer rounded w-3/5" />
       </div>
 
-      {/* C. Footer: PZS (left), Estatus (right) */}
-      <div className="flex-shrink-0 flex flex-row items-center justify-between gap-2 mt-auto py-1.5 px-2 bg-slate-700/50 rounded-b-lg -mx-2 -mb-2">
-        <div className="h-6 bg-slate-600 rounded w-16 flex-shrink-0" />
-        <div className="h-5 bg-slate-600 rounded w-20 flex-shrink-0" />
+      {/* Bottom: Progress + PZS + Status */}
+      <div className="flex-shrink-0 space-y-1.5">
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-3 skeleton-shimmer rounded-full" />
+          <div className="h-5 skeleton-shimmer rounded w-10 flex-shrink-0" />
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <div className="h-5 skeleton-shimmer rounded w-16 flex-shrink-0" />
+          <div className="h-6 skeleton-shimmer rounded-lg w-28 flex-shrink-0" />
+        </div>
       </div>
     </div>
   )

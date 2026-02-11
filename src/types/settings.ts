@@ -19,13 +19,12 @@ export interface DashboardSettings {
   companyRotation: number
   pageRotation: number
   ordersPerPage: number
-  autoScrollEnabled: boolean
-  autoScrollInterval: number
   fitToScreen: boolean
   columnDensity: ColumnDensity
   textSize: TextSize
   prioritizeOldOrders: boolean
   groupBySize: boolean
+  /** Auto-refresh interval in minutes (e.g. 5 = refresh every 5 minutes) */
   autoRefreshInterval: number
 }
 
@@ -33,6 +32,7 @@ export interface AdminPanelSettings {
   defaultItemsPerPage: number
   defaultSortColumn: SortColumn
   defaultSortOrder: SortOrder
+  /** Auto-refresh interval in seconds (e.g. 5 = refresh every 5 seconds) */
   autoRefreshInterval: number
   bulkOperationsEnabled: boolean
   quickActionsEnabled: boolean
@@ -66,8 +66,6 @@ export const DEFAULT_DASHBOARD_SETTINGS: DashboardSettings = {
   companyRotation: 30,
   pageRotation: 15,
   ordersPerPage: 8,
-  autoScrollEnabled: true,
-  autoScrollInterval: 15,
   fitToScreen: true,
   columnDensity: 'auto',
   textSize: 'normal',
@@ -80,7 +78,7 @@ export const DEFAULT_ADMIN_PANEL_SETTINGS: AdminPanelSettings = {
   defaultItemsPerPage: 25,
   defaultSortColumn: 'company_name',
   defaultSortOrder: 'asc',
-  autoRefreshInterval: 5000,
+  autoRefreshInterval: 5,
   bulkOperationsEnabled: true,
   quickActionsEnabled: true,
   showMetricsByDefault: true,

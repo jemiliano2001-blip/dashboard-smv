@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
+import { useState, useEffect, useCallback, lazy, Suspense, type FormEvent } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import {
   useWorkOrders,
@@ -11,6 +11,7 @@ import {
 import { useToast } from '../hooks/useToast'
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
 import { useAppSettings } from '../hooks/useAppSettings'
+import { useAuth } from '../hooks/useAuth'
 import { SkeletonTable } from './SkeletonTable'
 const SettingsPage = lazy(() =>
   import('@/features/settings').then((m) => ({ default: m.SettingsPage }))
@@ -26,10 +27,11 @@ import { KeyboardShortcutsModal } from './KeyboardShortcutsModal'
 import { SUCCESS_MESSAGES } from '../utils/constants'
 import { orderKeyByPo } from '../utils/formatUtils'
 import { exportWorkOrdersToCSV, exportWorkOrdersToPDF, exportWorkOrdersToExcel } from '../utils/exportUtils'
-import { escapeHtml } from '../utils/sanitize'
+import { generateWorkOrdersPrintHTML, openPrintWindow } from '../utils/printUtils'
 import type { WorkOrder, WorkOrderFormData, Priority, Status } from '../types'
 
 export function AdminPanel() {
+  const { user, loading: authLoading, error: authError, signInWithEmail } = useAuth()
   const { workOrders, loading: ordersLoading, error: ordersError, refetch } = useWorkOrders()
   const {
     createOrder,
@@ -53,14 +55,18 @@ export function AdminPanel() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false)
   const [bulkUploadOpen, setBulkUploadOpen] = useState(false)
   const [showMetrics, setShowMetrics] = useState(settings.adminPanel.showMetricsByDefault)
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginStatus, setLoginStatus] = useState<string | null>(null)
   const location = useLocation()
 
-  // Auto-refresh based on settings
+  // Auto-refresh based on settings (autoRefreshInterval is in seconds)
   useEffect(() => {
-    if (settings.adminPanel.autoRefreshInterval > 0) {
+    const intervalSeconds = settings.adminPanel.autoRefreshInterval
+    if (intervalSeconds > 0) {
+      const intervalMs = intervalSeconds * 1000
       const interval = setInterval(() => {
         refetch()
-      }, settings.adminPanel.autoRefreshInterval)
+      }, intervalMs)
 
       return () => clearInterval(interval)
     }
@@ -87,41 +93,67 @@ export function AdminPanel() {
   }, [actionError, showError, clearMessages])
 
   const handleSave = async (formData: WorkOrderFormData) => {
-    if (editingOrder) {
-      const updateResult = await updateOrder(editingOrder.id, formData)
-      if (updateResult.success) {
-        showSuccess(SUCCESS_MESSAGES.ORDER_UPDATED)
-        setEditingOrder(null)
-        setFormModalOpen(false)
+    try {
+      if (editingOrder) {
+        const updateResult = await updateOrder(editingOrder.id, formData)
+        if (updateResult.success) {
+          showSuccess(SUCCESS_MESSAGES.ORDER_UPDATED)
+          setEditingOrder(null)
+          setFormModalOpen(false)
+        } else {
+          showError(updateResult.error ?? 'Error al actualizar la orden')
+        }
+      } else {
+        const createResult = await createOrder(formData)
+        if (createResult.success) {
+          showSuccess(SUCCESS_MESSAGES.ORDER_CREATED)
+          setEditingOrder(null)
+          setFormModalOpen(false)
+        } else {
+          showError(createResult.error ?? 'Error al crear la orden')
+        }
       }
-    } else {
-      const createResult = await createOrder(formData)
-      if (createResult.success) {
-        showSuccess(SUCCESS_MESSAGES.ORDER_CREATED)
-        setEditingOrder(null)
-        setFormModalOpen(false)
-      }
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Error inesperado al guardar la orden')
     }
   }
 
   const handleDuplicate = async (order: WorkOrder) => {
-    const duplicateResult = await duplicateOrder(order.id)
-    if (duplicateResult.success) {
-      showSuccess('Orden duplicada exitosamente')
+    try {
+      const duplicateResult = await duplicateOrder(order.id)
+      if (duplicateResult.success) {
+        showSuccess('Orden duplicada exitosamente')
+      } else {
+        showError(duplicateResult.error ?? 'Error al duplicar la orden')
+      }
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Error inesperado al duplicar la orden')
     }
   }
 
   const handleQuickStatusChange = async (id: string, status: Status) => {
-    const result = await quickUpdateStatus(id, status)
-    if (result.success) {
-      showSuccess('Estado actualizado exitosamente')
+    try {
+      const result = await quickUpdateStatus(id, status)
+      if (result.success) {
+        showSuccess('Estado actualizado exitosamente')
+      } else {
+        showError(result.error ?? 'Error al actualizar el estado')
+      }
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Error inesperado al actualizar el estado')
     }
   }
 
   const handleQuickPriorityChange = async (id: string, priority: Priority) => {
-    const result = await quickUpdatePriority(id, priority)
-    if (result.success) {
-      showSuccess('Prioridad actualizada exitosamente')
+    try {
+      const result = await quickUpdatePriority(id, priority)
+      if (result.success) {
+        showSuccess('Prioridad actualizada exitosamente')
+      } else {
+        showError(result.error ?? 'Error al actualizar la prioridad')
+      }
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Error inesperado al actualizar la prioridad')
     }
   }
 
@@ -131,15 +163,21 @@ export function AdminPanel() {
   }, [])
 
   const handleDelete = useCallback(async (id: string) => {
-    const deleteResult = await deleteOrder(id)
-    if (deleteResult.success) {
-      showSuccess(SUCCESS_MESSAGES.ORDER_DELETED)
-      if (editingOrder?.id === id) {
-        setEditingOrder(null)
-        setFormModalOpen(false)
+    try {
+      const deleteResult = await deleteOrder(id)
+      if (deleteResult.success) {
+        showSuccess(SUCCESS_MESSAGES.ORDER_DELETED)
+        if (editingOrder?.id === id) {
+          setEditingOrder(null)
+          setFormModalOpen(false)
+        }
+      } else {
+        showError(deleteResult.error ?? 'Error al eliminar la orden')
       }
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Error inesperado al eliminar la orden')
     }
-  }, [deleteOrder, showSuccess, editingOrder])
+  }, [deleteOrder, showSuccess, showError, editingOrder])
 
   const handleNewOrder = () => {
     setEditingOrder(null)
@@ -152,122 +190,48 @@ export function AdminPanel() {
   }
 
   const handleExportCSV = () => {
-    const filename = `work_orders_all_${new Date().toISOString().split('T')[0]}`
-    exportWorkOrdersToCSV(workOrders, filename)
-    showSuccess('Órdenes exportadas a CSV exitosamente')
-    setExportMenuOpen(false)
+    try {
+      const filename = `work_orders_all_${new Date().toISOString().split('T')[0]}`
+      exportWorkOrdersToCSV(workOrders, filename)
+      showSuccess('Órdenes exportadas a CSV exitosamente')
+    } catch {
+      showError('No se pudieron exportar las órdenes a CSV. Intenta de nuevo.')
+    } finally {
+      setExportMenuOpen(false)
+    }
   }
 
   const handleExportPDF = () => {
-    const filename = `work_orders_all_${new Date().toISOString().split('T')[0]}`
-    exportWorkOrdersToPDF(workOrders, filename, { landscape: false, includeSummary: true })
-    showSuccess('Órdenes exportadas a PDF exitosamente')
-    setExportMenuOpen(false)
+    try {
+      const filename = `work_orders_all_${new Date().toISOString().split('T')[0]}`
+      exportWorkOrdersToPDF(workOrders, filename, { landscape: false, includeSummary: true })
+      showSuccess('Órdenes exportadas a PDF exitosamente')
+    } catch {
+      showError('No se pudieron exportar las órdenes a PDF. Intenta de nuevo.')
+    } finally {
+      setExportMenuOpen(false)
+    }
   }
 
   const handleExportExcel = () => {
-    const filename = `work_orders_all_${new Date().toISOString().split('T')[0]}`
-    exportWorkOrdersToExcel(workOrders, filename)
-    showSuccess('Órdenes exportadas a Excel exitosamente')
-    setExportMenuOpen(false)
-  }
-
-  const generatePrintHTML = (orders: WorkOrder[]): string => {
-    const inProductionCount = orders.filter((o) => o.status === 'production').length
-    const completedCount = orders.filter((o) => o.status === 'quality').length
-    const generatedDate = new Date().toLocaleString('es-ES')
-
-    const tableRows = orders
-      .map((order) => {
-        const progress = order.quantity_total > 0 
-          ? Math.round((order.quantity_completed / order.quantity_total) * 100) 
-          : 0
-        
-        return `
-          <tr>
-            <td>${escapeHtml(order.company_name || '')}</td>
-            <td>${escapeHtml(order.po_number || '')}</td>
-            <td>${escapeHtml(order.part_name || '')}</td>
-            <td>${order.quantity_total}</td>
-            <td>${order.quantity_completed}</td>
-            <td>${progress}%</td>
-            <td>${escapeHtml(order.priority)}</td>
-            <td>${escapeHtml(order.status)}</td>
-          </tr>
-        `
-      })
-      .join('')
-
-    return `
-      <div class="print-header">
-        <h1>Reporte de Órdenes de Trabajo</h1>
-        <p>Generado: ${escapeHtml(generatedDate)}</p>
-      </div>
-      <div class="print-summary">
-        <h2>Resumen</h2>
-        <p>Total: ${orders.length} | En producción: ${inProductionCount} | Completadas: ${completedCount}</p>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Compañía</th>
-            <th>PO Number</th>
-            <th>Pieza</th>
-            <th>Total</th>
-            <th>Completado</th>
-            <th>Progreso</th>
-            <th>Prioridad</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${tableRows}
-        </tbody>
-      </table>
-      <div class="print-footer">
-        <p>Página 1 - Generado por TV Dashboard Visual Factory</p>
-      </div>
-    `
-  }
-
-  const openPrintWindow = (html: string): void => {
-    const printWindow = window.open('', '_blank')
-    if (!printWindow) return
-
-    const fullHTML = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Reporte de Órdenes de Trabajo</title>
-          <style>
-            @page { margin: 1cm; size: A4; }
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; font-weight: bold; }
-            tr:nth-child(even) { background-color: #f9f9f9; }
-            .print-header { margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #000; }
-            .print-footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #ccc; font-size: 10px; color: #666; }
-            @media print { button { display: none; } }
-          </style>
-        </head>
-        <body>
-          ${html}
-        </body>
-      </html>
-    `
-
-    printWindow.document.write(fullHTML)
-    printWindow.document.close()
-
-    setTimeout(() => {
-      printWindow.print()
-    }, 250)
+    try {
+      const filename = `work_orders_all_${new Date().toISOString().split('T')[0]}`
+      exportWorkOrdersToExcel(workOrders, filename)
+      showSuccess('Órdenes exportadas a Excel exitosamente')
+    } catch {
+      showError('No se pudieron exportar las órdenes a Excel. Intenta de nuevo.')
+    } finally {
+      setExportMenuOpen(false)
+    }
   }
 
   const handlePrint = () => {
-    const printHTML = generatePrintHTML(workOrders)
-    openPrintWindow(printHTML)
+    try {
+      const printHTML = generateWorkOrdersPrintHTML(workOrders)
+      openPrintWindow(printHTML)
+    } catch (err) {
+      showError(err instanceof Error ? err.message : 'Error al imprimir. Verifica que las ventanas emergentes estén permitidas.')
+    }
   }
 
   useKeyboardShortcuts(
@@ -290,8 +254,71 @@ export function AdminPanel() {
         }
       },
     },
-    !ordersLoading
+    !ordersLoading && !!user
   )
+
+  if (authLoading) {
+    return <LoadingState />
+  }
+
+  if (!user) {
+    const handleLoginSubmit = async (event: FormEvent) => {
+      event.preventDefault()
+      if (!loginEmail.trim()) return
+      try {
+        setLoginStatus('Enviando enlace de acceso...')
+        await signInWithEmail(loginEmail.trim())
+        setLoginStatus('Revisa tu correo para el enlace de acceso.')
+      } catch {
+        setLoginStatus('No se pudo enviar el enlace. Intenta de nuevo.')
+      }
+    }
+
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 px-4">
+        <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 p-8 space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100">
+              Acceso al Panel de Administración
+            </h1>
+            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+              Ingresa tu correo corporativo para recibir un enlace mágico de acceso.
+            </p>
+          </div>
+          <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                required
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="tucorreo@empresa.com"
+              />
+            </div>
+            {(authError || loginStatus) && (
+              <div className="text-sm text-zinc-600 dark:text-zinc-300 bg-zinc-100/70 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3">
+                {authError && <p className="text-red-500 mb-1">{authError}</p>}
+                {loginStatus && <p>{loginStatus}</p>}
+              </div>
+            )}
+            <button
+              type="submit"
+              className="w-full inline-flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-zinc-50 dark:focus:ring-offset-zinc-950"
+            >
+              Enviar enlace de acceso
+            </button>
+          </form>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center">
+            Asegúrate de que el dominio de la aplicación esté configurado como URL de redirección en Supabase Auth.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   if (ordersLoading) {
     return <LoadingState />

@@ -39,5 +39,9 @@ lerna-debug.log*
 .vite/
 *.local
 
+# Deploy
+.netlify/
+.vercel/
+
 # OS
 Thumbs.db

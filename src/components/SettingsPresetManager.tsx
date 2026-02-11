@@ -40,7 +40,6 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
             dashboard: {
               ...currentSettings.dashboard,
               ordersPerPage: 100,
-              autoScrollInterval: 10,
               companyRotation: 20,
               pageRotation: 10,
             },
@@ -56,10 +55,8 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
             dashboard: {
               ...currentSettings.dashboard,
               ordersPerPage: 8,
-              autoScrollInterval: 30,
               companyRotation: 60,
               pageRotation: 20,
-              autoScrollEnabled: true,
             },
             appearance: {
               ...currentSettings.appearance,
@@ -76,11 +73,13 @@ export function SettingsPresetManager({ currentSettings, onLoadPreset }: Setting
           settings: {
             dashboard: {
               ...currentSettings.dashboard,
-              autoScrollInterval: 15,
+              companyRotation: 15,
+              pageRotation: 10,
+              autoRefreshInterval: 1,
             },
             adminPanel: {
               ...currentSettings.adminPanel,
-              autoRefreshInterval: 2000,
+              autoRefreshInterval: 2,
             },
           },
         },

@@ -51,19 +51,23 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       action: 'catch_error',
     })
 
-    this.setState((prevState) => ({
-      error,
-      errorInfo,
-      retryCount: prevState.retryCount + 1,
-    }))
+    this.setState((prevState) => {
+      const nextRetryCount = prevState.retryCount + 1
 
-    // Attempt automatic recovery after delay
-    if (this.state.retryCount < this.MAX_RETRIES) {
-      const delay = this.INITIAL_RETRY_DELAY * Math.pow(2, this.state.retryCount)
-      this.retryTimeoutId = setTimeout(() => {
-        this.handleRetry()
-      }, delay)
-    }
+      // Attempt automatic recovery after delay based on the next retry count
+      if (nextRetryCount <= this.MAX_RETRIES) {
+        const delay = this.INITIAL_RETRY_DELAY * Math.pow(2, nextRetryCount - 1)
+        this.retryTimeoutId = setTimeout(() => {
+          this.handleRetry()
+        }, delay)
+      }
+
+      return {
+        error,
+        errorInfo,
+        retryCount: nextRetryCount,
+      }
+    })
   }
 
   componentWillUnmount() {
