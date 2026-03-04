@@ -82,7 +82,7 @@ function FooterComponent({
   const isShowingCompanyData = !!currentCompanyOrders
 
   return (
-    <footer className="flex-shrink-0 bg-[#0a0e17]/95 glass-strong border-t border-blue-900/30 relative z-20 backdrop-blur-xl">
+    <footer className="flex-shrink-0 bg-industrial-bg/95 glass-strong border-t border-blue-900/30 relative z-20 backdrop-blur-xl">
       {/* Main KPI row */}
       <div className="flex items-center justify-between px-6 py-3">
         {/* KPIs */}

@@ -108,7 +108,15 @@ export function TVDashboard() {
   if (loading) {
     return (
       <div className="h-screen w-full max-w-[100vw] flex flex-col overflow-hidden relative mesh-gradient-bg">
-        <div className="h-16 flex-shrink-0 bg-[#0a0e17]/95 glass-strong border-b border-blue-900/30 relative z-20" />
+        <Header
+          companyName={currentCompany}
+          pageLabel={null}
+          rotationProgress={100}
+          companyIndex={companyIndex}
+          totalCompanies={companies.length}
+          companySummary={undefined}
+          isOnline={isOnline}
+        />
         <main className="flex-1 min-h-0 flex flex-col overflow-hidden p-[clamp(0.5rem,1.5vh,2rem)] relative z-10">
           <div
             className="grid gap-[clamp(4px,0.5vh,12px)] flex-1 min-h-0"
@@ -124,7 +132,12 @@ export function TVDashboard() {
             ))}
           </div>
         </main>
-        <div className="h-14 flex-shrink-0 bg-[#0a0e17]/95 glass-strong border-t border-blue-900/30 relative z-20" />
+        <Footer
+          workOrders={workOrders}
+          currentCompanyOrders={currentCompanyOrders}
+          companyIndex={companyIndex}
+          totalCompanies={companies.length}
+        />
       </div>
     )
   }

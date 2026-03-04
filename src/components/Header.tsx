@@ -111,7 +111,7 @@ function HeaderComponent({
   return (
     <header className="flex-shrink-0 relative z-20">
       {/* Main header bar */}
-      <div className="bg-[#0a0e17]/95 glass-strong border-b border-blue-900/30 flex items-center justify-between px-6 py-3 backdrop-blur-xl">
+      <div className="bg-industrial-bg/95 glass-strong border-b border-blue-900/30 flex items-center justify-between px-6 py-3 backdrop-blur-xl">
         {/* Left: Company name + summary */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3">
