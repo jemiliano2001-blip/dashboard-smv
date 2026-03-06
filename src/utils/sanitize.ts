@@ -24,7 +24,8 @@ export function escapeHtml(text: string | unknown): string {
 }
 
 /**
- * Sanitizes text input by trimming and escaping
+ * Sanitizes text input by trimming and limiting length.
+ * Does NOT HTML-escape — React handles escaping automatically on render.
  * @param input - Input to sanitize
  * @param maxLength - Maximum allowed length
  * @returns Sanitized text
@@ -33,8 +34,8 @@ export function sanitizeText(input: string | unknown, maxLength = 1000): string 
   if (typeof input !== 'string') {
     return ''
   }
-  
-  return escapeHtml(input.trim().slice(0, maxLength))
+
+  return input.trim().slice(0, maxLength)
 }
 
 /**

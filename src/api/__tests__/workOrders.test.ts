@@ -7,7 +7,7 @@ import {
   deleteWorkOrder,
   updateWorkOrderStatus,
   updateWorkOrderPriority,
-} from '../workOrders'
+} from '@/features/orders/api/workOrders'
 import type { WorkOrder, WorkOrderFormData } from '../../types'
 
 const mockOrder: WorkOrder = {
@@ -48,13 +48,13 @@ function createChain(returnValue: { data: unknown; error: unknown }) {
   return chain
 }
 
-vi.mock('../../utils/supabase', () => ({
+vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: vi.fn(),
   },
 }))
 
-const { supabase } = await import('../../utils/supabase')
+const { supabase } = await import('@/lib/supabase')
 
 describe('workOrders API', () => {
   beforeEach(() => {

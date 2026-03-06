@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
-import { useWorkOrders } from '../useWorkOrders'
+import { useWorkOrders } from '@/features/orders/hooks/useWorkOrders'
 import type { WorkOrder } from '../../types'
 
 const mockOrders: WorkOrder[] = [
@@ -56,11 +56,11 @@ vi.mock('../../utils/supabase', () => ({
   },
 }))
 
-vi.mock('../../api/workOrders', () => ({
+vi.mock('@/features/orders/api/workOrders', () => ({
   fetchWorkOrders: vi.fn(),
 }))
 
-const { fetchWorkOrders } = await import('../../api/workOrders')
+const { fetchWorkOrders } = await import('@/features/orders/api/workOrders')
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -79,6 +79,7 @@ function createWrapper() {
 
 describe('useWorkOrders', () => {
   beforeEach(() => {
+    vi.mocked(fetchWorkOrders).mockClear()
     vi.mocked(fetchWorkOrders).mockResolvedValue(mockOrders)
     mockChannel.on.mockClear()
     mockChannel.subscribe.mockClear()

@@ -12,7 +12,7 @@ import { useAppSettings } from '@/hooks/useAppSettings'
 import { exportWorkOrdersToCSV } from '@/utils/exportUtils'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { AdvancedFilters } from '@/components/AdvancedFilters'
-import { ColumnManager } from '@/components/ColumnManager'
+import { ColumnManager, type ColumnConfig } from '@/components/ColumnManager'
 import { QuickActionsMenu } from '@/components/QuickActionsMenu'
 import { BulkActionsBar } from '@/components/BulkActionsBar'
 import { OrderTableFilters } from '@/components/OrderTable/OrderTableFilters'
@@ -91,8 +91,8 @@ export function OrderDataTable({
     [filteredOrders, paginatedItems]
   )
 
-  const tableData =
-    filteredOrders.length > VIRTUALIZATION_THRESHOLD ? filteredOrders : paginatedOrders
+  const isVirtualized = filteredOrders.length > VIRTUALIZATION_THRESHOLD
+  const tableData = isVirtualized ? filteredOrders : paginatedOrders
 
   const callbacks = useMemo(
     () => ({
@@ -176,6 +176,16 @@ export function OrderDataTable({
     setConfirmBulkDelete(false)
   }, [selectedIds, onDelete])
 
+  const handleColumnsChange = useCallback((columns: ColumnConfig[]) => {
+    const visibility: Record<string, boolean> = {}
+    columns.forEach((col) => {
+      if (col.id !== 'checkbox') {
+        visibility[col.id] = col.visible
+      }
+    })
+    setColumnVisibility(visibility)
+  }, [])
+
   const handleExport = useCallback(() => {
     const filename =
       filteredOrders.length > 0
@@ -226,13 +236,19 @@ export function OrderDataTable({
       />
 
       <div className="flex items-center justify-between mb-4">
-        <OrderTablePagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          itemsPerPage={itemsPerPage}
-          onPageChange={handlePageChange}
-          onItemsPerPageChange={handleItemsPerPageChange}
-        />
+        {isVirtualized ? (
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            Mostrando todos los {filteredOrders.length} resultados (vista rápida activa)
+          </p>
+        ) : (
+          <OrderTablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            onPageChange={handlePageChange}
+            onItemsPerPageChange={handleItemsPerPageChange}
+          />
+        )}
         <OrderTableToolbar
           bulkOperationsEnabled={settings.adminPanel.bulkOperationsEnabled}
           selectedCount={selectedIds.size}
@@ -282,7 +298,7 @@ export function OrderDataTable({
           <div className="flex-1 flex items-center justify-center text-zinc-500 dark:text-zinc-400 text-sm font-medium">
             No se encontraron órdenes
           </div>
-        ) : filteredOrders.length > VIRTUALIZATION_THRESHOLD ? (
+        ) : isVirtualized ? (
           <div className="flex-1">
             <List
               rowCount={filteredOrders.length}
@@ -375,7 +391,7 @@ export function OrderDataTable({
       <ColumnManager
         isOpen={columnManagerOpen}
         onClose={() => setColumnManagerOpen(false)}
-        onColumnsChange={() => {}}
+        onColumnsChange={handleColumnsChange}
       />
       {quickMenuOpen && settings.adminPanel.quickActionsEnabled && (
         <QuickActionsMenu

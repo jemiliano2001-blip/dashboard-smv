@@ -1,4 +1,3 @@
-import { useCallback } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   createWorkOrder,
@@ -9,7 +8,7 @@ import {
   fetchWorkOrderById,
 } from '@/features/orders/api/workOrders'
 import { workOrderKeys } from '@/features/orders/api/queryKeys'
-import { ERROR_MESSAGES, VALID_STATUSES } from '@/utils/constants'
+import { ERROR_MESSAGES, VALID_STATUSES, VALID_PRIORITIES } from '@/utils/constants'
 import { validateWorkOrderFormData, validateWorkOrderId } from '@/utils/validationSchemas'
 import { sanitizeEnum } from '@/utils/sanitize'
 import type { WorkOrder, WorkOrderFormData, Priority, Status } from '@/types'
@@ -23,8 +22,6 @@ interface UseWorkOrderActionsReturn {
   duplicateOrder: (id: string) => Promise<{ success: boolean; error?: string }>
   loading: boolean
   error: string | null
-  success: string | null
-  clearMessages: () => void
 }
 
 export function useWorkOrderActions(): UseWorkOrderActionsReturn {
@@ -239,6 +236,9 @@ export function useWorkOrderActions(): UseWorkOrderActionsReturn {
   }
 
   const quickUpdatePriority = async (id: string, priority: Priority) => {
+    if (!validateWorkOrderId(id)) return { success: false, error: 'ID de orden inválido' }
+    const sanitizedPriority = sanitizeEnum(priority, VALID_PRIORITIES, 'normal' as Priority)
+    if (sanitizedPriority !== priority) return { success: false, error: 'Prioridad inválida' }
     try {
       await updatePriorityMutation.mutateAsync({ id, priority })
       return { success: true }
@@ -280,10 +280,6 @@ export function useWorkOrderActions(): UseWorkOrderActionsReturn {
                 ? duplicateMutation.error.message
                 : null
 
-  const success = null
-
-  const clearMessages = useCallback(() => {}, [])
-
   return {
     createOrder,
     updateOrder,
@@ -293,7 +289,5 @@ export function useWorkOrderActions(): UseWorkOrderActionsReturn {
     duplicateOrder,
     loading,
     error,
-    success,
-    clearMessages,
   }
 }

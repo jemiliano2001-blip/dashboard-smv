@@ -25,6 +25,7 @@ export function useOrderHistory(): UseOrderHistoryReturn {
         .select('*')
         .eq('work_order_id', orderId)
         .order('created_at', { ascending: false })
+        .limit(100)
 
       if (filters?.startDate) {
         query = query.gte('created_at', filters.startDate)

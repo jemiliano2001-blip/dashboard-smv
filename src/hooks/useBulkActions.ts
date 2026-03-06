@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { workOrderKeys } from '@/features/orders/api/queryKeys'
 import { logger } from '../utils/logger'
 import type { Priority, Status } from '../types'
 
@@ -11,6 +13,7 @@ interface BulkUpdateResult {
 }
 
 export function useBulkActions() {
+  const queryClient = useQueryClient()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -30,6 +33,7 @@ export function useBulkActions() {
 
       if (updateError) throw updateError
 
+      void queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
       setLoading(false)
       return {
         success: true,
@@ -71,6 +75,7 @@ export function useBulkActions() {
 
       if (updateError) throw updateError
 
+      void queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
       setLoading(false)
       return {
         success: true,
@@ -112,6 +117,7 @@ export function useBulkActions() {
 
       if (updateError) throw updateError
 
+      void queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
       setLoading(false)
       return {
         success: true,
@@ -149,6 +155,7 @@ export function useBulkActions() {
 
       if (deleteError) throw deleteError
 
+      void queryClient.invalidateQueries({ queryKey: workOrderKeys.lists() })
       setLoading(false)
       return {
         success: true,
