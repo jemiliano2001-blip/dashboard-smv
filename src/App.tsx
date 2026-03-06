@@ -23,12 +23,18 @@ function App() {
 
   useEffect(() => {
     const root = document.documentElement
-    const body = document.body
-    root.classList.remove('dark')
-    root.classList.add('light')
-    body.classList.remove('dark')
-    body.classList.add('light')
-    localStorage.removeItem(THEME_STORAGE_KEY)
+    const stored = localStorage.getItem(THEME_STORAGE_KEY)
+    if (stored === 'dark') {
+      root.classList.add('dark')
+      root.classList.remove('light')
+    } else if (stored === 'light') {
+      root.classList.remove('dark')
+      root.classList.add('light')
+    } else {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      root.classList.toggle('dark', prefersDark)
+      root.classList.toggle('light', !prefersDark)
+    }
   }, [])
 
   useEffect(() => {

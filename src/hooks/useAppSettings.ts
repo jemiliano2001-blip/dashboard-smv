@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { z } from 'zod'
 import { logger } from '../utils/logger'
 import type { AppSettings } from '../types'
@@ -141,11 +141,19 @@ export function useAppSettings() {
     return () => window.removeEventListener('settings-changed', handleSettingsChange)
   }, [])
 
-  const saveSettings = (newSettings: AppSettings) => {
+  const saveSettings = useCallback((newSettings: AppSettings) => {
+    const validation = appSettingsSchema.safeParse(newSettings)
+    if (!validation.success) {
+      logger.error('Attempted to save invalid settings, discarding', null, {
+        feature: 'settings',
+        action: 'validate_save',
+      })
+      return
+    }
     setSettings(newSettings)
     localStorage.setItem(APP_SETTINGS_KEY, JSON.stringify(newSettings))
     window.dispatchEvent(new CustomEvent('settings-changed', { detail: newSettings }))
-  }
+  }, [])
 
   return {
     settings,

@@ -14,6 +14,38 @@ Se auditaron **100+ archivos** del proyecto. Se encontraron **25 problemas** dis
 
 ---
 
+## Estado de correcciones
+
+| ID   | Estado                                                                 |
+| ---- | ---------------------------------------------------------------------- |
+| C-01 | ⚠️ Pendiente intencional (bypass para desarrollo)                      |
+| C-02 | ⚠️ Pendiente — requiere credenciales Supabase (`npm run update-types`) |
+| C-03 | ✅ Corregido                                                           |
+| C-04 | ✅ Corregido                                                           |
+| A-01 | ✅ Corregido                                                           |
+| A-02 | ✅ Corregido                                                           |
+| A-03 | ✅ Corregido                                                           |
+| A-04 | ✅ Corregido                                                           |
+| A-05 | ✅ Corregido                                                           |
+| A-06 | ✅ Corregido                                                           |
+| A-07 | ✅ Corregido                                                           |
+| M-01 | ✅ Corregido                                                           |
+| M-02 | ⚠️ Pendiente — requiere refactor mayor (paginación server-side)        |
+| M-03 | ✅ Corregido                                                           |
+| M-04 | ✅ Corregido                                                           |
+| M-05 | ⚠️ Pendiente — requiere refactor a Context/useSyncExternalStore        |
+| M-06 | ✅ Corregido                                                           |
+| M-07 | ✅ Corregido                                                           |
+| M-08 | ✅ Corregido                                                           |
+| M-09 | ✅ Corregido                                                           |
+| B-01 | ✅ Corregido                                                           |
+| B-02 | ✅ Corregido                                                           |
+| B-03 | ✅ Corregido                                                           |
+| B-04 | ✅ Corregido                                                           |
+| B-05 | ✅ Corregido                                                           |
+
+---
+
 ## 🔴 PRIORIDAD CRÍTICA
 
 Problemas que representan riesgos de seguridad activos, corrupción de datos o que rompen el compilador. Deben resolverse **antes de cualquier deploy a producción**.

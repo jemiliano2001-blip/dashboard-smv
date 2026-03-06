@@ -22,6 +22,7 @@ function createMockFrom(returnData: WorkOrderHistory[] | null, returnError: { me
     gte: vi.fn().mockReturnThis(),
     lte: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
     then: vi.fn((resolve: (v: typeof result) => void) => {
       resolve(result)
       return Promise.resolve(result)
@@ -34,13 +35,13 @@ function createMockFrom(returnData: WorkOrderHistory[] | null, returnError: { me
   }
 }
 
-vi.mock('../../utils/supabase', () => ({
+vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: vi.fn(),
   },
 }))
 
-const { supabase } = await import('../../utils/supabase')
+const { supabase } = await import('@/lib/supabase')
 
 describe('useOrderHistory', () => {
   beforeEach(() => {

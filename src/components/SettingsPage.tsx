@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useBeforeUnload } from 'react-router-dom'
 import { Save, RotateCcw, Tv, Settings, Palette, Sliders } from 'lucide-react'
 import { SettingsTabs } from './SettingsTabs'
@@ -52,12 +52,12 @@ export function SettingsPage() {
   }
 
   useBeforeUnload(
-    hasChanges
-      ? (event) => {
-          event.preventDefault()
-          // Most browsers ignore custom text, but preventDefault triggers the prompt
-        }
-      : undefined,
+    useCallback(
+      (event: BeforeUnloadEvent) => {
+        if (hasChanges) event.preventDefault()
+      },
+      [hasChanges],
+    ),
   )
 
   const handleSave = () => {

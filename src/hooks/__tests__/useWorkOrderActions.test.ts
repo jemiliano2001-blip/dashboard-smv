@@ -1,10 +1,21 @@
 import { describe, it, expect, vi } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
-import { useWorkOrderActions } from '../useWorkOrderActions'
+import { createElement, type ReactNode } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useWorkOrderActions } from '@/features/orders/hooks/useWorkOrderActions'
 import type { WorkOrderFormData } from '../../types'
 
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  })
+  return function Wrapper({ children }: { children: ReactNode }) {
+    return createElement(QueryClientProvider, { client: queryClient }, children)
+  }
+}
+
 // Mock Supabase
-vi.mock('../../utils/supabase', () => ({
+vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: vi.fn(() => ({
       insert: vi.fn(() => ({
@@ -48,15 +59,14 @@ describe('useWorkOrderActions', () => {
   }
 
   it('should initialize with default state', () => {
-    const { result } = renderHook(() => useWorkOrderActions())
+    const { result } = renderHook(() => useWorkOrderActions(), { wrapper: createWrapper() })
     
     expect(result.current.loading).toBe(false)
     expect(result.current.error).toBeNull()
-    expect(result.current.success).toBeNull()
   })
 
   it('should create order successfully', async () => {
-    const { result } = renderHook(() => useWorkOrderActions())
+    const { result } = renderHook(() => useWorkOrderActions(), { wrapper: createWrapper() })
     
     await waitFor(async () => {
       const createResult = await result.current.createOrder(validOrderData)
@@ -65,7 +75,7 @@ describe('useWorkOrderActions', () => {
   })
 
   it('should validate order data before creating', async () => {
-    const { result } = renderHook(() => useWorkOrderActions())
+    const { result } = renderHook(() => useWorkOrderActions(), { wrapper: createWrapper() })
     
     const invalidData = { ...validOrderData, company_name: '' }
     
@@ -76,20 +86,22 @@ describe('useWorkOrderActions', () => {
     })
   })
 
+  const VALID_UUID = '550e8400-e29b-4d10-a716-446655440000'
+
   it('should update order successfully', async () => {
-    const { result } = renderHook(() => useWorkOrderActions())
-    
+    const { result } = renderHook(() => useWorkOrderActions(), { wrapper: createWrapper() })
+
     await waitFor(async () => {
-      const updateResult = await result.current.updateOrder('1', validOrderData)
+      const updateResult = await result.current.updateOrder(VALID_UUID, validOrderData)
       expect(updateResult.success).toBe(true)
     })
   })
 
   it('should delete order successfully', async () => {
-    const { result } = renderHook(() => useWorkOrderActions())
-    
+    const { result } = renderHook(() => useWorkOrderActions(), { wrapper: createWrapper() })
+
     await waitFor(async () => {
-      const deleteResult = await result.current.deleteOrder('1')
+      const deleteResult = await result.current.deleteOrder(VALID_UUID)
       expect(deleteResult.success).toBe(true)
     })
   })

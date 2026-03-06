@@ -6,9 +6,14 @@ import { PRIORITY_COLORS, STATUS_COLORS } from '@/utils/constants'
 import { PRIORITY_LABELS, STATUS_LABELS } from './types'
 import type { WorkOrder, Priority, Status } from '@/types'
 
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
 function highlightText(text: string, searchTerm: string): React.ReactNode {
   if (!searchTerm || !text) return text
-  const parts = text.split(new RegExp(`(${searchTerm})`, 'gi'))
+  const escaped = escapeRegExp(searchTerm)
+  const parts = text.split(new RegExp(`(${escaped})`, 'gi'))
   return parts.map((part, i) =>
     part.toLowerCase() === searchTerm.toLowerCase() ? (
       <mark key={i} className="bg-yellow-400 text-yellow-900 px-1 rounded">
@@ -220,7 +225,7 @@ export function createColumns(
         const order = row.original
         return (
           <div
-            className={`px-6 ${rowPadding} group flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap`}
+            className={`px-6 ${rowPadding} group flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200 whitespace-nowrap`}
           >
             <button
               onClick={() => callbacks.onEdit(order)}

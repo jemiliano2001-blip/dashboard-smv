@@ -177,9 +177,9 @@ class Logger {
 
 export const logger = new Logger()
 
-// Flush remaining errors before page unload
+// Flush and clean up remaining errors before page unload
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
-    logger.flush()
+    logger.destroy()
   })
 }

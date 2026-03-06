@@ -16,9 +16,9 @@ describe('sanitize utilities', () => {
   })
 
   describe('sanitizeText', () => {
-    it('should trim and escape text', () => {
+    it('should trim text without HTML-escaping (React escapes on render)', () => {
       expect(sanitizeText('  test  ')).toBe('test')
-      expect(sanitizeText('<script>')).toBe('&lt;script&gt;')
+      expect(sanitizeText('<script>')).toBe('<script>')
     })
 
     it('should respect maxLength', () => {

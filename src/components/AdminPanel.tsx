@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, lazy, Suspense, type FormEvent } from 'react'
+import { useState, useEffect, useCallback, useMemo, lazy, Suspense, type FormEvent } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import {
   useWorkOrders,
@@ -12,7 +12,6 @@ import { useToast } from '../hooks/useToast'
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
 import { useAppSettings } from '../hooks/useAppSettings'
 import { useAuth } from '../hooks/useAuth'
-import { SkeletonTable } from './SkeletonTable'
 const SettingsPage = lazy(() =>
   import('@/features/settings').then((m) => ({ default: m.SettingsPage }))
 )
@@ -41,9 +40,6 @@ export function AdminPanel() {
     quickUpdatePriority,
     duplicateOrder,
     loading: actionLoading,
-    error: actionError,
-    success: actionSuccess,
-    clearMessages,
   } = useWorkOrderActions()
   const { success: showSuccess, error: showError, toasts, removeToast } = useToast()
   const { settings } = useAppSettings()
@@ -77,20 +73,6 @@ export function AdminPanel() {
   useEffect(() => {
     setShowMetrics(settings.adminPanel.showMetricsByDefault)
   }, [settings.adminPanel.showMetricsByDefault])
-
-  useEffect(() => {
-    if (actionSuccess) {
-      showSuccess(actionSuccess)
-      clearMessages()
-    }
-  }, [actionSuccess, showSuccess, clearMessages])
-
-  useEffect(() => {
-    if (actionError) {
-      showError(actionError)
-      clearMessages()
-    }
-  }, [actionError, showError, clearMessages])
 
   const handleSave = async (formData: WorkOrderFormData) => {
     try {
@@ -234,28 +216,24 @@ export function AdminPanel() {
     }
   }
 
-  useKeyboardShortcuts(
-    {
-      'ctrl+n': (e) => {
+  const keyboardShortcuts = useMemo(
+    () => ({
+      'ctrl+n': (e: KeyboardEvent) => {
         e.preventDefault()
-        if (!formModalOpen) {
-          handleNewOrder()
-        }
+        if (!formModalOpen) handleNewOrder()
       },
-      'cmd+n': (e) => {
+      'cmd+n': (e: KeyboardEvent) => {
         e.preventDefault()
-        if (!formModalOpen) {
-          handleNewOrder()
-        }
+        if (!formModalOpen) handleNewOrder()
       },
-      'escape': () => {
-        if (formModalOpen) {
-          handleCancelForm()
-        }
+      escape: () => {
+        if (formModalOpen) handleCancelForm()
       },
-    },
-    !ordersLoading && !!user
+    }),
+    [formModalOpen],
   )
+
+  useKeyboardShortcuts(keyboardShortcuts, !ordersLoading && !!user)
 
   if (authLoading) {
     return <LoadingState />
@@ -490,22 +468,18 @@ export function AdminPanel() {
             <Route
               index
               element={
-                ordersLoading ? (
-                  <SkeletonTable />
-                ) : (
-                  <>
-                    {showMetrics && <AdminMetrics orders={workOrders} />}
-                    <OrderTable
-                      orders={workOrders}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      onDuplicate={handleDuplicate}
-                      onQuickStatusChange={handleQuickStatusChange}
-                      onQuickPriorityChange={handleQuickPriorityChange}
-                      loading={actionLoading}
-                    />
-                  </>
-                )
+                <>
+                  {showMetrics && <AdminMetrics orders={workOrders} />}
+                  <OrderTable
+                    orders={workOrders}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onDuplicate={handleDuplicate}
+                    onQuickStatusChange={handleQuickStatusChange}
+                    onQuickPriorityChange={handleQuickPriorityChange}
+                    loading={actionLoading}
+                  />
+                </>
               }
             />
             <Route path="logs" element={<LogsPanel />} />

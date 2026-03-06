@@ -17,7 +17,7 @@ const PRIORITY_LABELS: Record<Priority, string> = {
 const STATUS_LABELS: Record<Status, string> = {
   scheduled: 'Programada',
   production: 'En Producción',
-  quality: 'Completada',
+  quality: 'Calidad',
   hold: 'En Hold',
 }
 
